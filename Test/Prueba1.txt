@@ -1,12 +1,12 @@
-program TestCorrect;
+program TESTCORRECT;
 var
-   x,y:int;
-   z:float;
+   X,Y:int;
+   Z:float;
 {
-   x = 1;
-   y = 2;
-   z = (x+y*3)/4;
-   if (z > x) {
-      print("hola mundo",(x+y));
+   X = 1;
+   Y = 2;
+   Z = (X + Y * 3) / 4;
+   if (Z > X) {
+      write("hola mun" << (X + Y) );
    }
 }

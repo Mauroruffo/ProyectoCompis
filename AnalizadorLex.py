@@ -34,7 +34,26 @@ reservadas = {
 
 tokens = tokens + list(reservadas.values())
 
-t_ignore = ' \t'
+t_ignore = ' \t\n'
+t_PROGRAM = 'program'
+t_VAR = 'var'
+t_CLASS = 'class'
+t_MAIN = 'main'
+t_IF = 'if'
+t_ELSEIF = 'elseif'
+t_ELSE = 'else'
+t_WHILE = 'while'
+t_DO = 'do'
+t_FUNCTION = 'function'
+t_RETURN = 'return'
+t_READ = 'read'
+t_WRITE = 'write'
+t_INT = 'int'
+t_FLOAT = 'float'
+t_VOID = 'void'
+t_ATTRIBUTES = 'attributes'
+t_METHODS = 'methods'
+t_DEF = 'def'
 t_EQUAL_ASSIGN = r'='
 t_LEFT_PARENTHESIS = r'\('
 t_RIGHT_PARENTHESIS = r'\)'
@@ -61,7 +80,7 @@ t_OR = r'\|\|'
 t_NEGATION = r'!'
 t_CONST_INT = r'[1-9][0-9]*|0'
 t_CONST_FLOAT = r'[+-]?([0-9]*[.])?[0-9]+'
-t_CONST_CHAR = r'[_(a-zA-Z0-9)]'
+#t_CONST_CHAR = r'[_(A-Z0-9)]'
 t_CONST_STRING = r'[[_(a-zA-Z0-9)+]*]'
 t_MORE = r'<<'
 t_DOUBLE_QUOTES = r'"'
@@ -71,7 +90,7 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 def t_ID(t):
-    r'[a-zA-Z][_(a-zA-Z0-9)+]*'
+    r'[A-Z][_(A-Z0-9)+]*'
     if t.value.upper() in reservadas:
         t.value = t.value.upper()
         t.type = t.value
@@ -112,20 +131,20 @@ def buscarFicheros(directorio):
     return files[int(numArchivo) - 1]
 
 
-directorio = 'C:/Users/mauro/OneDrive/Documents/9no Semestre/Compiladores/ProyectoFinalOOP/test/'
-archivo = buscarFicheros(directorio)
-test = directorio + archivo
-fp = codecs.open(test,"r","utf-8")
-cadena = fp.read()
-fp.close()
+# directorio = 'C:/Users/mauro/OneDrive/Documents/9no Semestre/Compiladores/ProyectoFinalOOP/test/'
+# archivo = buscarFicheros(directorio)
+# test = directorio + archivo
+# fp = codecs.open(test,"r","utf-8")
+# cadena = fp.read()
+# fp.close()
 
-print("Sam Raimi")
+# print("Sam Raimi")
 
 analizador = lex.lex()
-analizador.input(cadena)
+# analizador.input(cadena)
 
-# Imprimir tokens
-while True:
-    tok = analizador.token()
-    if not tok : break
-    print(tok)
+# # Imprimir tokens
+# while True:
+#     tok = analizador.token()
+#     if not tok : break
+#     print(tok)
