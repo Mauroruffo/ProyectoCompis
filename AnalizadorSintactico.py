@@ -160,7 +160,7 @@ def p_more2(p):
     ''' more : empty '''
 
 def p_string(p):
-    ''' string : DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES '''
+    ''' string : CONST_STRING '''
 
 def p_class(p):
     ''' class : CLASS LEFT_CURLYB vars method RIGHT_CURLYB '''

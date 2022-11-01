@@ -7,7 +7,7 @@ import sys
 
 tokens = ['LEFT_PARENTHESIS', 'RIGHT_PARENTHESIS', 'LEFT_BRACKET', 'RIGHT_BRACKET', 'LEFT_CURLYB', 'RIGHT_CURLYB', 'COLON', 'SEMICOLON', 
         'COMMA', 'PERIOD', 'LESS_THAN', 'GREATER_THAN', 'EQUAL_ASSIGN', 'NOT_EQUAL', 'LESS_EQUAL', 'GREATER_EQUAL', 'EQUAL_COMPARE', 'NUMBER',
-        'MINUS', 'PLUS', 'MULTIPLICATION', 'DIVISION', 'AND', 'OR', 'NEGATION', 'ID', 'CONST_INT', 'CONST_FLOAT', 'CONST_CHAR', 'CONST_STRING', 'MORE', 'DOUBLE_QUOTES']
+        'MINUS', 'PLUS', 'MULTIPLICATION', 'DIVISION', 'AND', 'OR', 'NEGATION', 'ID', 'CONST_INT', 'CONST_FLOAT', 'CONST_CHAR', 'CONST_STRING', 'MORE']
 
 reservadas = {
     'program' : 'PROGRAM',
@@ -34,7 +34,7 @@ reservadas = {
 
 tokens = tokens + list(reservadas.values())
 
-t_ignore = ' \t\n'
+t_ignore = ' \t'
 t_PROGRAM = 'program'
 t_VAR = 'var'
 t_CLASS = 'class'
@@ -81,13 +81,13 @@ t_NEGATION = r'!'
 t_CONST_INT = r'[1-9][0-9]*|0'
 t_CONST_FLOAT = r'[+-]?([0-9]*[.])?[0-9]+'
 #t_CONST_CHAR = r'[_(A-Z0-9)]'
-t_CONST_STRING = r'[[_(a-zA-Z0-9)+]*]'
 t_MORE = r'<<'
-t_DOUBLE_QUOTES = r'"'
 
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+    print("NewLine")
+    pass
 
 def t_ID(t):
     r'[A-Z][_(A-Z0-9)+]*'
@@ -95,6 +95,10 @@ def t_ID(t):
         t.value = t.value.upper()
         t.type = t.value
     
+    return t
+
+def t_CONST_STRING(t):
+    r'"(\\"|[^\n"])+"'
     return t
 
 def t_NUMBER(t):
@@ -131,20 +135,18 @@ def buscarFicheros(directorio):
     return files[int(numArchivo) - 1]
 
 
-# directorio = 'C:/Users/mauro/OneDrive/Documents/9no Semestre/Compiladores/ProyectoFinalOOP/test/'
-# archivo = buscarFicheros(directorio)
-# test = directorio + archivo
-# fp = codecs.open(test,"r","utf-8")
-# cadena = fp.read()
-# fp.close()
-
-# print("Sam Raimi")
+directorio = 'C:/Users/mauro/OneDrive/Documents/9no Semestre/Compiladores/ProyectoFinalOOP/test/'
+archivo = buscarFicheros(directorio)
+test = directorio + archivo
+fp = codecs.open(test,"r","utf-8")
+cadena = fp.read()
+fp.close()
 
 analizador = lex.lex()
-# analizador.input(cadena)
+analizador.input(cadena)
 
-# # Imprimir tokens
-# while True:
-#     tok = analizador.token()
-#     if not tok : break
-#     print(tok)
+# Imprimir tokens
+while True:
+    tok = analizador.token()
+    if not tok : break
+    print(tok)

@@ -67,7 +67,7 @@ Rule 39    inside -> string
 Rule 40    inside -> empty
 Rule 41    more -> MORE
 Rule 42    more -> empty
-Rule 43    string -> DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES
+Rule 43    string -> CONST_STRING
 Rule 44    class -> CLASS LEFT_CURLYB vars method RIGHT_CURLYB
 Rule 45    method -> DEF LEFT_PARENTHESIS varid RIGHT_PARENTHESIS bloquemetodo
 Rule 46    bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID SEMICOLON
@@ -88,7 +88,6 @@ CONST_STRING         : 43
 DEF                  : 45
 DIVISION             : 28
 DO                   : 
-DOUBLE_QUOTES        : 43 43
 ELSE                 : 19
 ELSEIF               : 
 EQUAL_ASSIGN         : 17
@@ -626,18 +625,18 @@ state 41
     (38) inside -> . ID
     (39) inside -> . string
     (40) inside -> . empty
-    (43) string -> . DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES
+    (43) string -> . CONST_STRING
     (47) empty -> .
 
   ! shift/reduce conflict for ID resolved as shift
-  ! shift/reduce conflict for DOUBLE_QUOTES resolved as shift
+  ! shift/reduce conflict for CONST_STRING resolved as shift
     ID              shift and go to state 61
-    DOUBLE_QUOTES   shift and go to state 64
+    CONST_STRING    shift and go to state 64
     RIGHT_PARENTHESIS reduce using rule 47 (empty -> .)
     MORE            reduce using rule 47 (empty -> .)
 
   ! ID              [ reduce using rule 47 (empty -> .) ]
-  ! DOUBLE_QUOTES   [ reduce using rule 47 (empty -> .) ]
+  ! CONST_STRING    [ reduce using rule 47 (empty -> .) ]
 
     inside                         shift and go to state 60
     string                         shift and go to state 62
@@ -893,7 +892,7 @@ state 60
     RIGHT_PARENTHESIS shift and go to state 79
     MORE            shift and go to state 81
     ID              reduce using rule 47 (empty -> .)
-    DOUBLE_QUOTES   reduce using rule 47 (empty -> .)
+    CONST_STRING    reduce using rule 47 (empty -> .)
 
   ! MORE            [ reduce using rule 47 (empty -> .) ]
   ! RIGHT_PARENTHESIS [ reduce using rule 47 (empty -> .) ]
@@ -908,7 +907,7 @@ state 61
     RIGHT_PARENTHESIS reduce using rule 38 (inside -> ID .)
     MORE            reduce using rule 38 (inside -> ID .)
     ID              reduce using rule 38 (inside -> ID .)
-    DOUBLE_QUOTES   reduce using rule 38 (inside -> ID .)
+    CONST_STRING    reduce using rule 38 (inside -> ID .)
 
 
 state 62
@@ -918,7 +917,7 @@ state 62
     RIGHT_PARENTHESIS reduce using rule 39 (inside -> string .)
     MORE            reduce using rule 39 (inside -> string .)
     ID              reduce using rule 39 (inside -> string .)
-    DOUBLE_QUOTES   reduce using rule 39 (inside -> string .)
+    CONST_STRING    reduce using rule 39 (inside -> string .)
 
 
 state 63
@@ -928,21 +927,24 @@ state 63
     RIGHT_PARENTHESIS reduce using rule 40 (inside -> empty .)
     MORE            reduce using rule 40 (inside -> empty .)
     ID              reduce using rule 40 (inside -> empty .)
-    DOUBLE_QUOTES   reduce using rule 40 (inside -> empty .)
+    CONST_STRING    reduce using rule 40 (inside -> empty .)
 
 
 state 64
 
-    (43) string -> DOUBLE_QUOTES . CONST_STRING DOUBLE_QUOTES
+    (43) string -> CONST_STRING .
 
-    CONST_STRING    shift and go to state 83
+    RIGHT_PARENTHESIS reduce using rule 43 (string -> CONST_STRING .)
+    MORE            reduce using rule 43 (string -> CONST_STRING .)
+    ID              reduce using rule 43 (string -> CONST_STRING .)
+    CONST_STRING    reduce using rule 43 (string -> CONST_STRING .)
 
 
 state 65
 
     (21) while -> WHILE LEFT_PARENTHESIS expresion . RIGHT_PARENTHESIS bloque
 
-    RIGHT_PARENTHESIS shift and go to state 84
+    RIGHT_PARENTHESIS shift and go to state 83
 
 
 state 66
@@ -975,7 +977,7 @@ state 68
     ID              shift and go to state 11
     RIGHT_PARENTHESIS reduce using rule 47 (empty -> .)
 
-    varid                          shift and go to state 85
+    varid                          shift and go to state 84
     empty                          shift and go to state 12
 
 state 69
@@ -1012,7 +1014,7 @@ state 70
     CONST_INT       shift and go to state 57
     CONST_FLOAT     shift and go to state 58
 
-    exp                            shift and go to state 86
+    exp                            shift and go to state 85
     termino                        shift and go to state 51
     factor                         shift and go to state 54
     varcte                         shift and go to state 56
@@ -1039,7 +1041,7 @@ state 71
     CONST_INT       shift and go to state 57
     CONST_FLOAT     shift and go to state 58
 
-    exp                            shift and go to state 87
+    exp                            shift and go to state 86
     termino                        shift and go to state 51
     factor                         shift and go to state 54
     varcte                         shift and go to state 56
@@ -1066,7 +1068,7 @@ state 72
     CONST_INT       shift and go to state 57
     CONST_FLOAT     shift and go to state 58
 
-    exp                            shift and go to state 88
+    exp                            shift and go to state 87
     termino                        shift and go to state 51
     factor                         shift and go to state 54
     varcte                         shift and go to state 56
@@ -1091,7 +1093,7 @@ state 73
     CONST_INT       shift and go to state 57
     CONST_FLOAT     shift and go to state 58
 
-    termino                        shift and go to state 89
+    termino                        shift and go to state 88
     factor                         shift and go to state 54
     varcte                         shift and go to state 56
 
@@ -1115,7 +1117,7 @@ state 74
     CONST_INT       shift and go to state 57
     CONST_FLOAT     shift and go to state 58
 
-    termino                        shift and go to state 90
+    termino                        shift and go to state 89
     factor                         shift and go to state 54
     varcte                         shift and go to state 56
 
@@ -1137,7 +1139,7 @@ state 75
     CONST_INT       shift and go to state 57
     CONST_FLOAT     shift and go to state 58
 
-    factor                         shift and go to state 91
+    factor                         shift and go to state 90
     varcte                         shift and go to state 56
 
 state 76
@@ -1158,14 +1160,14 @@ state 76
     CONST_INT       shift and go to state 57
     CONST_FLOAT     shift and go to state 58
 
-    factor                         shift and go to state 92
+    factor                         shift and go to state 91
     varcte                         shift and go to state 56
 
 state 77
 
     (29) factor -> LEFT_PARENTHESIS expresion . RIGHT_PARENTHESIS
 
-    RIGHT_PARENTHESIS shift and go to state 93
+    RIGHT_PARENTHESIS shift and go to state 92
 
 
 state 78
@@ -1175,7 +1177,7 @@ state 78
 
     LEFT_CURLYB     shift and go to state 14
 
-    bloque                         shift and go to state 94
+    bloque                         shift and go to state 93
 
 state 79
 
@@ -1196,20 +1198,20 @@ state 80
     (38) inside -> . ID
     (39) inside -> . string
     (40) inside -> . empty
-    (43) string -> . DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES
+    (43) string -> . CONST_STRING
     (47) empty -> .
 
   ! shift/reduce conflict for ID resolved as shift
-  ! shift/reduce conflict for DOUBLE_QUOTES resolved as shift
+  ! shift/reduce conflict for CONST_STRING resolved as shift
     ID              shift and go to state 61
-    DOUBLE_QUOTES   shift and go to state 64
+    CONST_STRING    shift and go to state 64
     MORE            reduce using rule 47 (empty -> .)
     RIGHT_PARENTHESIS reduce using rule 47 (empty -> .)
 
   ! ID              [ reduce using rule 47 (empty -> .) ]
-  ! DOUBLE_QUOTES   [ reduce using rule 47 (empty -> .) ]
+  ! CONST_STRING    [ reduce using rule 47 (empty -> .) ]
 
-    inside                         shift and go to state 95
+    inside                         shift and go to state 94
     string                         shift and go to state 62
     empty                          shift and go to state 63
 
@@ -1218,7 +1220,7 @@ state 81
     (41) more -> MORE .
 
     ID              reduce using rule 41 (more -> MORE .)
-    DOUBLE_QUOTES   reduce using rule 41 (more -> MORE .)
+    CONST_STRING    reduce using rule 41 (more -> MORE .)
     MORE            reduce using rule 41 (more -> MORE .)
     RIGHT_PARENTHESIS reduce using rule 41 (more -> MORE .)
 
@@ -1228,35 +1230,28 @@ state 82
     (42) more -> empty .
 
     ID              reduce using rule 42 (more -> empty .)
-    DOUBLE_QUOTES   reduce using rule 42 (more -> empty .)
+    CONST_STRING    reduce using rule 42 (more -> empty .)
     MORE            reduce using rule 42 (more -> empty .)
     RIGHT_PARENTHESIS reduce using rule 42 (more -> empty .)
 
 
 state 83
 
-    (43) string -> DOUBLE_QUOTES CONST_STRING . DOUBLE_QUOTES
-
-    DOUBLE_QUOTES   shift and go to state 96
-
-
-state 84
-
     (21) while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS . bloque
     (9) bloque -> . LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB
 
     LEFT_CURLYB     shift and go to state 14
 
-    bloque                         shift and go to state 97
+    bloque                         shift and go to state 95
 
-state 85
+state 84
 
     (45) method -> DEF LEFT_PARENTHESIS varid . RIGHT_PARENTHESIS bloquemetodo
 
-    RIGHT_PARENTHESIS shift and go to state 98
+    RIGHT_PARENTHESIS shift and go to state 96
 
 
-state 86
+state 85
 
     (22) expresion -> exp LESS_THAN exp .
 
@@ -1264,7 +1259,7 @@ state 86
     RIGHT_PARENTHESIS reduce using rule 22 (expresion -> exp LESS_THAN exp .)
 
 
-state 87
+state 86
 
     (23) expresion -> exp GREATER_THAN exp .
 
@@ -1272,7 +1267,7 @@ state 87
     RIGHT_PARENTHESIS reduce using rule 23 (expresion -> exp GREATER_THAN exp .)
 
 
-state 88
+state 87
 
     (24) expresion -> exp NOT_EQUAL exp .
 
@@ -1280,7 +1275,7 @@ state 88
     RIGHT_PARENTHESIS reduce using rule 24 (expresion -> exp NOT_EQUAL exp .)
 
 
-state 89
+state 88
 
     (25) exp -> termino PLUS termino .
 
@@ -1291,7 +1286,7 @@ state 89
     RIGHT_PARENTHESIS reduce using rule 25 (exp -> termino PLUS termino .)
 
 
-state 90
+state 89
 
     (26) exp -> termino MINUS termino .
 
@@ -1302,7 +1297,7 @@ state 90
     RIGHT_PARENTHESIS reduce using rule 26 (exp -> termino MINUS termino .)
 
 
-state 91
+state 90
 
     (27) termino -> factor MULTIPLICATION factor .
 
@@ -1315,7 +1310,7 @@ state 91
     RIGHT_PARENTHESIS reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
 
 
-state 92
+state 91
 
     (28) termino -> factor DIVISION factor .
 
@@ -1328,7 +1323,7 @@ state 92
     RIGHT_PARENTHESIS reduce using rule 28 (termino -> factor DIVISION factor .)
 
 
-state 93
+state 92
 
     (29) factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .
 
@@ -1343,7 +1338,7 @@ state 93
     RIGHT_PARENTHESIS reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
 
 
-state 94
+state 93
 
     (18) condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .
 
@@ -1356,7 +1351,7 @@ state 94
     RIGHT_CURLYB    reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
 
 
-state 95
+state 94
 
     (37) inside -> inside more inside .
     (37) inside -> inside . more inside
@@ -1367,33 +1362,23 @@ state 95
   ! shift/reduce conflict for MORE resolved as shift
   ! shift/reduce conflict for MORE resolved as shift
   ! reduce/reduce conflict for ID resolved using rule 37 (inside -> inside more inside .)
-  ! reduce/reduce conflict for DOUBLE_QUOTES resolved using rule 37 (inside -> inside more inside .)
+  ! reduce/reduce conflict for CONST_STRING resolved using rule 37 (inside -> inside more inside .)
   ! reduce/reduce conflict for RIGHT_PARENTHESIS resolved using rule 37 (inside -> inside more inside .)
     RIGHT_PARENTHESIS reduce using rule 37 (inside -> inside more inside .)
     ID              reduce using rule 37 (inside -> inside more inside .)
-    DOUBLE_QUOTES   reduce using rule 37 (inside -> inside more inside .)
+    CONST_STRING    reduce using rule 37 (inside -> inside more inside .)
     MORE            shift and go to state 81
 
   ! MORE            [ reduce using rule 37 (inside -> inside more inside .) ]
   ! MORE            [ reduce using rule 47 (empty -> .) ]
   ! ID              [ reduce using rule 47 (empty -> .) ]
-  ! DOUBLE_QUOTES   [ reduce using rule 47 (empty -> .) ]
+  ! CONST_STRING    [ reduce using rule 47 (empty -> .) ]
   ! RIGHT_PARENTHESIS [ reduce using rule 47 (empty -> .) ]
 
     more                           shift and go to state 80
     empty                          shift and go to state 82
 
-state 96
-
-    (43) string -> DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES .
-
-    RIGHT_PARENTHESIS reduce using rule 43 (string -> DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES .)
-    MORE            reduce using rule 43 (string -> DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES .)
-    ID              reduce using rule 43 (string -> DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES .)
-    DOUBLE_QUOTES   reduce using rule 43 (string -> DOUBLE_QUOTES CONST_STRING DOUBLE_QUOTES .)
-
-
-state 97
+state 95
 
     (21) while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .
 
@@ -1405,23 +1390,23 @@ state 97
     RIGHT_CURLYB    reduce using rule 21 (while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
 
 
-state 98
+state 96
 
     (45) method -> DEF LEFT_PARENTHESIS varid RIGHT_PARENTHESIS . bloquemetodo
     (46) bloquemetodo -> . LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID SEMICOLON
 
-    LEFT_CURLYB     shift and go to state 100
+    LEFT_CURLYB     shift and go to state 98
 
-    bloquemetodo                   shift and go to state 99
+    bloquemetodo                   shift and go to state 97
 
-state 99
+state 97
 
     (45) method -> DEF LEFT_PARENTHESIS varid RIGHT_PARENTHESIS bloquemetodo .
 
     RIGHT_CURLYB    reduce using rule 45 (method -> DEF LEFT_PARENTHESIS varid RIGHT_PARENTHESIS bloquemetodo .)
 
 
-state 100
+state 98
 
     (46) bloquemetodo -> LEFT_CURLYB . estatutoRecursivo RIGHT_CURLYB RETURN ID SEMICOLON
     (10) estatutoRecursivo -> . estatuto estatutoRecursivo
@@ -1446,7 +1431,7 @@ state 100
     WHILE           shift and go to state 29
     READ            shift and go to state 30
 
-    estatutoRecursivo              shift and go to state 101
+    estatutoRecursivo              shift and go to state 99
     estatuto                       shift and go to state 19
     empty                          shift and go to state 20
     asignacion                     shift and go to state 21
@@ -1455,35 +1440,35 @@ state 100
     while                          shift and go to state 24
     read                           shift and go to state 25
 
-state 101
+state 99
 
     (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo . RIGHT_CURLYB RETURN ID SEMICOLON
 
-    RIGHT_CURLYB    shift and go to state 102
+    RIGHT_CURLYB    shift and go to state 100
+
+
+state 100
+
+    (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB . RETURN ID SEMICOLON
+
+    RETURN          shift and go to state 101
+
+
+state 101
+
+    (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN . ID SEMICOLON
+
+    ID              shift and go to state 102
 
 
 state 102
 
-    (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB . RETURN ID SEMICOLON
+    (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID . SEMICOLON
 
-    RETURN          shift and go to state 103
+    SEMICOLON       shift and go to state 103
 
 
 state 103
-
-    (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN . ID SEMICOLON
-
-    ID              shift and go to state 104
-
-
-state 104
-
-    (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID . SEMICOLON
-
-    SEMICOLON       shift and go to state 105
-
-
-state 105
 
     (46) bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID SEMICOLON .
 
@@ -1493,12 +1478,12 @@ WARNING:
 WARNING: Conflicts:
 WARNING: 
 WARNING: shift/reduce conflict for ID in state 41 resolved as shift
-WARNING: shift/reduce conflict for DOUBLE_QUOTES in state 41 resolved as shift
+WARNING: shift/reduce conflict for CONST_STRING in state 41 resolved as shift
 WARNING: shift/reduce conflict for MORE in state 60 resolved as shift
 WARNING: shift/reduce conflict for RIGHT_PARENTHESIS in state 60 resolved as shift
 WARNING: shift/reduce conflict for ID in state 80 resolved as shift
-WARNING: shift/reduce conflict for DOUBLE_QUOTES in state 80 resolved as shift
-WARNING: shift/reduce conflict for MORE in state 95 resolved as shift
-WARNING: shift/reduce conflict for MORE in state 95 resolved as shift
-WARNING: reduce/reduce conflict in state 95 resolved using rule (inside -> inside more inside)
-WARNING: rejected rule (empty -> <empty>) in state 95
+WARNING: shift/reduce conflict for CONST_STRING in state 80 resolved as shift
+WARNING: shift/reduce conflict for MORE in state 94 resolved as shift
+WARNING: shift/reduce conflict for MORE in state 94 resolved as shift
+WARNING: reduce/reduce conflict in state 94 resolved using rule (inside -> inside more inside)
+WARNING: rejected rule (empty -> <empty>) in state 94

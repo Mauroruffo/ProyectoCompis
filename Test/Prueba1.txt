@@ -7,6 +7,6 @@ var
    Y = 2;
    Z = (X + Y * 3) / 4;
    if (Z > X) {
-      write("hola mun" << (X + Y) );
+      write("hola mun" << X );
    }
 }
