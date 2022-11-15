@@ -4,7 +4,11 @@ import codecs
 import re
 from AnalizadorLex import tokens
 from AnalizadorSemantico import *
+from estructuras.VarsFuncs import *
+from estructuras.stack import *
 from sys import stdin
+
+varTable = []
 
 precedence = (
     ('right', 'EQUAL_ASSIGN'),
@@ -20,11 +24,13 @@ precedence = (
 def p_program(p):
     ''' program : PROGRAM ID SEMICOLON vars class bloque '''
     p[0] = program(p[1], p[2], p[3], "program")
+    varTable.append(Variable(p[2], "program", "global"))
     print("program")
 
 def p_vars(p):
     ''' vars : VAR varid COLON tipo SEMICOLON '''
-    p[0] = vars(p[4], "vars")
+    p[0] = vars(p[2], p[4], "vars")
+    varTable.append(Variable(p[2], p[4], "global"))
     print("vars")
 
 def p_varsEmpty(p):
@@ -34,11 +40,11 @@ def p_varsEmpty(p):
 
 def p_varsid1(p):
     '''  varid : ID '''
-    p[0] : varsid1(varsid1(p[1]), "varsid1")
+    p[0] = varsid1(varsid1(p[1]), "varsid1")
 
 def p_varsid2(p):
     ''' varid : ID COMMA ID '''
-    p[0] : varsid2(varsid2(p[1]))
+    p[0] = varsid2(varsid2(p[1]))
 
 def p_varsidEmpty(p):
     ''' varid : empty '''
@@ -87,6 +93,12 @@ def p_estatuto5(p):
 def p_asignacion(p):
     ''' asignacion : ID EQUAL_ASSIGN expresion SEMICOLON '''
     p[0] = asignacion(p[3], "asignacion")
+    if contains(varTable, lambda Variable: Variable.name == p[1]):
+        Variable.value = p[3]
+    else:
+        print("Variable no declarada!")
+        pass
+
     print("asignacion")
 
 def p_condicion(p):
@@ -178,6 +190,11 @@ def p_writeInside1(p):
 def p_writeInside2(p):
     ''' inside : ID '''
     p[0] = writeInside2(ID(p[0]), "writeInside2")
+    if contains(varTable, lambda Variable: Variable.name == p[1]):
+        print("Si existe la variable")
+    else:
+        print("Variable no declarada")
+        pass
 
 def p_writeInside3(p):
     ''' inside : string '''
@@ -200,14 +217,69 @@ def p_string(p):
 def p_class(p):
     ''' class : CLASS ID LEFT_CURLYB vars method RIGHT_CURLYB '''
     p[0] = class_(p[4], p[5], "class")
+    varTable.append(Variable(p[2], "class", "global"))
 
 def p_method(p):
     ''' method : tipo LEFT_PARENTHESIS varid RIGHT_PARENTHESIS bloquemetodo '''
     p[0] = method(p[1], p[3], "method")
+    varTable.append(Variable(p[3], p[1], p[0]))
 
 def p_bloquemethod(p):
     ''' bloquemetodo : LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID SEMICOLON '''
     p[0] = bloquemethod(p[2], "bloquemethod")
+    if contains(varTable, lambda Variable:Variable.name == p[5]):
+        print("Variable retornada si existe")
+    else:
+        print("Variable no existe")
+
+def p_function(p):
+    ''' function :  FUNCTION functype ID LEFT_PARENTHESIS tipoid RIGHT_PARENTHESIS LEFT_CURLY vars bloque RIGHT_CURLY '''
+    
+
+def p_function1(p):
+    ''' functype :  VOID '''
+
+def p_function2(p):
+    ''' functype :  tipo '''
+
+def p_function3(p):
+    ''' tipoid :  tipo morecomma ID '''
+
+def p_function4(p):
+    ''' morecomma : COMMA '''
+
+def p_function5(p):
+    ''' morecomma : empty '''
+
+def p_function6(p):
+    ''' tipoid : tipoid moretipoid tipoid  '''
+
+def p_function7(p):
+    ''' moretipoid : empty '''
+
+def p_vdim(p):
+    ''' vdim : tipo ID LEFT_BRACKET dimensions RIGHT_BRACKET SEMICOLON '''
+
+def p_vdim1(p):
+    ''' dimensions : CONST_INT '''
+
+def p_vdim2(p):
+    ''' dimensions : CONST_INT COMMA CONST_INT '''
+
+def p_vdim3(p):
+    ''' dimensions : CONST_INT COMMA CONST_INT COMMA CONST_INT '''
+
+def p_arrayaccess(p):
+    ''' arrayaccess : ID LEFT_BRACKET dimensionsaccess RIGHT_BRACKET '''
+
+def p_arrayaccess1(p):
+    ''' dimensionsaccess : exp '''
+
+def p_arrayaccess2(p):
+    ''' dimensionsaccess : exp COMMA exp '''
+
+def p_arrayaccess3(p):
+    ''' dimensionsaccess : exp COMMA exp COMMA exp'''
 
 def p_empty(p):
     ''' empty :  '''

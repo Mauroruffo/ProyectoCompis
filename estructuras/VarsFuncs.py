@@ -1,9 +1,10 @@
 class Variable:
-    def __init__(self, varName, varType):
+    def __init__(self, varName, varType, varScope):
         self.__varName = varName
         self.__varType = varType
         self.__varValue = None
         self.__varSize = None
+        self.__varScope = varScope
 
     def name(self):
         return self.__varName
@@ -16,6 +17,9 @@ class Variable:
 
     def size(self):
         return self.__varSize
+
+    def scope(self):
+        return self.__varScope
 
 class Function:
     def __init__(self, funcName, funcType, parameters=[]):

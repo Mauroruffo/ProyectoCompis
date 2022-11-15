@@ -1,3 +1,6 @@
+from estructuras.VarsFuncs import *
+from estructuras.stack import *
+
 txt = " "
 cont = 0
 
@@ -29,6 +32,7 @@ class program(Nodo):
         self.son1 = son1
         self.son2 = son2
         self.son3 = son3
+        Variable(son2, "program")
 
     def imprimir(self, ident):
         self.son1.imprimir(" " + ident)
@@ -49,9 +53,10 @@ class program(Nodo):
         return "digraph G {\n\t" + txt + "}"
 
 class vars(Nodo):
-    def __init__(self, son1, name):
+    def __init__(self, son1, son2, name):
         self.name = name
         self.son1 = son1
+        self.son2 = son2
 
     def imprimir(self, ident):
         self.son1.imprimir(" " + ident)
@@ -750,6 +755,103 @@ class bloquemethod(Nodo):
         txt += id + "[label= " + self.name + "]"+"\n\t"
         txt += id + "->" + son1 + "\n\t"
         return id
+
+class function(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class function1(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class function2(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class function3(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class function4(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class function5(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class function6(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class function7(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class vdim(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class vdim1(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class vdim2(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class vdim3(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class arrayaccess(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class arrayaccess1(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class arrayaccess2(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
+class arrayaccess3(Nodo):
+    def __init__(self, son1, son2, name):
+        self.name = name
+        self.son1 = son1
+        self.son2 = son2
+
 
 class ID(Nodo):
     def __init__(self, name):
