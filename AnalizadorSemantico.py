@@ -405,6 +405,8 @@ class exp2(Nodo):
         self.name = name
         self.son1 = son1
         self.son2 = son2
+        t1 = None
+        print("-", son1, son2, t1)
 
     def imprimir(self, ident):
         self.son1.imprimir(" " + ident)
@@ -502,12 +504,20 @@ class factor1(Nodo):
         return id
 
 class factor2(Nodo):
-    def __init__(self, name):
+    def __init__(self, son1, name):
         self.name = name
+        self.son1 = son1
 
+    def imprimir(self, ident):
+        self.son1.imprimir(" " + ident)
+        print(ident + "Nodo: " + self.name)
+        
     def traducir(self):
         global txt
         id = incrementarContador()
+        son1 = self.son1.traducir()
+        txt += id + "[label= " + self.name + "]"+"\n\t"
+        txt += id + "->" + son1 + "\n\t"
         return id
 
 class factor3(Nodo):
@@ -537,30 +547,54 @@ class factor4(Nodo):
         return id
 
 class varcte1(Nodo):
-    def __init__(self, name):
+    def __init__(self, son1, name):
         self.name = name
+        self.son1 = son1
 
+    def imprimir(self, ident):
+        self.son1.imprimir(" " + ident)
+        print(ident + "Nodo: " + self.name)
+        
     def traducir(self):
         global txt
         id = incrementarContador()
+        son1 = self.son1.traducir()
+        txt += id + "[label= " + self.name + "]"+"\n\t"
+        txt += id + "->" + son1 + "\n\t"
         return id
 
 class varcte2(Nodo):
-    def __init__(self, name):
+    def __init__(self, son1, name):
         self.name = name
+        self.son1 = son1
 
+    def imprimir(self, ident):
+        self.son1.imprimir(" " + ident)
+        print(ident + "Nodo: " + self.name)
+        
     def traducir(self):
         global txt
         id = incrementarContador()
+        son1 = self.son1.traducir()
+        txt += id + "[label= " + self.name + "]"+"\n\t"
+        txt += id + "->" + son1 + "\n\t"
         return id
 
 class varcte3(Nodo):
-    def __init__(self, name):
+    def __init__(self, son1, name):
         self.name = name
+        self.son1 = son1
 
+    def imprimir(self, ident):
+        self.son1.imprimir(" " + ident)
+        print(ident + "Nodo: " + self.name)
+        
     def traducir(self):
         global txt
         id = incrementarContador()
+        son1 = self.son1.traducir()
+        txt += id + "[label= " + self.name + "]"+"\n\t"
+        txt += id + "->" + son1 + "\n\t"
         return id
 
 class write(Nodo):
@@ -606,12 +640,20 @@ class writeInside1(Nodo):
         return id
 
 class writeInside2(Nodo):
-    def __init__(self, name):
+    def __init__(self, son1, name):
         self.name = name
+        self.son1 = son1
 
+    def imprimir(self, ident):
+        self.son1.imprimir(" " + ident)
+        print(ident + "Nodo: " + self.name)
+        
     def traducir(self):
         global txt
         id = incrementarContador()
+        son1 = self.son1.traducir()
+        txt += id + "[label= " + self.name + "]"+"\n\t"
+        txt += id + "->" + son1 + "\n\t"
         return id
 
 class writeInside3(Nodo):
@@ -709,17 +751,125 @@ class bloquemethod(Nodo):
         txt += id + "->" + son1 + "\n\t"
         return id
 
-    class ID(Nodo):
-        def __init__(self, name):
-            self.name = name
+class ID(Nodo):
+    def __init__(self, name):
+        self.name = name
 
-        def imprimir(self, ident):
-            print(ident + "ID: " + self.name)
+    def imprimir(self, ident):
+        print(ident + "ID: " + self.name)
 
-        def traducir(self):
-            global txt
-            id = incrementarContador()
-            return id
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class Int(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Int: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class Float(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Int: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class Plus(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Plus: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class Minus(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Plus: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class LT(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Less than: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class GT(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Greater than: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class NE(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Greater than: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class Division(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Division: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
+
+class Multiplication(Nodo):
+    def __init__(self, name):
+        self.name = name
+
+    def imprimir(self, ident):
+        print(ident + "Greater than: " + self.name)
+
+    def traducir(self):
+        global txt
+        id = incrementarContador()
+        return id
 
 class empty(Nodo):
     pass

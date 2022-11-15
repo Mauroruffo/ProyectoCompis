@@ -109,16 +109,16 @@ def p_while(p):
 
 def p_expresion1(p):
     '''  expresion : exp LESS_THAN exp '''
-    p[0] = expresion1(p[1], p[3], "expresion1")
+    p[0] = expresion1(p[1], LT(p[2]), p[3], "expresion1")
     print("expression")
 
 def p_expresion2(p):
     ''' expresion : exp GREATER_THAN exp '''
-    p[0] = expresion2(p[1], p[3], "expresion2")
+    p[0] = expresion2(p[1], GT(p[2]), p[3], "expresion2")
 
 def p_expresion3(p):
     ''' expresion : exp NOT_EQUAL exp '''
-    p[0] = expresion3(p[1], p[3], "expresion3")
+    p[0] = expresion3(p[1], NE(p[2]), p[3], "expresion3")
 
 def p_exp1(p):
     ''' exp : termino PLUS termino  '''
@@ -131,12 +131,12 @@ def p_exp2(p):
 
 def p_termino1(p):
     '''  termino : factor MULTIPLICATION factor '''
-    p[0] = termino1(p[1], p[3], "termino1")
+    p[0] = termino1(p[1], Multiplication(p[2]), p[3], "termino1")
     print("termino")
 
 def p_termino2(p):
     ''' termino : factor DIVISION factor '''
-    p[0] = termino2(p[1], p[3], "termino2")
+    p[0] = termino2(p[1], Division(p[2]), p[3], "termino2")
 
 def p_factor1(p):
     '''  factor : LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS '''
@@ -145,9 +145,11 @@ def p_factor1(p):
 
 def p_factor2(p):
     ''' factor : PLUS '''
+    p[0] = factor2(Plus(p[1], "factor2"))
 
 def p_factor3(p):
     ''' factor : MINUS '''
+    p[0] = factor3(Minus(p[1]), "factor3")
 
 def p_factor4(p):
     ''' factor : varcte '''
@@ -155,12 +157,15 @@ def p_factor4(p):
 
 def p_varcte1(p):
     ''' varcte : ID '''
+    p[0] = varcte1(ID(p[1], "varcte1"))
 
 def p_varcte2(p):
     ''' varcte : CONST_INT '''
+    p[0] = varcte2(Int(p[1]), "varcte2")
 
 def p_varcte3(p):
     ''' varcte : CONST_FLOAT '''
+    p[0] = varcte3(Float(p[1]), "varcte3")
 
 def p_write(p):
     ''' write : WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS '''
@@ -172,6 +177,7 @@ def p_writeInside1(p):
 
 def p_writeInside2(p):
     ''' inside : ID '''
+    p[0] = writeInside2(ID(p[0]), "writeInside2")
 
 def p_writeInside3(p):
     ''' inside : string '''
