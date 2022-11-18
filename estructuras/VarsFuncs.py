@@ -21,6 +21,9 @@ class Variable:
     def scope(self):
         return self.__varScope
 
+    def __repr__(self):
+        print(self.__varName + ' ' + self.__varType + ' ' + self.__varValue + ' ' + self.__varSize + ' ' + self.__varScope)
+
 class Function:
     def __init__(self, funcName, funcType, parameters=[]):
         self.__funcName = funcName

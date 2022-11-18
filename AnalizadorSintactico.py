@@ -6,9 +6,12 @@ from AnalizadorLex import tokens
 from AnalizadorSemantico import *
 from estructuras.VarsFuncs import *
 from estructuras.stack import *
+from estructuras.Cuadruplos import *
+from estructuras.consideraciones_semanticas import *
 from sys import stdin
 
 varTable = []
+quadList = []
 
 precedence = (
     ('right', 'EQUAL_ASSIGN'),
@@ -22,264 +25,230 @@ precedence = (
 )
 
 def p_program(p):
-    ''' program : PROGRAM ID SEMICOLON vars class bloque '''
+    ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
     p[0] = program(p[1], p[2], p[3], "program")
     varTable.append(Variable(p[2], "program", "global"))
     print("program")
 
-def p_vars(p):
-    ''' vars : VAR varid COLON tipo SEMICOLON '''
-    p[0] = vars(p[2], p[4], "vars")
-    varTable.append(Variable(p[2], p[4], "global"))
-    print("vars")
+def p_main(p):
+    ''' main : MAIN pn_internal_scope LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLYB vars_dec pn_gen_vartable pn_start_funcquad bloque_rec RIGHT_CURLYB pn_end_main'''
 
-def p_varsEmpty(p):
-    ''' vars : empty '''
-    p[0] = Null()
-    print("Nulo")
+def p_pn_internal_scope(p):
+    ''' internal_scope : empty '''
 
-def p_varsid1(p):
-    '''  varid : ID '''
-    p[0] = varsid1(varsid1(p[1]), "varsid1")
+def p_pn_start_program(p):
+    ''' pn_start_program : empty '''
 
-def p_varsid2(p):
-    ''' varid : ID COMMA ID '''
-    p[0] = varsid2(varsid2(p[1]))
+def p_pn_start_func(p):
+    ''' start_func : empty '''
 
-def p_varsidEmpty(p):
-    ''' varid : empty '''
-    p[0] = Null()
+def p_init_dec(p):
+    ''' init_dec : empty | dec init_dec '''
 
-def p_tipo1(p):
-    '''  tipo : INT '''
+def p_dec(p):
+    ''' dec :  var_dec | func_dec | class_dec '''
 
-def p_tipo2(p):
-    '''  tipo : FLOAT '''
+def p_var(p):
+    ''' var : ID varArray'''
+
+def p_varArray(p):
+    ''' varArray :  empty | pn_array_access1 LEFT_BRACKET pn_array_access2 all_logical pn_array_access3 RIGHT_BRACKET '''
+
+def p_pn_array_access1(p):
+    ''' list_access : empty |  '''
+
+def p_pn_array_access2(p):
+    ''' list_access : empty |  '''
+
+def p_pn_array_access3(p):
+    ''' list_access : empty |  '''
+
+def p_vardec(p):
+    ''' var_dec :  VAR pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable'''
+
+def p_pn_var_type(p):
+    ''' pn_var_type : empty '''
+
+def p_pn_value_type(p):
+    ''' pn_value_type : empty '''
+
+def p_pn_current_name(p):
+    ''' pn_current_name : empty '''
+
+def p_pn_add_variable(p):
+    ''' pn_add_variable : empty '''
 
 def p_bloque(p):
-    ''' bloque : LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB '''
-    p[0] = bloque(p[2], "bloque")
-    print("bloque")
-
-def p_estatutoRec1(p):
-    ''' estatutoRecursivo : estatuto estatutoRecursivo '''
-    p[0] = estatutoRec1(p[1], p[2], "estatutoRec1")
-
-def p_estatutoRec2(p):
-    ''' estatutoRecursivo : empty '''
-    p[0] = Null()
-
-def p_estatuto1(p):
-    ''' estatuto : asignacion  '''
-    p[0] = estatuto1(p[1], "estatuto1")
-    print("estatuto")
-
-def p_estatuto2(p):
-    '''  estatuto : condicion '''
-    p[0] = estatuto2(p[1], "estatuto2")
-
-def p_estatuto3(p):
-    '''  estatuto : write '''
-    p[0] = estatuto3(p[1], "estatuto3")
-
-def p_estatuto4(p):
-    '''  estatuto : while '''
-    p[0] = estatuto4(p[1], "estatuto4")
-
-def p_estatuto5(p):
-    '''  estatuto : read '''
-    p[0] = estatuto5(p[1], "estatuto5")
+    ''' bloque : asignacion | condicional | while | read | write | func_call SEMICOLON '''
 
 def p_asignacion(p):
-    ''' asignacion : ID EQUAL_ASSIGN expresion SEMICOLON '''
-    p[0] = asignacion(p[3], "asignacion")
-    if contains(varTable, lambda Variable: Variable.name == p[1]):
-        Variable.value = p[3]
-    else:
-        print("Variable no declarada!")
-        pass
+    ''' asignacion : var pn_var_assign EQUAL_ASSIGN all_logical SEMICOLON '''
 
-    print("asignacion")
+def p_pn_var_asignacion(p):
+    ''' pn_var_assign : empty '''
 
-def p_condicion(p):
-    '''  condicion : IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque  '''
-    p[0] = condicion(p[3], p[5], "condicion")
-    print("condicion")
+def p_pn_operator(p):
+    ''' pn_operator : empty '''
 
-def p_condicion2(p):
-    ''' condicion :  condicion ELSE bloque'''
-    p[0] = condicion2(p[1], p[3], "condicion2")
+def p_all_logical(p):
+    ''' all_logical : logical_exp pn_all_logical all_logical_rec '''
 
-def p_read(p):
-    '''  read : READ VAR SEMICOLON '''
-    print("read")
+def p_all_logical_rec(p):
+    ''' all_logical_rec : AND pn_operator logical_exp pn_all_logical all_logical_rec | OR pn_operator logical_exp pn_all_logical all_logical_rec | empty'''
+
+def p_pn_all_logical(p):
+    ''' pn_all_logical : empty '''
+
+def p_logical_exp(p):
+    ''' logical_exp : exp pn_logical_exp logical_exp_rec '''
+
+def p_logical_exp_rec(p):
+    ''' logical_exp_rec : GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec | LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec | EQUAL pn_operator exp pn_logical_exp logical_exp_rec | NOT_EQUAL pn_operator exp pn_logical_exp logical_exp_rec | empty'''
+
+def p_pn_logical_exp(p):
+    ''' pn_logical_exp : empty '''
+
+def p_exp(p):
+    ''' exp : termino pn_exp exp_rec '''
+
+def p_exp_rec(p):
+    ''' exp_rec : PLUS pn_operator termino pn_exp exp_rec | MINUS pn_operator termino pn_exp exp_rec | empty'''
+
+def p_termino(p):
+    ''' termino :  factor pn_termino termino_rec '''
+
+def p_termino_rec(p):
+    ''' termino_rec : MULTIPLICATION pn_operator factor pn_termino termino_rec | DIVISION pn_operator factor pn_termino termino_rec | empty'''
+
+def p_pn_termino(p):
+    ''' pn_termino : empty '''
+
+def p_factor(p):
+    ''' factor : varcte | LEFT_PARENTHESIS pn_open_parenthesis all_logical  RIGHT_PARENTHESIS pn_close_parenthesis | func_call '''
+
+def p_varcte(p):
+    ''' varcte : cte_int pn_add_constant | cte_float pn_add_constant | cte_bool pn_add_constant | cte_string pn_add_constant'''
+
+def p_cte_int(p):
+    ''' cte_int : CONST_INT | MINUS CONST_INT '''
+
+def p_cte_float(p):
+    ''' cte_float : CONST_FLOAT | MINUS CONST_FLOAT '''    
+
+def p_pn_add_constant(p):
+    ''' pn_add_constant : empty '''   
+
+def p_pn_open_parenthesis(p):
+    ''' pn_open_parenthesis : empty ''' 
+
+def p_pn_close_parenthesis(p):
+    ''' pn_close_parenthesis : empty '''
+
+def p_tipo(p):
+    ''' tipo : INT | FLOAT | BOOL | STRING '''
+
+def p_return_module(p):
+    ''' return : tipo | VOID '''
+
+def p_parametro(p):
+    ''' parametro : tipo ID parametro_rec | empty '''
+
+def p_parametro_rec(p):
+    ''' parametro_rec : COMMA tipo ID parametro_rec | empty '''
+
+def p_pn_parametro_varTable(p):
+    ''' pn_parametro_varTable : empty '''
+
+def p_condicional(p):
+    ''' condicional : IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else '''
+
+def p_condicional_else(p):
+    ''' condicional_else : ELSE pn_condicional_else LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_condicional_final | pn_condicional_final '''
+
+def p_pn_condicional(p):
+    ''' pn_condicional : empty '''
+
+def p_pn_condicional_else(p):
+    ''' pn_condicional_else : empty '''
+
+def p_pn_condicional_final(p):
+    ''' pn_condicional_final : empty '''
 
 def p_while(p):
-    '''  while : WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque '''
-    p[0] = while_(p[3], p[5], "while")
-    print("while")
+    ''' while : WHILE pn_while LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_while_jump while_loop'''
 
-def p_expresion1(p):
-    '''  expresion : exp LESS_THAN exp '''
-    p[0] = expresion1(p[1], LT(p[2]), p[3], "expresion1")
-    print("expression")
+def p_while_loop(p):
+    ''' while_loop : LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_while_jump1 '''
 
-def p_expresion2(p):
-    ''' expresion : exp GREATER_THAN exp '''
-    p[0] = expresion2(p[1], GT(p[2]), p[3], "expresion2")
+def p_pn_while(p):
+    ''' pn_while : empty '''
 
-def p_expresion3(p):
-    ''' expresion : exp NOT_EQUAL exp '''
-    p[0] = expresion3(p[1], NE(p[2]), p[3], "expresion3")
+def p_pn_while_jump(p):
+    ''' pn_while_jump : empty '''
 
-def p_exp1(p):
-    ''' exp : termino PLUS termino  '''
-    p[0] = exp1(p[1], p[3], "exp1")
-    print("exp")
+def p_pn_while_jump1(p):
+    ''' pn_while_jump1 : empty '''
 
-def p_exp2(p):
-    ''' exp : termino MINUS termino '''
-    p[0] = exp2(p[1], p[3], "exp2")
-
-def p_termino1(p):
-    '''  termino : factor MULTIPLICATION factor '''
-    p[0] = termino1(p[1], Multiplication(p[2]), p[3], "termino1")
-    print("termino")
-
-def p_termino2(p):
-    ''' termino : factor DIVISION factor '''
-    p[0] = termino2(p[1], Division(p[2]), p[3], "termino2")
-
-def p_factor1(p):
-    '''  factor : LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS '''
-    p[0] = factor1(p[2], "factor1")
-    print("factor")
-
-def p_factor2(p):
-    ''' factor : PLUS '''
-    p[0] = factor2(Plus(p[1], "factor2"))
-
-def p_factor3(p):
-    ''' factor : MINUS '''
-    p[0] = factor3(Minus(p[1]), "factor3")
-
-def p_factor4(p):
-    ''' factor : varcte '''
-    p[0] = factor4(p[1], "factor4")
-
-def p_varcte1(p):
-    ''' varcte : ID '''
-    p[0] = varcte1(ID(p[1], "varcte1"))
-
-def p_varcte2(p):
-    ''' varcte : CONST_INT '''
-    p[0] = varcte2(Int(p[1]), "varcte2")
-
-def p_varcte3(p):
-    ''' varcte : CONST_FLOAT '''
-    p[0] = varcte3(Float(p[1]), "varcte3")
+def p_read(p):
+    ''' read : READ LEFT_PARENTHESIS var RIGHT_PARENTHESIS SEMICOLON '''
 
 def p_write(p):
-    ''' write : WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS '''
-    p[0] = write(p[3], "write")
+    ''' write : WRITE LEFT_PARENTHESIS write_rec RIGHT_PARENTHESIS SEMICOLON '''
 
-def p_writeInside1(p):
-    ''' inside : inside more inside '''
-    p[0] = writeInside1(p[1], p[2], p[3], "wirteInside1")
+def p_write_rec(p):
+    ''' write_rec : all_logical pn_write_quad write_rec1 '''
 
-def p_writeInside2(p):
-    ''' inside : ID '''
-    p[0] = writeInside2(ID(p[0]), "writeInside2")
-    if contains(varTable, lambda Variable: Variable.name == p[1]):
-        print("Si existe la variable")
-    else:
-        print("Variable no declarada")
-        pass
+def p_write_rec1(p):
+    ''' write_rec1 : MORE all_logical pn_write_quad write_rec1 | empty '''
 
-def p_writeInside3(p):
-    ''' inside : string '''
-    p[0] = writeInside3(p[1], "writeInside3")
+def p_pn_write_quad(p):
+    ''' pn_write_quad : empty '''
 
-def p_writeInside4(p):
-    ''' inside : empty '''
-    p[0] = Null()
+def p_func_call(p):
+    ''' func_call : ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS '''
 
-def p_more1(p):
-    ''' more : MORE '''
+def p_pn_verify_func(p):
+    ''' pn_verify_func : empty '''
 
-def p_more2(p):
-    ''' more : empty '''
-    p[0] = Null()
+def p_pn_param_counter(p):
+    ''' pn_param_counter : empty '''
 
-def p_string(p):
-    ''' string : CONST_STRING '''
+def p_func_call_rec(p):
+    ''' func_call_rec : all_logical pn_param_match func_call_rec1 '''
 
-def p_class(p):
-    ''' class : CLASS ID LEFT_CURLYB vars method RIGHT_CURLYB '''
-    p[0] = class_(p[4], p[5], "class")
-    varTable.append(Variable(p[2], "class", "global"))
+def p_func_call_rec1(p):
+    ''' func_call_rec1 : COMMA all_logical pn_param_match function_call_rec '''
 
-def p_method(p):
-    ''' method : tipo LEFT_PARENTHESIS varid RIGHT_PARENTHESIS bloquemetodo '''
-    p[0] = method(p[1], p[3], "method")
-    varTable.append(Variable(p[3], p[1], p[0]))
+def p_pn_param_match(p):
+    ''' pn_param_match : empty '''
 
-def p_bloquemethod(p):
-    ''' bloquemetodo : LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID SEMICOLON '''
-    p[0] = bloquemethod(p[2], "bloquemethod")
-    if contains(varTable, lambda Variable:Variable.name == p[5]):
-        print("Variable retornada si existe")
-    else:
-        print("Variable no existe")
+def p_func_dec(p):
+    ''' func_dec : FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB var_dec pn_gen_vartable pn_func_quad bloque_func func_return RIGHT_CURLYB pn_end_func '''
 
-def p_function(p):
-    ''' function :  FUNCTION functype ID LEFT_PARENTHESIS tipoid RIGHT_PARENTHESIS LEFT_CURLY vars bloque RIGHT_CURLY '''
-    
+def p_pn_gen_vartable(p):
+    ''' pn_gen_vartable : empty '''
 
-def p_function1(p):
-    ''' functype :  VOID '''
+def p_pn_func_quad(p):
+    ''' pn_func_quad : empty '''
 
-def p_function2(p):
-    ''' functype :  tipo '''
+def p_pn_end_main(p):
+    ''' pn_end_main : empty'''
 
-def p_function3(p):
-    ''' tipoid :  tipo morecomma ID '''
+def p_pn_end_func(p):
+    ''' pn_end_func : empty '''
 
-def p_function4(p):
-    ''' morecomma : COMMA '''
+def p_pn_add_func(p):
+    ''' pn_add_func : empty '''
 
-def p_function5(p):
-    ''' morecomma : empty '''
+def p_pn_return_type(p):
+    ''' pn_return_type : empty '''
 
-def p_function6(p):
-    ''' tipoid : tipoid moretipoid tipoid  '''
+def p_func_return(p):
+    ''' func_return : RETURN all_logical SEMICOLON | RETURN SEMICOLON '''
 
-def p_function7(p):
-    ''' moretipoid : empty '''
+def p_bloque_rec(p):
+    ''' bloque_rec : bloque bloque_rec | empty'''
 
-def p_vdim(p):
-    ''' vdim : tipo ID LEFT_BRACKET dimensions RIGHT_BRACKET SEMICOLON '''
-
-def p_vdim1(p):
-    ''' dimensions : CONST_INT '''
-
-def p_vdim2(p):
-    ''' dimensions : CONST_INT COMMA CONST_INT '''
-
-def p_vdim3(p):
-    ''' dimensions : CONST_INT COMMA CONST_INT COMMA CONST_INT '''
-
-def p_arrayaccess(p):
-    ''' arrayaccess : ID LEFT_BRACKET dimensionsaccess RIGHT_BRACKET '''
-
-def p_arrayaccess1(p):
-    ''' dimensionsaccess : exp '''
-
-def p_arrayaccess2(p):
-    ''' dimensionsaccess : exp COMMA exp '''
-
-def p_arrayaccess3(p):
-    ''' dimensionsaccess : exp COMMA exp COMMA exp'''
 
 def p_empty(p):
     ''' empty :  '''
@@ -331,3 +300,5 @@ result = parser.parse(cadena)
 # graphFile.close()
 
 print(result)
+print (varTable)
+print([Variable.name for Variable in varTable])

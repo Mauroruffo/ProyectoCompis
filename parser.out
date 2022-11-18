@@ -22,7 +22,7 @@ Unused terminals:
 Grammar
 
 Rule 0     S' -> program
-Rule 1     program -> PROGRAM ID SEMICOLON vars class bloque
+Rule 1     program -> PROGRAM ID SEMICOLON vars bloque
 Rule 2     vars -> VAR varid COLON tipo SEMICOLON
 Rule 3     vars -> empty
 Rule 4     varid -> ID
@@ -68,7 +68,7 @@ Rule 43    string -> CONST_STRING
 Rule 44    class -> CLASS ID LEFT_CURLYB vars method RIGHT_CURLYB
 Rule 45    method -> tipo LEFT_PARENTHESIS varid RIGHT_PARENTHESIS bloquemetodo
 Rule 46    bloquemetodo -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB RETURN ID SEMICOLON
-Rule 47    function -> FUNCTION functype ID LEFT_PARENTHESIS tipoid RIGHT_PARENTHESIS LEFT_CURLY vars bloque RIGHT_CURLY
+Rule 47    function -> FUNCTION functype ID LEFT_PARENTHESIS tipoid RIGHT_PARENTHESIS LEFT_CURLYB vars bloque RIGHT_CURLYB
 Rule 48    functype -> VOID
 Rule 49    functype -> tipo
 Rule 50    tipoid -> tipo morecomma ID
@@ -113,7 +113,7 @@ ID                   : 1 4 5 5 17 33 38 44 46 47 50 55 59
 IF                   : 18
 INT                  : 7
 LEFT_BRACKET         : 55 59
-LEFT_CURLYB          : 9 44 46
+LEFT_CURLYB          : 9 44 46 47
 LEFT_PARENTHESIS     : 18 21 29 36 45 47
 LESS_EQUAL           : 
 LESS_THAN            : 22
@@ -132,7 +132,7 @@ PROGRAM              : 1
 READ                 : 20
 RETURN               : 46
 RIGHT_BRACKET        : 55 59
-RIGHT_CURLYB         : 9 44 46
+RIGHT_CURLYB         : 9 44 46 47
 RIGHT_PARENTHESIS    : 18 21 29 36 45 47
 SEMICOLON            : 1 2 17 20 46 55
 VAR                  : 2 20
@@ -143,13 +143,11 @@ error                :
 
 Nonterminals, with rules where they appear
 
-LEFT_CURLY           : 47
-RIGHT_CURLY          : 47
 arrayaccess          : 
 asignacion           : 12
 bloque               : 1 18 19 21 47
 bloquemetodo         : 45
-class                : 1
+class                : 
 condicion            : 13 19
 dimensions           : 55
 dimensionsaccess     : 59
@@ -179,3 +177,1165 @@ vdim                 :
 while                : 15
 write                : 14
 
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . PROGRAM ID SEMICOLON vars bloque
+
+    PROGRAM         shift and go to state 2
+
+    program                        shift and go to state 1
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> PROGRAM . ID SEMICOLON vars bloque
+
+    ID              shift and go to state 3
+
+
+state 3
+
+    (1) program -> PROGRAM ID . SEMICOLON vars bloque
+
+    SEMICOLON       shift and go to state 4
+
+
+state 4
+
+    (1) program -> PROGRAM ID SEMICOLON . vars bloque
+    (2) vars -> . VAR varid COLON tipo SEMICOLON
+    (3) vars -> . empty
+    (63) empty -> .
+
+    VAR             shift and go to state 6
+    LEFT_CURLYB     reduce using rule 63 (empty -> .)
+
+    vars                           shift and go to state 5
+    empty                          shift and go to state 7
+
+state 5
+
+    (1) program -> PROGRAM ID SEMICOLON vars . bloque
+    (9) bloque -> . LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB
+
+    LEFT_CURLYB     shift and go to state 9
+
+    bloque                         shift and go to state 8
+
+state 6
+
+    (2) vars -> VAR . varid COLON tipo SEMICOLON
+    (4) varid -> . ID
+    (5) varid -> . ID COMMA ID
+    (6) varid -> . empty
+    (63) empty -> .
+
+    ID              shift and go to state 11
+    COLON           reduce using rule 63 (empty -> .)
+
+    varid                          shift and go to state 10
+    empty                          shift and go to state 12
+
+state 7
+
+    (3) vars -> empty .
+
+    LEFT_CURLYB     reduce using rule 3 (vars -> empty .)
+
+
+state 8
+
+    (1) program -> PROGRAM ID SEMICOLON vars bloque .
+
+    $end            reduce using rule 1 (program -> PROGRAM ID SEMICOLON vars bloque .)
+
+
+state 9
+
+    (9) bloque -> LEFT_CURLYB . estatutoRecursivo RIGHT_CURLYB
+    (10) estatutoRecursivo -> . estatuto estatutoRecursivo
+    (11) estatutoRecursivo -> . empty
+    (12) estatuto -> . asignacion
+    (13) estatuto -> . condicion
+    (14) estatuto -> . write
+    (15) estatuto -> . while
+    (16) estatuto -> . read
+    (63) empty -> .
+    (17) asignacion -> . ID EQUAL_ASSIGN expresion SEMICOLON
+    (18) condicion -> . IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque
+    (19) condicion -> . condicion ELSE bloque
+    (36) write -> . WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS
+    (21) while -> . WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque
+    (20) read -> . READ VAR SEMICOLON
+
+    RIGHT_CURLYB    reduce using rule 63 (empty -> .)
+    ID              shift and go to state 21
+    IF              shift and go to state 22
+    WRITE           shift and go to state 23
+    WHILE           shift and go to state 24
+    READ            shift and go to state 25
+
+    estatutoRecursivo              shift and go to state 13
+    estatuto                       shift and go to state 14
+    empty                          shift and go to state 15
+    asignacion                     shift and go to state 16
+    condicion                      shift and go to state 17
+    write                          shift and go to state 18
+    while                          shift and go to state 19
+    read                           shift and go to state 20
+
+state 10
+
+    (2) vars -> VAR varid . COLON tipo SEMICOLON
+
+    COLON           shift and go to state 26
+
+
+state 11
+
+    (4) varid -> ID .
+    (5) varid -> ID . COMMA ID
+
+    COLON           reduce using rule 4 (varid -> ID .)
+    COMMA           shift and go to state 27
+
+
+state 12
+
+    (6) varid -> empty .
+
+    COLON           reduce using rule 6 (varid -> empty .)
+
+
+state 13
+
+    (9) bloque -> LEFT_CURLYB estatutoRecursivo . RIGHT_CURLYB
+
+    RIGHT_CURLYB    shift and go to state 28
+
+
+state 14
+
+    (10) estatutoRecursivo -> estatuto . estatutoRecursivo
+    (10) estatutoRecursivo -> . estatuto estatutoRecursivo
+    (11) estatutoRecursivo -> . empty
+    (12) estatuto -> . asignacion
+    (13) estatuto -> . condicion
+    (14) estatuto -> . write
+    (15) estatuto -> . while
+    (16) estatuto -> . read
+    (63) empty -> .
+    (17) asignacion -> . ID EQUAL_ASSIGN expresion SEMICOLON
+    (18) condicion -> . IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque
+    (19) condicion -> . condicion ELSE bloque
+    (36) write -> . WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS
+    (21) while -> . WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque
+    (20) read -> . READ VAR SEMICOLON
+
+    RIGHT_CURLYB    reduce using rule 63 (empty -> .)
+    ID              shift and go to state 21
+    IF              shift and go to state 22
+    WRITE           shift and go to state 23
+    WHILE           shift and go to state 24
+    READ            shift and go to state 25
+
+    estatuto                       shift and go to state 14
+    estatutoRecursivo              shift and go to state 29
+    empty                          shift and go to state 15
+    asignacion                     shift and go to state 16
+    condicion                      shift and go to state 17
+    write                          shift and go to state 18
+    while                          shift and go to state 19
+    read                           shift and go to state 20
+
+state 15
+
+    (11) estatutoRecursivo -> empty .
+
+    RIGHT_CURLYB    reduce using rule 11 (estatutoRecursivo -> empty .)
+
+
+state 16
+
+    (12) estatuto -> asignacion .
+
+    ID              reduce using rule 12 (estatuto -> asignacion .)
+    IF              reduce using rule 12 (estatuto -> asignacion .)
+    WRITE           reduce using rule 12 (estatuto -> asignacion .)
+    WHILE           reduce using rule 12 (estatuto -> asignacion .)
+    READ            reduce using rule 12 (estatuto -> asignacion .)
+    RIGHT_CURLYB    reduce using rule 12 (estatuto -> asignacion .)
+
+
+state 17
+
+    (13) estatuto -> condicion .
+    (19) condicion -> condicion . ELSE bloque
+
+    ID              reduce using rule 13 (estatuto -> condicion .)
+    IF              reduce using rule 13 (estatuto -> condicion .)
+    WRITE           reduce using rule 13 (estatuto -> condicion .)
+    WHILE           reduce using rule 13 (estatuto -> condicion .)
+    READ            reduce using rule 13 (estatuto -> condicion .)
+    RIGHT_CURLYB    reduce using rule 13 (estatuto -> condicion .)
+    ELSE            shift and go to state 30
+
+
+state 18
+
+    (14) estatuto -> write .
+
+    ID              reduce using rule 14 (estatuto -> write .)
+    IF              reduce using rule 14 (estatuto -> write .)
+    WRITE           reduce using rule 14 (estatuto -> write .)
+    WHILE           reduce using rule 14 (estatuto -> write .)
+    READ            reduce using rule 14 (estatuto -> write .)
+    RIGHT_CURLYB    reduce using rule 14 (estatuto -> write .)
+
+
+state 19
+
+    (15) estatuto -> while .
+
+    ID              reduce using rule 15 (estatuto -> while .)
+    IF              reduce using rule 15 (estatuto -> while .)
+    WRITE           reduce using rule 15 (estatuto -> while .)
+    WHILE           reduce using rule 15 (estatuto -> while .)
+    READ            reduce using rule 15 (estatuto -> while .)
+    RIGHT_CURLYB    reduce using rule 15 (estatuto -> while .)
+
+
+state 20
+
+    (16) estatuto -> read .
+
+    ID              reduce using rule 16 (estatuto -> read .)
+    IF              reduce using rule 16 (estatuto -> read .)
+    WRITE           reduce using rule 16 (estatuto -> read .)
+    WHILE           reduce using rule 16 (estatuto -> read .)
+    READ            reduce using rule 16 (estatuto -> read .)
+    RIGHT_CURLYB    reduce using rule 16 (estatuto -> read .)
+
+
+state 21
+
+    (17) asignacion -> ID . EQUAL_ASSIGN expresion SEMICOLON
+
+    EQUAL_ASSIGN    shift and go to state 31
+
+
+state 22
+
+    (18) condicion -> IF . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque
+
+    LEFT_PARENTHESIS shift and go to state 32
+
+
+state 23
+
+    (36) write -> WRITE . LEFT_PARENTHESIS inside RIGHT_PARENTHESIS
+
+    LEFT_PARENTHESIS shift and go to state 33
+
+
+state 24
+
+    (21) while -> WHILE . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque
+
+    LEFT_PARENTHESIS shift and go to state 34
+
+
+state 25
+
+    (20) read -> READ . VAR SEMICOLON
+
+    VAR             shift and go to state 35
+
+
+state 26
+
+    (2) vars -> VAR varid COLON . tipo SEMICOLON
+    (7) tipo -> . INT
+    (8) tipo -> . FLOAT
+
+    INT             shift and go to state 37
+    FLOAT           shift and go to state 38
+
+    tipo                           shift and go to state 36
+
+state 27
+
+    (5) varid -> ID COMMA . ID
+
+    ID              shift and go to state 39
+
+
+state 28
+
+    (9) bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .
+
+    $end            reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+    ELSE            reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+    ID              reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+    IF              reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+    WRITE           reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+    WHILE           reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+    READ            reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+    RIGHT_CURLYB    reduce using rule 9 (bloque -> LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB .)
+
+
+state 29
+
+    (10) estatutoRecursivo -> estatuto estatutoRecursivo .
+
+    RIGHT_CURLYB    reduce using rule 10 (estatutoRecursivo -> estatuto estatutoRecursivo .)
+
+
+state 30
+
+    (19) condicion -> condicion ELSE . bloque
+    (9) bloque -> . LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB
+
+    LEFT_CURLYB     shift and go to state 9
+
+    bloque                         shift and go to state 40
+
+state 31
+
+    (17) asignacion -> ID EQUAL_ASSIGN . expresion SEMICOLON
+    (22) expresion -> . exp LESS_THAN exp
+    (23) expresion -> . exp GREATER_THAN exp
+    (24) expresion -> . exp NOT_EQUAL exp
+    (25) exp -> . termino PLUS termino
+    (26) exp -> . termino MINUS termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    expresion                      shift and go to state 42
+    exp                            shift and go to state 43
+    termino                        shift and go to state 44
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 32
+
+    (18) condicion -> IF LEFT_PARENTHESIS . expresion RIGHT_PARENTHESIS bloque
+    (22) expresion -> . exp LESS_THAN exp
+    (23) expresion -> . exp GREATER_THAN exp
+    (24) expresion -> . exp NOT_EQUAL exp
+    (25) exp -> . termino PLUS termino
+    (26) exp -> . termino MINUS termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    expresion                      shift and go to state 52
+    exp                            shift and go to state 43
+    termino                        shift and go to state 44
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 33
+
+    (36) write -> WRITE LEFT_PARENTHESIS . inside RIGHT_PARENTHESIS
+    (37) inside -> . inside more inside
+    (38) inside -> . ID
+    (39) inside -> . string
+    (40) inside -> . empty
+    (43) string -> . CONST_STRING
+    (63) empty -> .
+
+  ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for CONST_STRING resolved as shift
+    ID              shift and go to state 54
+    CONST_STRING    shift and go to state 57
+    RIGHT_PARENTHESIS reduce using rule 63 (empty -> .)
+    MORE            reduce using rule 63 (empty -> .)
+
+  ! ID              [ reduce using rule 63 (empty -> .) ]
+  ! CONST_STRING    [ reduce using rule 63 (empty -> .) ]
+
+    inside                         shift and go to state 53
+    string                         shift and go to state 55
+    empty                          shift and go to state 56
+
+state 34
+
+    (21) while -> WHILE LEFT_PARENTHESIS . expresion RIGHT_PARENTHESIS bloque
+    (22) expresion -> . exp LESS_THAN exp
+    (23) expresion -> . exp GREATER_THAN exp
+    (24) expresion -> . exp NOT_EQUAL exp
+    (25) exp -> . termino PLUS termino
+    (26) exp -> . termino MINUS termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    expresion                      shift and go to state 58
+    exp                            shift and go to state 43
+    termino                        shift and go to state 44
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 35
+
+    (20) read -> READ VAR . SEMICOLON
+
+    SEMICOLON       shift and go to state 59
+
+
+state 36
+
+    (2) vars -> VAR varid COLON tipo . SEMICOLON
+
+    SEMICOLON       shift and go to state 60
+
+
+state 37
+
+    (7) tipo -> INT .
+
+    SEMICOLON       reduce using rule 7 (tipo -> INT .)
+
+
+state 38
+
+    (8) tipo -> FLOAT .
+
+    SEMICOLON       reduce using rule 8 (tipo -> FLOAT .)
+
+
+state 39
+
+    (5) varid -> ID COMMA ID .
+
+    COLON           reduce using rule 5 (varid -> ID COMMA ID .)
+
+
+state 40
+
+    (19) condicion -> condicion ELSE bloque .
+
+    ELSE            reduce using rule 19 (condicion -> condicion ELSE bloque .)
+    ID              reduce using rule 19 (condicion -> condicion ELSE bloque .)
+    IF              reduce using rule 19 (condicion -> condicion ELSE bloque .)
+    WRITE           reduce using rule 19 (condicion -> condicion ELSE bloque .)
+    WHILE           reduce using rule 19 (condicion -> condicion ELSE bloque .)
+    READ            reduce using rule 19 (condicion -> condicion ELSE bloque .)
+    RIGHT_CURLYB    reduce using rule 19 (condicion -> condicion ELSE bloque .)
+
+
+state 41
+
+    (33) varcte -> ID .
+
+    MULTIPLICATION  reduce using rule 33 (varcte -> ID .)
+    DIVISION        reduce using rule 33 (varcte -> ID .)
+    PLUS            reduce using rule 33 (varcte -> ID .)
+    MINUS           reduce using rule 33 (varcte -> ID .)
+    LESS_THAN       reduce using rule 33 (varcte -> ID .)
+    GREATER_THAN    reduce using rule 33 (varcte -> ID .)
+    NOT_EQUAL       reduce using rule 33 (varcte -> ID .)
+    SEMICOLON       reduce using rule 33 (varcte -> ID .)
+    RIGHT_PARENTHESIS reduce using rule 33 (varcte -> ID .)
+
+
+state 42
+
+    (17) asignacion -> ID EQUAL_ASSIGN expresion . SEMICOLON
+
+    SEMICOLON       shift and go to state 61
+
+
+state 43
+
+    (22) expresion -> exp . LESS_THAN exp
+    (23) expresion -> exp . GREATER_THAN exp
+    (24) expresion -> exp . NOT_EQUAL exp
+
+    LESS_THAN       shift and go to state 62
+    GREATER_THAN    shift and go to state 63
+    NOT_EQUAL       shift and go to state 64
+
+
+state 44
+
+    (25) exp -> termino . PLUS termino
+    (26) exp -> termino . MINUS termino
+
+    PLUS            shift and go to state 65
+    MINUS           shift and go to state 66
+
+
+state 45
+
+    (30) factor -> PLUS .
+
+    MULTIPLICATION  reduce using rule 30 (factor -> PLUS .)
+    DIVISION        reduce using rule 30 (factor -> PLUS .)
+    PLUS            reduce using rule 30 (factor -> PLUS .)
+    MINUS           reduce using rule 30 (factor -> PLUS .)
+    LESS_THAN       reduce using rule 30 (factor -> PLUS .)
+    GREATER_THAN    reduce using rule 30 (factor -> PLUS .)
+    NOT_EQUAL       reduce using rule 30 (factor -> PLUS .)
+    SEMICOLON       reduce using rule 30 (factor -> PLUS .)
+    RIGHT_PARENTHESIS reduce using rule 30 (factor -> PLUS .)
+
+
+state 46
+
+    (31) factor -> MINUS .
+
+    MULTIPLICATION  reduce using rule 31 (factor -> MINUS .)
+    DIVISION        reduce using rule 31 (factor -> MINUS .)
+    PLUS            reduce using rule 31 (factor -> MINUS .)
+    MINUS           reduce using rule 31 (factor -> MINUS .)
+    LESS_THAN       reduce using rule 31 (factor -> MINUS .)
+    GREATER_THAN    reduce using rule 31 (factor -> MINUS .)
+    NOT_EQUAL       reduce using rule 31 (factor -> MINUS .)
+    SEMICOLON       reduce using rule 31 (factor -> MINUS .)
+    RIGHT_PARENTHESIS reduce using rule 31 (factor -> MINUS .)
+
+
+state 47
+
+    (27) termino -> factor . MULTIPLICATION factor
+    (28) termino -> factor . DIVISION factor
+
+    MULTIPLICATION  shift and go to state 67
+    DIVISION        shift and go to state 68
+
+
+state 48
+
+    (29) factor -> LEFT_PARENTHESIS . expresion RIGHT_PARENTHESIS
+    (22) expresion -> . exp LESS_THAN exp
+    (23) expresion -> . exp GREATER_THAN exp
+    (24) expresion -> . exp NOT_EQUAL exp
+    (25) exp -> . termino PLUS termino
+    (26) exp -> . termino MINUS termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    expresion                      shift and go to state 69
+    exp                            shift and go to state 43
+    termino                        shift and go to state 44
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 49
+
+    (32) factor -> varcte .
+
+    MULTIPLICATION  reduce using rule 32 (factor -> varcte .)
+    DIVISION        reduce using rule 32 (factor -> varcte .)
+    PLUS            reduce using rule 32 (factor -> varcte .)
+    MINUS           reduce using rule 32 (factor -> varcte .)
+    LESS_THAN       reduce using rule 32 (factor -> varcte .)
+    GREATER_THAN    reduce using rule 32 (factor -> varcte .)
+    NOT_EQUAL       reduce using rule 32 (factor -> varcte .)
+    SEMICOLON       reduce using rule 32 (factor -> varcte .)
+    RIGHT_PARENTHESIS reduce using rule 32 (factor -> varcte .)
+
+
+state 50
+
+    (34) varcte -> CONST_INT .
+
+    MULTIPLICATION  reduce using rule 34 (varcte -> CONST_INT .)
+    DIVISION        reduce using rule 34 (varcte -> CONST_INT .)
+    PLUS            reduce using rule 34 (varcte -> CONST_INT .)
+    MINUS           reduce using rule 34 (varcte -> CONST_INT .)
+    LESS_THAN       reduce using rule 34 (varcte -> CONST_INT .)
+    GREATER_THAN    reduce using rule 34 (varcte -> CONST_INT .)
+    NOT_EQUAL       reduce using rule 34 (varcte -> CONST_INT .)
+    SEMICOLON       reduce using rule 34 (varcte -> CONST_INT .)
+    RIGHT_PARENTHESIS reduce using rule 34 (varcte -> CONST_INT .)
+
+
+state 51
+
+    (35) varcte -> CONST_FLOAT .
+
+    MULTIPLICATION  reduce using rule 35 (varcte -> CONST_FLOAT .)
+    DIVISION        reduce using rule 35 (varcte -> CONST_FLOAT .)
+    PLUS            reduce using rule 35 (varcte -> CONST_FLOAT .)
+    MINUS           reduce using rule 35 (varcte -> CONST_FLOAT .)
+    LESS_THAN       reduce using rule 35 (varcte -> CONST_FLOAT .)
+    GREATER_THAN    reduce using rule 35 (varcte -> CONST_FLOAT .)
+    NOT_EQUAL       reduce using rule 35 (varcte -> CONST_FLOAT .)
+    SEMICOLON       reduce using rule 35 (varcte -> CONST_FLOAT .)
+    RIGHT_PARENTHESIS reduce using rule 35 (varcte -> CONST_FLOAT .)
+
+
+state 52
+
+    (18) condicion -> IF LEFT_PARENTHESIS expresion . RIGHT_PARENTHESIS bloque
+
+    RIGHT_PARENTHESIS shift and go to state 70
+
+
+state 53
+
+    (36) write -> WRITE LEFT_PARENTHESIS inside . RIGHT_PARENTHESIS
+    (37) inside -> inside . more inside
+    (41) more -> . MORE
+    (42) more -> . empty
+    (63) empty -> .
+
+  ! shift/reduce conflict for MORE resolved as shift
+  ! shift/reduce conflict for RIGHT_PARENTHESIS resolved as shift
+    RIGHT_PARENTHESIS shift and go to state 71
+    MORE            shift and go to state 73
+    ID              reduce using rule 63 (empty -> .)
+    CONST_STRING    reduce using rule 63 (empty -> .)
+
+  ! MORE            [ reduce using rule 63 (empty -> .) ]
+  ! RIGHT_PARENTHESIS [ reduce using rule 63 (empty -> .) ]
+
+    more                           shift and go to state 72
+    empty                          shift and go to state 74
+
+state 54
+
+    (38) inside -> ID .
+
+    RIGHT_PARENTHESIS reduce using rule 38 (inside -> ID .)
+    MORE            reduce using rule 38 (inside -> ID .)
+    ID              reduce using rule 38 (inside -> ID .)
+    CONST_STRING    reduce using rule 38 (inside -> ID .)
+
+
+state 55
+
+    (39) inside -> string .
+
+    RIGHT_PARENTHESIS reduce using rule 39 (inside -> string .)
+    MORE            reduce using rule 39 (inside -> string .)
+    ID              reduce using rule 39 (inside -> string .)
+    CONST_STRING    reduce using rule 39 (inside -> string .)
+
+
+state 56
+
+    (40) inside -> empty .
+
+    RIGHT_PARENTHESIS reduce using rule 40 (inside -> empty .)
+    MORE            reduce using rule 40 (inside -> empty .)
+    ID              reduce using rule 40 (inside -> empty .)
+    CONST_STRING    reduce using rule 40 (inside -> empty .)
+
+
+state 57
+
+    (43) string -> CONST_STRING .
+
+    RIGHT_PARENTHESIS reduce using rule 43 (string -> CONST_STRING .)
+    MORE            reduce using rule 43 (string -> CONST_STRING .)
+    ID              reduce using rule 43 (string -> CONST_STRING .)
+    CONST_STRING    reduce using rule 43 (string -> CONST_STRING .)
+
+
+state 58
+
+    (21) while -> WHILE LEFT_PARENTHESIS expresion . RIGHT_PARENTHESIS bloque
+
+    RIGHT_PARENTHESIS shift and go to state 75
+
+
+state 59
+
+    (20) read -> READ VAR SEMICOLON .
+
+    ID              reduce using rule 20 (read -> READ VAR SEMICOLON .)
+    IF              reduce using rule 20 (read -> READ VAR SEMICOLON .)
+    WRITE           reduce using rule 20 (read -> READ VAR SEMICOLON .)
+    WHILE           reduce using rule 20 (read -> READ VAR SEMICOLON .)
+    READ            reduce using rule 20 (read -> READ VAR SEMICOLON .)
+    RIGHT_CURLYB    reduce using rule 20 (read -> READ VAR SEMICOLON .)
+
+
+state 60
+
+    (2) vars -> VAR varid COLON tipo SEMICOLON .
+
+    LEFT_CURLYB     reduce using rule 2 (vars -> VAR varid COLON tipo SEMICOLON .)
+
+
+state 61
+
+    (17) asignacion -> ID EQUAL_ASSIGN expresion SEMICOLON .
+
+    ID              reduce using rule 17 (asignacion -> ID EQUAL_ASSIGN expresion SEMICOLON .)
+    IF              reduce using rule 17 (asignacion -> ID EQUAL_ASSIGN expresion SEMICOLON .)
+    WRITE           reduce using rule 17 (asignacion -> ID EQUAL_ASSIGN expresion SEMICOLON .)
+    WHILE           reduce using rule 17 (asignacion -> ID EQUAL_ASSIGN expresion SEMICOLON .)
+    READ            reduce using rule 17 (asignacion -> ID EQUAL_ASSIGN expresion SEMICOLON .)
+    RIGHT_CURLYB    reduce using rule 17 (asignacion -> ID EQUAL_ASSIGN expresion SEMICOLON .)
+
+
+state 62
+
+    (22) expresion -> exp LESS_THAN . exp
+    (25) exp -> . termino PLUS termino
+    (26) exp -> . termino MINUS termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    exp                            shift and go to state 76
+    termino                        shift and go to state 44
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 63
+
+    (23) expresion -> exp GREATER_THAN . exp
+    (25) exp -> . termino PLUS termino
+    (26) exp -> . termino MINUS termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    exp                            shift and go to state 77
+    termino                        shift and go to state 44
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 64
+
+    (24) expresion -> exp NOT_EQUAL . exp
+    (25) exp -> . termino PLUS termino
+    (26) exp -> . termino MINUS termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    exp                            shift and go to state 78
+    termino                        shift and go to state 44
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 65
+
+    (25) exp -> termino PLUS . termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    termino                        shift and go to state 79
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 66
+
+    (26) exp -> termino MINUS . termino
+    (27) termino -> . factor MULTIPLICATION factor
+    (28) termino -> . factor DIVISION factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    termino                        shift and go to state 80
+    factor                         shift and go to state 47
+    varcte                         shift and go to state 49
+
+state 67
+
+    (27) termino -> factor MULTIPLICATION . factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    factor                         shift and go to state 81
+    varcte                         shift and go to state 49
+
+state 68
+
+    (28) termino -> factor DIVISION . factor
+    (29) factor -> . LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS
+    (30) factor -> . PLUS
+    (31) factor -> . MINUS
+    (32) factor -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CONST_INT
+    (35) varcte -> . CONST_FLOAT
+
+    LEFT_PARENTHESIS shift and go to state 48
+    PLUS            shift and go to state 45
+    MINUS           shift and go to state 46
+    ID              shift and go to state 41
+    CONST_INT       shift and go to state 50
+    CONST_FLOAT     shift and go to state 51
+
+    factor                         shift and go to state 82
+    varcte                         shift and go to state 49
+
+state 69
+
+    (29) factor -> LEFT_PARENTHESIS expresion . RIGHT_PARENTHESIS
+
+    RIGHT_PARENTHESIS shift and go to state 83
+
+
+state 70
+
+    (18) condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS . bloque
+    (9) bloque -> . LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB
+
+    LEFT_CURLYB     shift and go to state 9
+
+    bloque                         shift and go to state 84
+
+state 71
+
+    (36) write -> WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS .
+
+    ID              reduce using rule 36 (write -> WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS .)
+    IF              reduce using rule 36 (write -> WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS .)
+    WRITE           reduce using rule 36 (write -> WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS .)
+    WHILE           reduce using rule 36 (write -> WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS .)
+    READ            reduce using rule 36 (write -> WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS .)
+    RIGHT_CURLYB    reduce using rule 36 (write -> WRITE LEFT_PARENTHESIS inside RIGHT_PARENTHESIS .)
+
+
+state 72
+
+    (37) inside -> inside more . inside
+    (37) inside -> . inside more inside
+    (38) inside -> . ID
+    (39) inside -> . string
+    (40) inside -> . empty
+    (43) string -> . CONST_STRING
+    (63) empty -> .
+
+  ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for CONST_STRING resolved as shift
+    ID              shift and go to state 54
+    CONST_STRING    shift and go to state 57
+    MORE            reduce using rule 63 (empty -> .)
+    RIGHT_PARENTHESIS reduce using rule 63 (empty -> .)
+
+  ! ID              [ reduce using rule 63 (empty -> .) ]
+  ! CONST_STRING    [ reduce using rule 63 (empty -> .) ]
+
+    inside                         shift and go to state 85
+    string                         shift and go to state 55
+    empty                          shift and go to state 56
+
+state 73
+
+    (41) more -> MORE .
+
+    ID              reduce using rule 41 (more -> MORE .)
+    CONST_STRING    reduce using rule 41 (more -> MORE .)
+    MORE            reduce using rule 41 (more -> MORE .)
+    RIGHT_PARENTHESIS reduce using rule 41 (more -> MORE .)
+
+
+state 74
+
+    (42) more -> empty .
+
+    ID              reduce using rule 42 (more -> empty .)
+    CONST_STRING    reduce using rule 42 (more -> empty .)
+    MORE            reduce using rule 42 (more -> empty .)
+    RIGHT_PARENTHESIS reduce using rule 42 (more -> empty .)
+
+
+state 75
+
+    (21) while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS . bloque
+    (9) bloque -> . LEFT_CURLYB estatutoRecursivo RIGHT_CURLYB
+
+    LEFT_CURLYB     shift and go to state 9
+
+    bloque                         shift and go to state 86
+
+state 76
+
+    (22) expresion -> exp LESS_THAN exp .
+
+    SEMICOLON       reduce using rule 22 (expresion -> exp LESS_THAN exp .)
+    RIGHT_PARENTHESIS reduce using rule 22 (expresion -> exp LESS_THAN exp .)
+
+
+state 77
+
+    (23) expresion -> exp GREATER_THAN exp .
+
+    SEMICOLON       reduce using rule 23 (expresion -> exp GREATER_THAN exp .)
+    RIGHT_PARENTHESIS reduce using rule 23 (expresion -> exp GREATER_THAN exp .)
+
+
+state 78
+
+    (24) expresion -> exp NOT_EQUAL exp .
+
+    SEMICOLON       reduce using rule 24 (expresion -> exp NOT_EQUAL exp .)
+    RIGHT_PARENTHESIS reduce using rule 24 (expresion -> exp NOT_EQUAL exp .)
+
+
+state 79
+
+    (25) exp -> termino PLUS termino .
+
+    LESS_THAN       reduce using rule 25 (exp -> termino PLUS termino .)
+    GREATER_THAN    reduce using rule 25 (exp -> termino PLUS termino .)
+    NOT_EQUAL       reduce using rule 25 (exp -> termino PLUS termino .)
+    SEMICOLON       reduce using rule 25 (exp -> termino PLUS termino .)
+    RIGHT_PARENTHESIS reduce using rule 25 (exp -> termino PLUS termino .)
+
+
+state 80
+
+    (26) exp -> termino MINUS termino .
+
+    LESS_THAN       reduce using rule 26 (exp -> termino MINUS termino .)
+    GREATER_THAN    reduce using rule 26 (exp -> termino MINUS termino .)
+    NOT_EQUAL       reduce using rule 26 (exp -> termino MINUS termino .)
+    SEMICOLON       reduce using rule 26 (exp -> termino MINUS termino .)
+    RIGHT_PARENTHESIS reduce using rule 26 (exp -> termino MINUS termino .)
+
+
+state 81
+
+    (27) termino -> factor MULTIPLICATION factor .
+
+    PLUS            reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
+    MINUS           reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
+    LESS_THAN       reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
+    GREATER_THAN    reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
+    NOT_EQUAL       reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
+    SEMICOLON       reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
+    RIGHT_PARENTHESIS reduce using rule 27 (termino -> factor MULTIPLICATION factor .)
+
+
+state 82
+
+    (28) termino -> factor DIVISION factor .
+
+    PLUS            reduce using rule 28 (termino -> factor DIVISION factor .)
+    MINUS           reduce using rule 28 (termino -> factor DIVISION factor .)
+    LESS_THAN       reduce using rule 28 (termino -> factor DIVISION factor .)
+    GREATER_THAN    reduce using rule 28 (termino -> factor DIVISION factor .)
+    NOT_EQUAL       reduce using rule 28 (termino -> factor DIVISION factor .)
+    SEMICOLON       reduce using rule 28 (termino -> factor DIVISION factor .)
+    RIGHT_PARENTHESIS reduce using rule 28 (termino -> factor DIVISION factor .)
+
+
+state 83
+
+    (29) factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .
+
+    MULTIPLICATION  reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    DIVISION        reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    PLUS            reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    MINUS           reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    LESS_THAN       reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    GREATER_THAN    reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    NOT_EQUAL       reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    SEMICOLON       reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+    RIGHT_PARENTHESIS reduce using rule 29 (factor -> LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS .)
+
+
+state 84
+
+    (18) condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .
+
+    ELSE            reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    ID              reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    IF              reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    WRITE           reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    WHILE           reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    READ            reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    RIGHT_CURLYB    reduce using rule 18 (condicion -> IF LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+
+
+state 85
+
+    (37) inside -> inside more inside .
+    (37) inside -> inside . more inside
+    (41) more -> . MORE
+    (42) more -> . empty
+    (63) empty -> .
+
+  ! shift/reduce conflict for MORE resolved as shift
+  ! shift/reduce conflict for MORE resolved as shift
+  ! reduce/reduce conflict for ID resolved using rule 37 (inside -> inside more inside .)
+  ! reduce/reduce conflict for CONST_STRING resolved using rule 37 (inside -> inside more inside .)
+  ! reduce/reduce conflict for RIGHT_PARENTHESIS resolved using rule 37 (inside -> inside more inside .)
+    RIGHT_PARENTHESIS reduce using rule 37 (inside -> inside more inside .)
+    ID              reduce using rule 37 (inside -> inside more inside .)
+    CONST_STRING    reduce using rule 37 (inside -> inside more inside .)
+    MORE            shift and go to state 73
+
+  ! MORE            [ reduce using rule 37 (inside -> inside more inside .) ]
+  ! MORE            [ reduce using rule 63 (empty -> .) ]
+  ! ID              [ reduce using rule 63 (empty -> .) ]
+  ! CONST_STRING    [ reduce using rule 63 (empty -> .) ]
+  ! RIGHT_PARENTHESIS [ reduce using rule 63 (empty -> .) ]
+
+    more                           shift and go to state 72
+    empty                          shift and go to state 74
+
+state 86
+
+    (21) while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .
+
+    ID              reduce using rule 21 (while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    IF              reduce using rule 21 (while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    WRITE           reduce using rule 21 (while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    WHILE           reduce using rule 21 (while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    READ            reduce using rule 21 (while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+    RIGHT_CURLYB    reduce using rule 21 (while -> WHILE LEFT_PARENTHESIS expresion RIGHT_PARENTHESIS bloque .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for ID in state 33 resolved as shift
+WARNING: shift/reduce conflict for CONST_STRING in state 33 resolved as shift
+WARNING: shift/reduce conflict for MORE in state 53 resolved as shift
+WARNING: shift/reduce conflict for RIGHT_PARENTHESIS in state 53 resolved as shift
+WARNING: shift/reduce conflict for ID in state 72 resolved as shift
+WARNING: shift/reduce conflict for CONST_STRING in state 72 resolved as shift
+WARNING: shift/reduce conflict for MORE in state 85 resolved as shift
+WARNING: shift/reduce conflict for MORE in state 85 resolved as shift
+WARNING: reduce/reduce conflict in state 85 resolved using rule (inside -> inside more inside)
+WARNING: rejected rule (empty -> <empty>) in state 85
