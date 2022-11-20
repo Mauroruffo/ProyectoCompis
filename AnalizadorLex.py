@@ -7,7 +7,8 @@ import sys
 
 tokens = ['LEFT_PARENTHESIS', 'RIGHT_PARENTHESIS', 'LEFT_BRACKET', 'RIGHT_BRACKET', 'LEFT_CURLYB', 'RIGHT_CURLYB', 'COLON', 'SEMICOLON', 
         'COMMA', 'PERIOD', 'LESS_THAN', 'GREATER_THAN', 'EQUAL_ASSIGN', 'NOT_EQUAL', 'LESS_EQUAL', 'GREATER_EQUAL', 'EQUAL_COMPARE', 'NUMBER',
-        'MINUS', 'PLUS', 'MULTIPLICATION', 'DIVISION', 'AND', 'OR', 'NEGATION', 'ID', 'CONST_INT', 'CONST_FLOAT', 'CONST_CHAR', 'CONST_STRING', 'MORE']
+        'MINUS', 'PLUS', 'MULTIPLICATION', 'DIVISION', 'AND', 'OR', 'NEGATION', 'ID', 'CONST_INT', 'CONST_FLOAT', 'CONST_CHAR', 'CONST_STRING', 'MORE'
+        'BOOL', 'STRING', 'CONST_BOOL', 'CALL' ]
 
 reservadas = {
     'program' : 'PROGRAM',
@@ -19,17 +20,21 @@ reservadas = {
     'else' : 'ELSE',
     'while' : 'WHILE',
     'do' : 'DO',
-    'function' : 'FUNCTION',
+    'func' : 'FUNC',
     'return' : 'RETURN',
     'read' : 'READ',
     'write' : 'WRITE',
     'int' : 'INT',
     'float' : 'FLOAT',
+    'bool' : 'BOOL',
+    'string' : 'STRING',
     'char' : 'CHAR',
     'void' : 'VOID',
     'attributes' : 'ATTRIBUTES',
     'methods' : 'METHODS',
-    'def' : 'DEF'
+    'def' : 'DEF',
+    'more' : 'MORE',
+    'call' : 'CALL'
 }
 
 tokens = tokens + list(reservadas.values())
@@ -44,7 +49,7 @@ t_ELSEIF = 'elseif'
 t_ELSE = 'else'
 t_WHILE = 'while'
 t_DO = 'do'
-t_FUNCTION = 'function'
+t_FUNC = 'func'
 t_RETURN = 'return'
 t_READ = 'read'
 t_WRITE = 'write'
@@ -53,7 +58,10 @@ t_FLOAT = 'float'
 t_VOID = 'void'
 t_ATTRIBUTES = 'attributes'
 t_METHODS = 'methods'
+t_BOOL = 'bool'
+t_STRING = 'string'
 t_DEF = 'def'
+t_CALL = 'call'
 t_EQUAL_ASSIGN = r'='
 t_LEFT_PARENTHESIS = r'\('
 t_RIGHT_PARENTHESIS = r'\)'
@@ -78,8 +86,6 @@ t_DIVISION = r'/'
 t_AND = r'&'
 t_OR = r'\|\|'
 t_NEGATION = r'!'
-t_CONST_INT = r'[1-9][0-9]*|0'
-t_CONST_FLOAT = r'[+-]?([0-9]*[.])?[0-9]+'
 #t_CONST_CHAR = r'[_(A-Z0-9)]'
 t_MORE = r'<<'
 
@@ -101,9 +107,23 @@ def t_CONST_STRING(t):
     r'"(\\"|[^\n"])+"'
     return t
 
-def t_NUMBER(t):
-    r'\d+'
-    t.value = int(t.value)
+def t_CONST_BOOL(t):
+    r'T|F'
+    t.type = reservadas.get(t.value, 'CONST_BOOL')
+    t.value = (t.value, 'bool')
+    return t
+
+def t_CONST_FLOAT(t):
+    r'[0-9]+\.[0-9]+'
+    t.type = reservadas.get(t.value, 'CONST_FLOAT')
+    t.value = (t.value, 'float')
+    return t
+
+
+def t_CONST_INT(t):
+    r'[0-9]+'
+    t.type = reservadas.get(t.value, 'CONST_INT')
+    t.value = (t.value, 'int')
     return t
 
 def t_error(t):

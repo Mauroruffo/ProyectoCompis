@@ -1,0 +1,13 @@
+program TESTCORRECT;
+var int X;
+var int Y;
+
+func int PRUEBA ( int X ){
+    Y = 8;
+    return X;
+}
+
+main(){
+    X = 1;
+    call PRUEBA ( X );
+}

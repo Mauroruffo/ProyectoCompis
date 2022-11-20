@@ -1,0 +1,7 @@
+program TESTCORRECT;
+var int X;
+var int Y;
+
+main(){
+  read( X );
+}
