@@ -7,10 +7,11 @@ from AnalizadorSemantico import *
 from estructuras.VarsFuncs import *
 from estructuras.stack import *
 from estructuras.Cuadruplos import *
-from estructuras.consideraciones_semanticas import *
+from estructuras.CuboSemantico import *
 from sys import stdin
 
 varTable = []
+funcTable = []
 quadList = []
 
 precedence = (
@@ -28,7 +29,7 @@ precedence = (
 def p_program(p):
     ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
     p[0] = program(p[1], p[2], p[3], "program")
-    varTable.append(Variable(p[2], "program", "global"))
+    funcTable.append(Function(p[2], "program"))
     print("program")
 
 
@@ -62,6 +63,8 @@ def p_class_dec(p):
 
 def p_var(p):
     ''' var : ID varArray'''
+    p[0] = p[1]
+    print(p[1])
 
 def p_varArray(p):
     ''' varArray :  empty 
@@ -78,6 +81,8 @@ def p_pn_array_access3(p):
 
 def p_var_dec(p):
     ''' var_dec :  VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable '''
+    varTable.append(Variable(p[5], p[2]))
+    #print(len(varTable))
 
 def p_pn_var_type(p):
     ''' pn_var_type : empty '''
@@ -101,6 +106,18 @@ def p_bloque(p):
 
 def p_asignacion(p):
     ''' asignacion : var pn_var_assign EQUAL_ASSIGN all_logical SEMICOLON '''
+    variable_exists = False
+
+    for x in varTable:
+        print(x.name())
+        if x.name() == p[1]:
+            print("La variable " + p[1] + " si existe!")
+            variable_exists = True
+            break
+
+    if (variable_exists == False):
+        print("La variable " + p[1] + " no existe FLOP!")
+        quit()
 
 def p_pn_var_asignacion(p):
     ''' pn_var_assign : empty '''
@@ -189,10 +206,12 @@ def p_tipo(p):
             | FLOAT 
             | BOOL 
             | STRING '''
+    p[0] = p[1]
 
 def p_return_module(p):
     ''' return_module : tipo 
                 | VOID '''
+    p[0] = p[1]
 
 def p_parametro(p):
     ''' parametro : tipo ID parametro_rec 
@@ -254,6 +273,18 @@ def p_pn_write_quad(p):
 
 def p_func_call(p):
     ''' func_call : CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS '''
+    func_exists = False
+
+    for x in funcTable:
+        print(x.name())
+        if x.name() == p[2]:
+            print("La funcion " + p[2] + " si existe!")
+            func_exists = True
+            break
+
+    if (func_exists == False):
+        print("La funcion " + p[2] + " no existe FLOP!")
+        quit()
 
 def p_pn_verify_func(p):
     ''' pn_verify_func : empty '''
@@ -272,7 +303,9 @@ def p_pn_param_match(p):
     ''' pn_param_match : empty '''
 
 def p_func_dec(p):
-    ''' func_dec : FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
+    ''' func_dec : FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
+
+    funcTable.append(Function(p[4], p[2]))
 
 def p_pn_add_param_vartable(p):
     ''' pn_add_param_vartable : empty '''
