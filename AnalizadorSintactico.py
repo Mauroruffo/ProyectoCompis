@@ -139,6 +139,7 @@ def p_pn_var_asignacion(p):
 
 def p_pn_operator(p):
     ''' pn_operator : empty '''
+    operatorStack.append(p[-1])
 
 def p_all_logical(p):
     ''' all_logical : logical_exp pn_all_logical all_logical_rec '''
@@ -150,6 +151,7 @@ def p_all_logical_rec(p):
 
 def p_pn_all_logical(p):
     ''' pn_all_logical : empty '''
+    exp_cuad(['&&', '||'], p.lineno(1))
 
 def p_logical_exp(p):
     ''' logical_exp : exp pn_logical_exp logical_exp_rec '''
@@ -163,12 +165,14 @@ def p_logical_exp_rec(p):
 
 def p_pn_logical_exp(p):
     ''' pn_logical_exp : empty '''
+    exp_cuad(['>', '<', '==', '!='], p.lineno(1))
 
 def p_exp(p):
     ''' exp : termino pn_exp exp_rec '''
 
 def p_pn_exp(p):
     ''' pn_exp : empty '''
+    exp_cuad(['+', '-'], p.lineno(1))
 
 def p_exp_rec(p):
     ''' exp_rec : PLUS pn_operator termino pn_exp exp_rec 
@@ -185,6 +189,7 @@ def p_termino_rec(p):
 
 def p_pn_termino(p):
     ''' pn_termino : empty '''
+    exp_cuad(['*', '/'], p.lineno(1))
 
 def p_factor(p):
     ''' factor : varcte 
@@ -195,11 +200,17 @@ def p_varcte(p):
     ''' varcte : cte_int pn_add_constant 
                 | cte_float pn_add_constant 
                 | CONST_BOOL pn_add_constant 
-                | CONST_STRING  
+                | CONST_STRING empty empty
                 | var '''
     if len(p) == 3:
         _, constType = p[1]
         temp = (p[2], constType)
+        operandStack.append(temp)
+    elif len(p) == 2:
+        temp = p[1]
+        for x in varTable:
+            if x.name() == temp:
+                temp = ([x.name(), x.type()])
         operandStack.append(temp)
 
 
@@ -380,6 +391,24 @@ def p_empty(p):
 def p_error(p):
     print("Error de sintaxis" , p)
     print("Error en la linea " + str(p.lineno - 10))
+
+def exp_cuad(op_list, line_no = 'Undefined'):
+    print("Enter exp_cuad")
+    print(operatorStack)
+    print(operandStack)
+    if operatorStack and operatorStack[-1] in op_list:
+        print("operatorStack")
+        valor_der, tipo_der = operandStack.pop()
+        valor_izq, tipo_izq = operandStack.pop()
+        op = operatorStack.pop()
+        result_type = semantic_cube.type_match(tipo_izq, tipo_der, op)
+        if result_type:
+            # temp_address, temp_type = avail.get_new_temp(result_type)
+            cuads.gen_cuad(op, valor_izq, valor_der, 5000)
+            operandStack.append((5000, 'int'))
+        else:
+            print("Flop de operador " + op + " entre " + tipo_izq + " y " + tipo_der + " en linea " + str(line_no - 10))
+            quit()
 
 def buscarFicheros(directorio):
     ficheros = []
