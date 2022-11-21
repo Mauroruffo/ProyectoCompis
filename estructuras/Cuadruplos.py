@@ -1,9 +1,16 @@
 class Cuadruplos:
-    def __init__(self, operador, opIzq, opDer, resultado):
-        self.__operador = operador
-        self.__opIzq = opIzq
-        self.__opDer = opDer
-        self.__resultado = resultado
+    def __init__(self):
+        self.counter = 0
+        self.list = []
+
+    def gen_cuad(self, operador, opIzq, opDer, resultado):
+        cuad = [operador, opIzq, opDer, resultado]
+        self.list.append(cuad)
+        print(cuad)
+        self.counter += 1
+
+    def fill_quad(self, rellena_cuad, index_cuad, valor):
+        self.list[rellena_cuad][index_cuad] = valor
 
     def operador(self):
         return self.__operador

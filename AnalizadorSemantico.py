@@ -1,5 +1,5 @@
 from estructuras.VarsFuncs import *
-from estructuras.stack import *
+from estructuras.Stack import *
 
 txt = " "
 cont = 0

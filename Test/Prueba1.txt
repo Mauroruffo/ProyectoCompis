@@ -6,6 +6,6 @@ main(){
    X = 1;
    Y = 2;
    if ( Y > X ) {
-      write("hola mun" << X );
+      write( "hola mun" << X );
    }
 }

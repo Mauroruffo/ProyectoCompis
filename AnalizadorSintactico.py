@@ -5,14 +5,22 @@ import re
 from AnalizadorLex import tokens
 from AnalizadorSemantico import *
 from estructuras.VarsFuncs import *
-from estructuras.stack import *
+from estructuras.Stack import *
 from estructuras.Cuadruplos import *
 from estructuras.CuboSemantico import *
 from sys import stdin
 
 varTable = []
+constTable = []
 funcTable = []
 quadList = []
+operatorStack = []
+operandStack = []
+jumpStack = []
+semantic_cube = Cubo()
+cuads = Cuadruplos()
+const = Constant()
+
 
 precedence = (
     ('right', 'EQUAL_ASSIGN'),
@@ -113,6 +121,13 @@ def p_asignacion(p):
         if x.name() == p[1]:
             print("La variable " + p[1] + " si existe!")
             variable_exists = True
+            all_logical_value, all_logical_type = operandStack.pop()
+            result_type = semantic_cube.type_match(x.type(), all_logical_type, '=')
+            if(result_type == True):
+                cuads.gen_cuad('=', all_logical_value, None, x.name() )
+            else:
+                print("Flop de asignacion entre " + x.type() + " and " + all_logical_type + " en linea " + str(p.lineno(3) - 10))
+                quit()
             break
 
     if (variable_exists == False):
@@ -175,25 +190,46 @@ def p_factor(p):
     ''' factor : varcte 
                 | LEFT_PARENTHESIS pn_open_parenthesis all_logical  RIGHT_PARENTHESIS pn_close_parenthesis 
                 | func_call '''
-
+    
 def p_varcte(p):
     ''' varcte : cte_int pn_add_constant 
                 | cte_float pn_add_constant 
                 | CONST_BOOL pn_add_constant 
-                | CONST_STRING pn_add_constant 
+                | CONST_STRING  
                 | var '''
+    if len(p) == 3:
+        _, constType = p[1]
+        temp = (p[2], constType)
+        operandStack.append(temp)
 
 
 def p_cte_int(p):
     ''' cte_int : CONST_INT 
                 | MINUS CONST_INT '''
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = ('-' + p[2][0], p[2][1])
 
 def p_cte_float(p):
     ''' cte_float : CONST_FLOAT 
                 | MINUS CONST_FLOAT '''    
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = ('-' + p[2][0], p[2][1])
 
 def p_pn_add_constant(p):
-    ''' pn_add_constant : empty '''   
+    ''' pn_add_constant : empty '''  
+    print("Debug")
+    print(p[-1]) 
+    constValue, constType = p[-1]
+
+    if not const.const_exists(constType, constValue):
+        const.add_const(constType, 5000, constValue)
+    
+    p[0] = const.const_address(constType, constValue)
+
 
 def p_pn_open_parenthesis(p):
     ''' pn_open_parenthesis : empty ''' 
@@ -387,5 +423,3 @@ result = parser.parse(cadena)
 # graphFile.close()
 
 print(result)
-print (varTable)
-print([Variable.name for Variable in varTable])
