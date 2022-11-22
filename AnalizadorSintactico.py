@@ -18,6 +18,7 @@ quadList = []
 operatorStack = []
 operandStack = []
 jumpStack = []
+controlTable = []
 semantic_cube = Cubo()
 cuads = Cuadruplos()
 const = Constant()
@@ -145,6 +146,7 @@ def p_pn_operator(p):
 
 def p_all_logical(p):
     ''' all_logical : logical_exp pn_all_logical all_logical_rec '''
+    p[0] = p[1]
 
 def p_all_logical_rec(p):
     ''' all_logical_rec : AND pn_operator logical_exp pn_all_logical all_logical_rec 
@@ -157,6 +159,7 @@ def p_pn_all_logical(p):
 
 def p_logical_exp(p):
     ''' logical_exp : exp pn_logical_exp logical_exp_rec '''
+    p[0] = p[1]
 
 def p_logical_exp_rec(p):
     ''' logical_exp_rec : GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec 
@@ -171,6 +174,7 @@ def p_pn_logical_exp(p):
 
 def p_exp(p):
     ''' exp : termino pn_exp exp_rec '''
+    p[0] = p[1]
 
 def p_pn_exp(p):
     ''' pn_exp : empty '''
@@ -183,6 +187,7 @@ def p_exp_rec(p):
 
 def p_termino(p):
     ''' termino :  factor pn_termino termino_rec '''
+    p[0] = p[1]
 
 def p_termino_rec(p):
     ''' termino_rec : MULTIPLICATION pn_operator factor pn_termino termino_rec 
@@ -197,6 +202,7 @@ def p_factor(p):
     ''' factor : varcte 
                 | LEFT_PARENTHESIS pn_open_parenthesis all_logical  RIGHT_PARENTHESIS pn_close_parenthesis 
                 | func_call '''
+    p[0] = p[1]
     
 def p_varcte(p):
     ''' varcte : cte_int pn_add_constant 
@@ -209,6 +215,7 @@ def p_varcte(p):
         temp = (p[2], constType)
         operandStack.append(temp)
     elif len(p) == 2:
+        p[0] = p[1]
         temp = p[1]
         for x in varTable:
             if x.name() == temp:
@@ -332,6 +339,9 @@ def p_pn_while_jump1(p):
 
 def p_read(p):
     ''' read : READ LEFT_PARENTHESIS var RIGHT_PARENTHESIS SEMICOLON '''
+    for var in p[3]:
+        dir_var = var
+        cuads.gen_cuad('READ', None, None, dir_var)
 
 def p_write(p):
     ''' write : WRITE LEFT_PARENTHESIS write_rec RIGHT_PARENTHESIS SEMICOLON '''
