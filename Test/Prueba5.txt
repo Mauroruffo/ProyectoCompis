@@ -10,4 +10,5 @@ main(){
    if ( Y > X ) {
       write( "hola mun" << X );
    }
+   Z[0] = 5 
 }

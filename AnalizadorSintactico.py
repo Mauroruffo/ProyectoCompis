@@ -20,6 +20,7 @@ operandStack = []
 jumpStack = []
 paramTable = []
 controlTable = []
+dim_stack = []
 semantic_cube = Cubo()
 cuads = Cuadruplos()
 const = Constant()
@@ -64,9 +65,9 @@ def p_pn_start_func(p):
     global general_scope, internal_scope
     general_scope = '#global'
     internal_scope = '#global'
-    func_dir.add_general_scope(general_scope)
-    func_dir.add_internal_scope(general_scope, internal_scope)
-    func_dir.set_function_type(general_scope, internal_scope, 'void')
+    func_dir.genScope(general_scope)
+    func_dir.intScope(general_scope, internal_scope)
+    func_dir.tipoFunc(general_scope, internal_scope, 'void')
 
 def p_init_dec(p):
     ''' init_dec : empty 
@@ -87,16 +88,71 @@ def p_var(p):
 
 def p_varArray(p):
     ''' varArray :  empty 
-                | pn_array_access1 LEFT_BRACKET pn_array_access2 all_logical pn_array_access3 RIGHT_BRACKET '''
+                | pn_array_access1 LEFT_BRACKET pn_array_access2 all_logical pn_array_access3 RIGHT_BRACKET pn_access_return'''
 
 def p_pn_array_access1(p):
     ''' pn_array_access1 : empty '''
+    for x in varTable:
+        if x.name() == p[-1]:
+            print("Si entra a la funcion ")
+            varMap = func_dir.table['#global']['#global']['vars_table'][p[-1]]
+            varDir, varType = varMap['var_virtual_address'], varMap['var_data_type']
+            current_name = p[-1]
+            operandStack.append((varDir, varType))
+            # internal_scope = '#global'
+
+    Exception("Flop de variable " + p[-1] + ", esta no fue definida!")
 
 def p_pn_array_access2(p):
     ''' pn_array_access2 : empty '''
+    listDir, _ = operandStack.pop()
+    listDim = None
+    if func_dir.varExists('#global', '#global', current_name):
+        listDim = func_dir.get_group_dimensions('#global', '#global', current_name)
+
+    if listDim > 0:
+        dim = [listDir, 1, '#global', current_name]
+        dim_stack.append(dim)
+        operandStack.append('[')
+    else: 
+        Exception('Flop de arreglo ' + current_name + ', no tiene dimensiones!')
+        
 
 def p_pn_array_access3(p):
     ''' pn_array_access3 : empty '''
+    general_scope = '#global'
+    dimSize = func_dir.dimSize(general_scope, dim_stack[-1][2], dim_stack[-1][3], dim_stack[-1][1])
+    index = operandStack[-1][0]
+
+    cuads.gen_cuad('VER', dimSize, index, None)
+
+    auxDir, auxType = operandStack.pop()
+    if auxType != 'int':
+        raise Exception('Flop de indexamiento por variable ' + dim_stack[-1][3] + ' por su tipo ' + auxType)
+    else:
+        dimM = func_dir.dimM(general_scope, dim_stack[-1][2], dim_stack[-1][3], dim_stack[-1][1])
+        dir = const.const_address('int', str(int(dimM)))
+        tempDir = memo.nueva_dir('int', 'temps')
+        cuads.gen_cuad('*', auxDir, dir, tempDir)
+        operandStack.append((tempDir, 'int'))
+
+def p_pn_access_return(p):
+    ''' pn_access_return : empty '''
+    auxDir1, _ = operandStack.pop()
+    listDir = func_dir.varDir('#global', dim_stack[-1][2], dim_stack[-1][3])
+    listType = func_dir.varType('#global', dim_stack[-1][2], dim_stack[-1][3])
+    newDir = None
+    if not const.const_exists('int', str(listDir)):
+        newDir = memo.nueva_dir('int', 'constants')
+        const.add_const('int', newDir, str(listDir))
+    else:
+        newDir = const.const_address('int', str(listDir))
+    tempDir = memo.nueva_dir('int', str(listDir))
+    cuads.gen_cuad('+', auxDir1, newDir, tempDir)
+    pointerDir = '&' + str(tempDir)
+    dim_stack.pop()
+    operatorStack.pop()
+    p[0] = (pointerDir, listType)
 
 def p_var_dec(p):
     ''' var_dec :  VAR tipo pn_var_type  pn_value_type ID pn_current_name SEMICOLON pn_add_variable 
@@ -111,7 +167,7 @@ def p_pn_add_dim(p):
     ''' pn_add_dim : empty'''
     size, _ = p[-1]
     size = int(size)
-    func_dir.add_dim_size_and_update_r('#global', '#global', current_name, 0, size)
+    func_dir.edit_dimSize('#global', '#global', current_name, 0, size)
 
     if not const.const_exists('int', p[-1][0]):
         const_dir = memo.nueva_dir('int', 'constants')
@@ -135,7 +191,7 @@ def p_pn_current_name(p):
 def p_pn_add_variable(p):
     ''' pn_add_variable : empty '''
     var_dir = memo.nueva_dir(var_type, 'globals')
-    func_dir.add_variable('#global', '#global', current_name, var_type, value_type, var_dir)
+    func_dir.addVar('#global', '#global', current_name, var_type, value_type, var_dir)
 
 def p_bloque(p):
     ''' bloque : asignacion 
