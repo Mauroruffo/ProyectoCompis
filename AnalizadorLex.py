@@ -8,7 +8,7 @@ import sys
 tokens = ['LEFT_PARENTHESIS', 'RIGHT_PARENTHESIS', 'LEFT_BRACKET', 'RIGHT_BRACKET', 'LEFT_CURLYB', 'RIGHT_CURLYB', 'COLON', 'SEMICOLON', 
         'COMMA', 'PERIOD', 'LESS_THAN', 'GREATER_THAN', 'EQUAL_ASSIGN', 'NOT_EQUAL', 'LESS_EQUAL', 'GREATER_EQUAL', 'EQUAL_COMPARE', 'NUMBER',
         'MINUS', 'PLUS', 'MULTIPLICATION', 'DIVISION', 'AND', 'OR', 'NEGATION', 'ID', 'CONST_INT', 'CONST_FLOAT', 'CONST_CHAR', 'CONST_STRING', 'MORE'
-        'BOOL', 'STRING', 'CONST_BOOL', 'CALL' ]
+        'BOOL', 'STRING', 'CONST_BOOL', 'CALL', 'LIST' ]
 
 reservadas = {
     'program' : 'PROGRAM',
@@ -34,7 +34,8 @@ reservadas = {
     'methods' : 'METHODS',
     'def' : 'DEF',
     'more' : 'MORE',
-    'call' : 'CALL'
+    'call' : 'CALL',
+    'list' : 'LIST'
 }
 
 tokens = tokens + list(reservadas.values())
@@ -62,6 +63,7 @@ t_BOOL = 'bool'
 t_STRING = 'string'
 t_DEF = 'def'
 t_CALL = 'call'
+t_LIST = 'list'
 t_EQUAL_ASSIGN = r'='
 t_LEFT_PARENTHESIS = r'\('
 t_RIGHT_PARENTHESIS = r'\)'

@@ -18,11 +18,13 @@ quadList = []
 operatorStack = []
 operandStack = []
 jumpStack = []
+paramTable = []
 controlTable = []
 semantic_cube = Cubo()
 cuads = Cuadruplos()
 const = Constant()
 memo = MemoriaVirtual()
+func_dir = Function()
 
 
 precedence = (
@@ -40,7 +42,7 @@ precedence = (
 def p_program(p):
     ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
     p[0] = program(p[1], p[2], p[3], "program")
-    funcTable.append(Function(p[2], "program"))
+    funcTable.append(Function1(p[2], "program"))
     print("program")
 
 
@@ -59,6 +61,12 @@ def p_pn_start_program(p):
 
 def p_pn_start_func(p):
     ''' pn_start_func : empty '''
+    global general_scope, internal_scope
+    general_scope = '#global'
+    internal_scope = '#global'
+    func_dir.add_general_scope(general_scope)
+    func_dir.add_internal_scope(general_scope, internal_scope)
+    func_dir.set_function_type(general_scope, internal_scope, 'void')
 
 def p_init_dec(p):
     ''' init_dec : empty 
@@ -91,21 +99,43 @@ def p_pn_array_access3(p):
     ''' pn_array_access3 : empty '''
 
 def p_var_dec(p):
-    ''' var_dec :  VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable '''
+    ''' var_dec :  VAR tipo pn_var_type  pn_value_type ID pn_current_name SEMICOLON pn_add_variable 
+                | LIST tipo pn_var_type  pn_value_type ID pn_current_name pn_add_variable LEFT_BRACKET pn_add_dim_list cte_int pn_add_dim RIGHT_BRACKET SEMICOLON'''
     varTable.append(Variable(p[5], p[2]))
-    #print(len(varTable))
+    
+def p_pn_add_dim_list(p):
+    ''' pn_add_dim_list : empty'''
+    func_dir.add_dim1_list('#global', '#global', current_name)
+    
+def p_pn_add_dim(p):
+    ''' pn_add_dim : empty'''
+    size, _ = p[-1]
+    size = int(size)
+    func_dir.add_dim_size_and_update_r('#global', '#global', current_name, 0, size)
+
+    if not const.const_exists('int', p[-1][0]):
+        const_dir = memo.nueva_dir('int', 'constants')
+        const.add_const('int', const_dir, p[-1][0])
 
 def p_pn_var_type(p):
     ''' pn_var_type : empty '''
+    global var_type 
+    var_type = p[-1]
 
 def p_pn_value_type(p):
     ''' pn_value_type : empty '''
+    global value_type
+    value_type = p[-1]
 
 def p_pn_current_name(p):
     ''' pn_current_name : empty '''
+    global current_name
+    current_name = p[-1]
 
 def p_pn_add_variable(p):
     ''' pn_add_variable : empty '''
+    var_dir = memo.nueva_dir(var_type, 'globals')
+    func_dir.add_variable('#global', '#global', current_name, var_type, value_type, var_dir)
 
 def p_bloque(p):
     ''' bloque : asignacion 
@@ -272,10 +302,18 @@ def p_return_module(p):
 def p_parametro(p):
     ''' parametro : tipo ID parametro_rec 
                     | empty '''
+    if len(p) == 4:
+        p[0] = [(p[1], p[2])] + p[3]
+    else:
+        p[0] = []
 
 def p_parametro_rec(p):
     ''' parametro_rec : COMMA tipo ID parametro_rec 
                         | empty '''
+    if len(p) == 5:
+        p[0] = [(p[2], p[3])] + p[4]
+    else:
+        p[0] = []
 
 def p_pn_parametro_varTable(p):
     ''' pn_parametro_varTable : empty '''
@@ -390,10 +428,14 @@ def p_pn_param_match(p):
 def p_func_dec(p):
     ''' func_dec : FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
 
-    funcTable.append(Function(p[4], p[2]))
+    funcTable.append(Function1(p[4], p[2]))
+
 
 def p_pn_add_param_vartable(p):
     ''' pn_add_param_vartable : empty '''
+    parametros = p[-1]
+    
+
 
 def p_pn_gen_vartable(p):
     ''' pn_gen_vartable : empty '''
@@ -481,12 +523,5 @@ fp.close()
 
 parser = yacc.yacc()
 result = parser.parse(cadena)
-
-# result.imprimir(" ")
-# print result.traducir()
-
-# graphFile = open('graphviztrhee.vz', 'w')
-# graphFile.write(result.traducir())
-# graphFile.close()
 
 print(result)
