@@ -1,0 +1,68 @@
+from TypeTranslate import *
+
+class GlobalMemory:
+    def __init__(self, varSize, constSize, constTable):
+        varInt = varSize
+        varFloat = varSize
+        varBool = varSize
+        varString = varSize
+
+        constInt = constSize
+        constFloat  =constSize
+        constBool = constSize
+        constString = constSize
+
+        self.table = { 'variables' : {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
+                        'constants' : {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
+        }
+
+        self.TT = Translator()
+
+        for type, dictValue in constTable.items():
+            for item, dir in dictValue.items():
+                self.constDir(dir, item)
+
+    def constDir(self, dir, item):
+        tableScope, dataType, index = self.tableKeys(dir)
+        item = self.TT.cast(item, dataType)
+        self.table[tableScope][dataType][index]
+
+    def itemDir(self, dir, item):
+        tableScope, dataType, index = self.tableKeys(dir)
+        self.table[tableScope][dataType][index] = item
+
+    def getItem(self, dir):
+        tableScope, dataType, index = self.tableKeys(dir)
+        item  = self.table[tableScope][dataType][index]
+        return (dataType, item)
+
+    def tableKeys(self, dir):
+        scopeKey = self.scopeKey(dir)
+        if scopeKey == 'vars':
+            dir = dir - 0
+        else:
+            dir = dir - 24000
+        dataType, index = self.dataType(dir)
+        return (scopeKey, dataType, index)
+    
+    def scopeKey(self, dir):
+        if dir >= 0 and dir < 8000:
+            return 'variables'
+        else:
+            return 'constants'
+
+    def dataType(self, dir):
+        dataType = 0
+        if dir >= 0 and dir < 2000:
+            dataType = 'int'
+            dir = dir -0
+        elif dir >= 2000 and dir < 4000:
+            dataType = 'float'
+            dir = dir - 2000
+        elif dir >= 4000 and dir < 6000:
+            dataType = 'bool'
+            dir = dir - 4000
+        elif dir >= 6000:
+            dataType = 'string'
+            dir = dir - 6000
+        return (dataType, dir)
