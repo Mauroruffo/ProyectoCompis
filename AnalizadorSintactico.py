@@ -8,6 +8,7 @@ from estructuras.VarsFuncs import *
 from estructuras.Stack import *
 from estructuras.Cuadruplos import *
 from estructuras.CuboSemantico import *
+from estructuras.Memoria import *
 from sys import stdin
 
 varTable = []
@@ -20,6 +21,7 @@ jumpStack = []
 semantic_cube = Cubo()
 cuads = Cuadruplos()
 const = Constant()
+memo = MemoriaVirtual()
 
 
 precedence = (
@@ -123,7 +125,7 @@ def p_asignacion(p):
             variable_exists = True
             all_logical_value, all_logical_type = operandStack.pop()
             result_type = semantic_cube.type_match(x.type(), all_logical_type, '=')
-            if(result_type == True):
+            if(result_type):
                 cuads.gen_cuad('=', all_logical_value, None, x.name() )
             else:
                 print("Flop de asignacion entre " + x.type() + " and " + all_logical_type + " en linea " + str(p.lineno(3) - 10))
@@ -280,12 +282,25 @@ def p_condicional_else(p):
 
 def p_pn_condicional(p):
     ''' pn_condicional : empty '''
+    direccion, tipo = operandStack.pop()
+    print(operandStack)
+    print(operatorStack)
+    if tipo == 'bool':
+        cuads.gen_cuad('GoToF', direccion, None, None)
+        jumpStack.append(cuads.counter - 1)
+    else:
+        print("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
+
 
 def p_pn_condicional_else(p):
     ''' pn_condicional_else : empty '''
 
 def p_pn_condicional_final(p):
     ''' pn_condicional_final : empty '''
+    cuads.gen_cuad('GoTo', None, None, None)
+    id_cuad_falso = jumpStack.pop()
+    jumpStack.append(cuads.counter - 1)
+    cuads.fill_quad(id_cuad_falso, 3, cuads.counter)
 
 def p_while(p):
     ''' while : WHILE pn_while LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_while_jump while_loop'''
@@ -295,12 +310,25 @@ def p_while_loop(p):
 
 def p_pn_while(p):
     ''' pn_while : empty '''
+    jumpStack.append(cuads.counter)
 
 def p_pn_while_jump(p):
     ''' pn_while_jump : empty '''
+    direccion, tipo = operandStack.pop()
+    print(operandStack)
+    print(operatorStack)
+    if tipo == 'bool':
+        cuads.gen_cuad('GoToF', direccion, None, None)
+        jumpStack.append(cuads.counter - 1)
+    else:
+        print("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
 
 def p_pn_while_jump1(p):
     ''' pn_while_jump1 : empty '''
+    gotof_id = jumpStack.pop()
+    cuad_return = jumpStack.pop()
+    cuads.gen_cuad('GoTo', None, None, cuad_return)
+    cuads.fill_quad(gotof_id, 3, cuads.counter)
 
 def p_read(p):
     ''' read : READ LEFT_PARENTHESIS var RIGHT_PARENTHESIS SEMICOLON '''
@@ -403,9 +431,9 @@ def exp_cuad(op_list, line_no = 'Undefined'):
         op = operatorStack.pop()
         result_type = semantic_cube.type_match(tipo_izq, tipo_der, op)
         if result_type:
-            # temp_address, temp_type = avail.get_new_temp(result_type)
+            temp_address, temp_type = memo.nuevo_temp(result_type)
             cuads.gen_cuad(op, valor_izq, valor_der, 5000)
-            operandStack.append((5000, 'int'))
+            operandStack.append((temp_address, temp_type))
         else:
             print("Flop de operador " + op + " entre " + tipo_izq + " y " + tipo_der + " en linea " + str(line_no - 10))
             quit()

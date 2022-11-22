@@ -66,5 +66,5 @@ class Cubo:
 
     def type_match(self, left_operand, right_operand, op):
         if (left_operand, right_operand, op) in self.semanticCube:
-            return True
+            return self.semanticCube[(left_operand, right_operand, op)]
         return None
