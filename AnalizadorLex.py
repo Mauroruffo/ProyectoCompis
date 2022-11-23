@@ -88,13 +88,11 @@ t_DIVISION = r'/'
 t_AND = r'&'
 t_OR = r'\|\|'
 t_NEGATION = r'!'
-#t_CONST_CHAR = r'[_(A-Z0-9)]'
 t_MORE = r'<<'
 
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
-    print("NewLine")
     pass
 
 def t_ID(t):
