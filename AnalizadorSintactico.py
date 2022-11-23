@@ -44,7 +44,6 @@ def p_program(p):
     ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
     p[0] = program(p[1], p[2], p[3], "program")
     funcTable.append(Function1(p[2], "program"))
-    print("program")
 
 
 def p_main(p):
@@ -84,7 +83,6 @@ def p_class_dec(p):
 def p_var(p):
     ''' var : ID varArray'''
     p[0] = p[1]
-    print(p[1])
 
 def p_varArray(p):
     ''' varArray :  empty 
@@ -94,7 +92,6 @@ def p_pn_array_access1(p):
     ''' pn_array_access1 : empty '''
     for x in varTable:
         if x.name() == p[-1]:
-            print("Si entra a la funcion ")
             varMap = func_dir.table['#global']['#global']['vars_table'][p[-1]]
             varDir, varType = varMap['var_virtual_address'], varMap['var_data_type']
             current_name = p[-1]
@@ -206,22 +203,18 @@ def p_asignacion(p):
     variable_exists = False
 
     for x in varTable:
-        print(x.name())
         if x.name() == p[1]:
-            print("La variable " + p[1] + " si existe!")
             variable_exists = True
             all_logical_value, all_logical_type = operandStack.pop()
             result_type = semantic_cube.type_match(x.type(), all_logical_type, '=')
             if(result_type):
                 cuads.gen_cuad('=', all_logical_value, None, x.name() )
             else:
-                print("Flop de asignacion entre " + x.type() + " and " + all_logical_type + " en linea " + str(p.lineno(3) - 10))
-                quit()
+                Exception("Flop de asignacion entre " + x.type() + " and " + all_logical_type + " en linea " + str(p.lineno(3) - 10))
             break
 
     if (variable_exists == False):
-        print("La variable " + p[1] + " no existe FLOP!")
-        quit()
+        Exception("La variable " + p[1] + " no existe FLOP!")
 
 def p_pn_var_asignacion(p):
     ''' pn_var_assign : empty '''
@@ -326,9 +319,7 @@ def p_cte_float(p):
         p[0] = ('-' + p[2][0], p[2][1])
 
 def p_pn_add_constant(p):
-    ''' pn_add_constant : empty '''  
-    print("Debug")
-    print(p[-1]) 
+    ''' pn_add_constant : empty '''   
     constValue, constType = p[-1]
 
     if not const.const_exists(constType, constValue):
@@ -384,13 +375,11 @@ def p_condicional_else(p):
 def p_pn_condicional(p):
     ''' pn_condicional : empty '''
     direccion, tipo = operandStack.pop()
-    print(operandStack)
-    print(operatorStack)
     if tipo == 'bool':
         cuads.gen_cuad('GoToF', direccion, None, None)
         jumpStack.append(cuads.counter - 1)
     else:
-        print("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
+        Exception("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
 
 
 def p_pn_condicional_else(p):
@@ -416,13 +405,11 @@ def p_pn_while(p):
 def p_pn_while_jump(p):
     ''' pn_while_jump : empty '''
     direccion, tipo = operandStack.pop()
-    print(operandStack)
-    print(operatorStack)
     if tipo == 'bool':
         cuads.gen_cuad('GoToF', direccion, None, None)
         jumpStack.append(cuads.counter - 1)
     else:
-        print("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
+        Exception("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
 
 def p_pn_while_jump1(p):
     ''' pn_while_jump1 : empty '''
@@ -455,15 +442,13 @@ def p_func_call(p):
     func_exists = False
 
     for x in funcTable:
-        print(x.name())
         if x.name() == p[2]:
-            print("La funcion " + p[2] + " si existe!")
             func_exists = True
             break
 
     if (func_exists == False):
-        print("La funcion " + p[2] + " no existe FLOP!")
-        quit()
+        Exception("La funcion " + p[2] + " no existe FLOP!")
+
 
 def p_pn_verify_func(p):
     ''' pn_verify_func : empty '''
@@ -526,14 +511,10 @@ def p_empty(p):
 
 def p_error(p):
     print("Error de sintaxis" , p)
-    print("Error en la linea " + str(p.lineno - 10))
+    Exception("Error en la linea " + str(p.lineno - 10))
 
 def exp_cuad(op_list, line_no = 'Undefined'):
-    print("Enter exp_cuad")
-    print(operatorStack)
-    print(operandStack)
     if operatorStack and operatorStack[-1] in op_list:
-        print("operatorStack")
         valor_der, tipo_der = operandStack.pop()
         valor_izq, tipo_izq = operandStack.pop()
         op = operatorStack.pop()
@@ -543,8 +524,8 @@ def exp_cuad(op_list, line_no = 'Undefined'):
             cuads.gen_cuad(op, valor_izq, valor_der, 5000)
             operandStack.append((temp_address, temp_type))
         else:
-            print("Flop de operador " + op + " entre " + tipo_izq + " y " + tipo_der + " en linea " + str(line_no - 10))
-            quit()
+            Exception("Flop de operador " + op + " entre " + tipo_izq + " y " + tipo_der + " en linea " + str(line_no - 10))
+ 
 
 def buscarFicheros(directorio):
     ficheros = []
