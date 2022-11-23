@@ -66,3 +66,74 @@ class GlobalMemory:
             dataType = 'string'
             dir = dir - 6000
         return (dataType, dir)
+    
+class LocalMemory:
+    def __init__(self, varSize, constSize):
+        varInt = varSize
+        varFloat = varSize
+        varBool = varSize
+        varString = varSize
+
+        constInt = constSize
+        constFloat  =constSize
+        constBool = constSize
+        constString = constSize
+
+        self.table = { 'variables' : {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
+                        'constants' : {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
+        }
+
+    def scopeKey(self, dir):
+        if dir >= 8000 and dir < 16000:
+            return 'locals'
+        elif dir >= 16000 and dir < 24000:
+            return 'constants'
+        
+    def dataType(self, dir):
+        dataType = 0
+        if dir >= 0 and dir < 2000:
+            return ('int', 0)
+        elif dir >= 2000 and dir < 4000:
+            return ('float', 2000)
+        elif dir >= 4000 and dir < 6000:
+            return ('bool', 4000)
+        elif dir >= 6000:
+            return ('string', 6000)
+        return (dataType, dir)
+    
+    def tableKeys(self, dir):
+        scopeKey = self.scopeKey(dir)
+        if not scopeKey:
+            return (None, None, None)
+        tableScope = None
+        dataType = None
+
+        if scopeKey == 'temps':
+            tableScope = 'temps'
+            dir = dir - 16000
+        else:
+            tableScope = 'vars'
+            dir = dir - 8000
+        
+        dataType, offSet = self.dataType(dir)
+
+        return (tableScope, dataType, (dir - offSet))
+    
+    def editValorDir(self, dir, valor):
+        tableScope, dataType, index = self.tableKeys(dir)
+        if not tableScope:
+            return None
+        self.table[tableScope][dataType][index] = valor
+
+    def setvalorDir(self, dir, valor):
+        tableScope, dataType, index = self.tableKeys(dir)
+        if not tableScope:
+            return None
+        self.table[tableScope][dataType][index] = valor
+
+    def valorDir(self, dir):
+        tableScope, dataType, index = self.tableKeys(dir)
+        if not tableScope:
+            return (None, None)
+        else:
+            return (dataType, self.table[tableScope][dataType][index])
