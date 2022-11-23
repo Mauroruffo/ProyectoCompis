@@ -125,13 +125,13 @@ class LocalMemory:
             return None
         self.table[tableScope][dataType][index] = valor
 
-    def setvalorDir(self, dir, valor):
+    def setValorDir(self, dir, valor):
         tableScope, dataType, index = self.tableKeys(dir)
         if not tableScope:
             return None
         self.table[tableScope][dataType][index] = valor
 
-    def valorDir(self, dir):
+    def getItem(self, dir):
         tableScope, dataType, index = self.tableKeys(dir)
         if not tableScope:
             return (None, None)
