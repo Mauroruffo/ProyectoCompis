@@ -42,7 +42,6 @@ precedence = (
 
 def p_program(p):
     ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
-    p[0] = program(p[1], p[2], p[3], "program")
     funcTable.append(Function1(p[2], "program"))
 
 
@@ -383,16 +382,17 @@ def p_pn_condicional(p):
     else:
         Exception("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
 
-
 def p_pn_condicional_else(p):
     ''' pn_condicional_else : empty '''
-
-def p_pn_condicional_final(p):
-    ''' pn_condicional_final : empty '''
     cuads.gen_cuad('GoTo', None, None, None)
     id_cuad_falso = jumpStack.pop()
     jumpStack.append(cuads.counter - 1)
     cuads.fill_quad(id_cuad_falso, 3, cuads.counter)
+
+def p_pn_condicional_final(p):
+    ''' pn_condicional_final : empty '''
+    if_final = jumpStack.pop()
+    cuads.fill_quad(if_final, 3, cuads.counter)
 
 def p_while(p):
     ''' while : WHILE pn_while LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_while_jump while_loop'''

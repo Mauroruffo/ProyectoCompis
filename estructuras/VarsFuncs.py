@@ -22,15 +22,6 @@ class Variable:
 
 class Function:
     def __init__(self):
-
-        # tabla que contiene el directorio de funciones con la siguiente estructura
-        #       scope general       scope interno       tabla de variables
-        #       class_name	        -> #global          -> vars_table
-        # 		                    -> function_name 	-> vars_table
-        # 		                    -> constructor	    -> vars_table
-        #       '#global'	        -> #global          -> vars_table
-        # 		                    -> function_name 	-> vars_table
-        # 		                    -> main		        -> vars_table
         self.table = {}
 
     def genScope(self, name):
@@ -143,8 +134,6 @@ class Function:
                                    ] += var_dict['group_size']
         self.table[general_name][internal_name]['workspace']['variables_workspace'] = variable_workspace
 
-    # funcion para calcular y guardar la m de una dimension de una variable de tipo grupo
-    # entradas: scope general, scope interno, nombre de la variable
     def gen_dimM(self, general_name, internal_name, var_name):
         size = self.table[general_name][internal_name]['vars_table'][var_name]['r']
 
@@ -156,8 +145,6 @@ class Function:
 
         self.table[general_name][internal_name]['vars_table'][var_name]['group_size'] = size
 
-    # funcion para eliminar la tabla de variables de un scope interno
-    # entradas: nombre de scope general y nombre de scope interno
     def delete_varTable(self, general_name, internal_name):
         self.table[general_name][internal_name]['vars_table'] = {}
 

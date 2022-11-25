@@ -9,4 +9,7 @@ main(){
    if ( Y > X ) {
       write( X << 1 + 6 );
    }
+   else {
+      X = 4 + 9;
+   }
 }
