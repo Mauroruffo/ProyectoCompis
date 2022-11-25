@@ -299,8 +299,9 @@ def p_varcte(p):
         for x in varTable:
             if x.name() == temp:
                 temp = ([x.name(), x.type()])
-        operandStack.append(temp)
-
+                print("La temp es:")
+                print(temp)
+                operandStack.append(temp)
 
 def p_cte_int(p):
     ''' cte_int : CONST_INT 
@@ -323,7 +324,8 @@ def p_pn_add_constant(p):
     constValue, constType = p[-1]
 
     if not const.const_exists(constType, constValue):
-        const.add_const(constType, 5000, constValue)
+        const_dir = memo.nueva_dir(constType, 'constants')
+        const.add_const(constType, const_dir, constValue)
     
     p[0] = const.const_address(constType, constValue)
 
@@ -436,6 +438,8 @@ def p_write_rec1(p):
 
 def p_pn_write_quad(p):
     ''' pn_write_quad : empty '''
+    operandDir, _ = operandStack.pop()
+    cuads.gen_cuad('WRITE', None, None, operandDir)
 
 def p_func_call(p):
     ''' func_call : CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS '''
@@ -520,9 +524,9 @@ def exp_cuad(op_list, line_no = 'Undefined'):
         op = operatorStack.pop()
         result_type = semantic_cube.type_match(tipo_izq, tipo_der, op)
         if result_type:
-            temp_address, temp_type = memo.nuevo_temp(result_type)
-            cuads.gen_cuad(op, valor_izq, valor_der, 5000)
-            operandStack.append((temp_address, temp_type))
+            temp_dir, temp_type = memo.nuevo_temp(result_type)
+            cuads.gen_cuad(op, valor_izq, valor_der, temp_dir)
+            operandStack.append((temp_dir, temp_type))
         else:
             Exception("Flop de operador " + op + " entre " + tipo_izq + " y " + tipo_der + " en linea " + str(line_no - 10))
  
