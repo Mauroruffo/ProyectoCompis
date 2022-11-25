@@ -1,7 +1,8 @@
 class Variable:
-    def __init__(self, varName, varType):
+    def __init__(self, varName, varType, varDir):
         self.__varName = varName
         self.__varType = varType
+        self.__varDir = varDir
         self.__varValue = None
         self.__varSize = None
 
@@ -16,6 +17,9 @@ class Variable:
 
     def size(self):
         return self.__varSize
+    
+    def varDir(self):
+        return self.__varDir
 
     def __repr__(self):
         print(self.__varName + ' ' + self.__varType + ' ' + self.__varValue + ' ' + self.__varSize)
@@ -88,16 +92,15 @@ class Function:
         self.table[general_name][internal_name]['start_quad'] = quad_id
 
     def addVar(self, general_name, internal_name, var_name, var_type, var_data_type, var_virtual_address):
+        print("Variable ha sido agregada")
         if var_name in self.table[general_name][internal_name]['vars_table'].keys():
             raise Exception(
                 "Variable named " + var_name + " has already been declared in the same scope.")
         else:
-            print("La variable " + var_name + " ha sido agregada")
             self.table[general_name][internal_name]['vars_table'][var_name] = {
                 'var_type': var_type,
                 'var_data_type': var_data_type,
-                'var_virtual_address': var_virtual_address,
-                'var_name': var_name
+                'var_virtual_address': var_virtual_address
             }
 
     def addParam(self, general_name, internal_name, parameter_type):

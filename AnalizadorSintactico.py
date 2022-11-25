@@ -43,6 +43,9 @@ precedence = (
 def p_program(p):
     ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
     funcTable.append(Function1(p[2], "program"))
+
+    constTable = memo.cont_info('constants')
+    func_dir.genVarInfo('#global', '#global')
     
     obj = {"function_directory": func_dir.table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table}
     with open('obj.json', "w") as output_file:
@@ -60,7 +63,7 @@ def p_pn_internal_scope(p):
 
 def p_pn_start_program(p):
     ''' pn_start_program : empty '''
-    cuads.gen_cuad('GoToMain', None, None, None)
+    cuads.gen_cuad('GoToMain', None, None, 0)
 
 def p_pn_start_func(p):
     ''' pn_start_func : empty '''
@@ -157,7 +160,6 @@ def p_pn_access_return(p):
 def p_var_dec(p):
     ''' var_dec :  VAR tipo pn_var_type  pn_value_type ID pn_current_name SEMICOLON pn_add_variable 
                 | LIST tipo pn_var_type  pn_value_type ID pn_current_name pn_add_variable LEFT_BRACKET pn_add_dim_list cte_int pn_add_dim RIGHT_BRACKET SEMICOLON'''
-    varTable.append(Variable(p[5], p[2]))
     
 def p_pn_add_dim_list(p):
     ''' pn_add_dim_list : empty'''
@@ -181,7 +183,7 @@ def p_pn_var_type(p):
 def p_pn_value_type(p):
     ''' pn_value_type : empty '''
     global value_type
-    value_type = p[-1]
+    value_type = p[-3]
 
 def p_pn_current_name(p):
     ''' pn_current_name : empty '''
@@ -191,6 +193,7 @@ def p_pn_current_name(p):
 def p_pn_add_variable(p):
     ''' pn_add_variable : empty '''
     var_dir = memo.nueva_dir(var_type, 'globals')
+    varTable.append(Variable(p[-3], p[-6], var_dir))
     func_dir.addVar('#global', '#global', current_name, var_type, value_type, var_dir)
 
 def p_bloque(p):
@@ -210,8 +213,10 @@ def p_asignacion(p):
             variable_exists = True
             all_logical_value, all_logical_type = operandStack.pop()
             result_type = semantic_cube.type_match(x.type(), all_logical_type, '=')
+            print("Vars table incluye esto")
+            print(func_dir.table['#global']['#global']['vars_table'])
             if(result_type):
-                cuads.gen_cuad('=', all_logical_value, None, x.name() )
+                cuads.gen_cuad('=', all_logical_value, None, x.varDir() )
             else:
                 Exception("Flop de asignacion entre " + x.type() + " and " + all_logical_type + " en linea " + str(p.lineno(3) - 10))
             break
@@ -443,8 +448,10 @@ def p_write_rec1(p):
 def p_pn_write_quad(p):
     ''' pn_write_quad : empty '''
     operandDir, _ = operandStack.pop()
-    cuads.gen_cuad('WRITE', None, None, operandDir)
-
+    for x in varTable:
+        if x.name() == operandDir:
+            cuads.gen_cuad('WRITE', None, None, x.varDir())
+    
 def p_func_call(p):
     ''' func_call : CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS '''
     func_exists = False
@@ -488,12 +495,16 @@ def p_pn_add_param_vartable(p):
 
 def p_pn_gen_vartable(p):
     ''' pn_gen_vartable : empty '''
+    # func_dir.genVarInfo('#global', '#global')
 
 def p_pn_func_quad(p):
     ''' pn_func_quad : empty '''
 
 def p_pn_end_main(p):
     ''' pn_end_main : empty'''
+    func_dir.delete_varTable('#global', '#global')
+    tempWorkSpace = memo.cont_info('temps')
+    func_dir.tempInfo('#global', '#global', tempWorkSpace)
 
 def p_pn_end_func(p):
     ''' pn_end_func : empty '''

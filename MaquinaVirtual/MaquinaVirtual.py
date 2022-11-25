@@ -30,7 +30,7 @@ def globalValueType(dir):
     return(type, value)
 
 def valueType(local_memory, dir):
-    type, value = local_memory.valorDir(dir)
+    type, value = local_memory.getItem(dir)
     if not type:
         return globalValueType(dir)
     return (type, value)
@@ -54,39 +54,30 @@ def biOperands(memLocal, dirOpIzq, dirOpDer):
 def valorMemoria(dir, mem_local, valor):
     memScope = memoryScope(dir)
     if memScope == 'local_memory':
-        mem_local.getItem(dir, valor)
+        mem_local.setValorDir(dir, valor)
     else:
-        globalMemory.getItem(dir, valor)
+        globalMemory.setValorDir(dir, valor)
     return mem_local
-    
-    
-
-# def resetCuadDir(current_quad, memory):
-#     for i, element in enumerate(current_quad):
-#         if element is not None and str(element)[0] == '&':
-#             # make the check for && operand
-#             if len(str(element)) > 1 and str(element)[1] == '&':
-#                 continue
-#             element = element[1:]
-#             element = int(element)
-#             _, new_address = get_type_and_value(memory, element)
-#             current_quad[i] = new_address
-#     return current_quad
 
 print("---------------------FLOP++---------------------")
 
 while(instructionPtr < len(cuads)):
     currCuad = cuads[instructionPtr].copy()
     if len(memStack) > 100000:
-        raise Exception('Stack overFLop, demasiadas llamadas creadas')
+        raise Exception('Stack OverFlop, demasiadas llamadas creadas')
+    
     if currCuad[0] == 'GoToMain':
-        mainVarWorkSpace = obj.varWorkspace('#global', 'main')
-        mainTempWorkspace = obj.tempWorkspace('#global', 'main')
+        # print("Ciclo")
+        # print(instructionPtr)
+        mainVarWorkSpace = obj.varWorkspace('#global', '#global')
+        mainTempWorkspace = obj.tempWorkspace('#global', '#global')
         mainVarWorkSpaceType = (mainVarWorkSpace['int'], mainVarWorkSpace['float'], mainVarWorkSpace['bool'], mainVarWorkSpace['string'])
         mainTempWorkSpaceType = (mainTempWorkspace['int'], mainTempWorkspace['float'], mainTempWorkspace['bool'], mainTempWorkspace['string'])
         mainMem = LocalMemory(mainVarWorkSpaceType, mainTempWorkSpaceType)
         memStack.append(mainMem)
         instructionPtr = currCuad[3]
+        instructionPtr = instructionPtr + 1
+        continue
 
     elif currCuad[0] == '=':
         assignType, assignValue = None, None
@@ -194,6 +185,7 @@ while(instructionPtr < len(cuads)):
 
     elif currCuad[0] == 'GoTo':
         instructionPtr = currCuad[3]
+        print(instructionPtr)
         continue
 
     elif currCuad[0] == 'GoToF':
@@ -210,6 +202,6 @@ while(instructionPtr < len(cuads)):
             instructionPtr = currCuad[3]
             continue
 
-    instructionPtr += 1
+    instructionPtr = instructionPtr + 1
 
 print("---------------------Programa Flop++ ejecutado sin Flopear!---------------------")

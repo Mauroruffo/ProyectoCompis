@@ -23,8 +23,11 @@ class GlobalMemory:
         item = self.TT.cast(item, dataType)
         self.table[tableScope][dataType][index]
 
-    def itemDir(self, dir, item):
+    def setValorDir(self, dir, item):
         tableScope, dataType, index = self.tableKeys(dir)
+        print(tableScope)
+        print(dir)
+        print(index)
         self.table[tableScope][dataType][index] = item
 
     def getItem(self, dir):
@@ -43,7 +46,7 @@ class GlobalMemory:
     
     def scopeKey(self, dir):
         if dir >= 0 and dir < 8000:
-            return 'variables'
+            return 'vars'
         else:
             return 'constants'
 
@@ -77,7 +80,7 @@ class LocalMemory:
         if dir >= 8000 and dir < 16000:
             return 'locals'
         elif dir >= 16000 and dir < 24000:
-            return 'constants'
+            return 'temps'
         
     def dataType(self, dir):
         dataType = 0
@@ -108,12 +111,6 @@ class LocalMemory:
         dataType, offSet = self.dataType(dir)
 
         return (tableScope, dataType, (dir - offSet))
-    
-    def editValorDir(self, dir, valor):
-        tableScope, dataType, index = self.tableKeys(dir)
-        if not tableScope:
-            return None
-        self.table[tableScope][dataType][index] = valor
 
     def setValorDir(self, dir, valor):
         tableScope, dataType, index = self.tableKeys(dir)
