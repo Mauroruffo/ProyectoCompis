@@ -2,19 +2,15 @@ from TypeTranslate import *
 
 class GlobalMemory:
     def __init__(self, varSize, constSize, constTable):
-        varInt = varSize
-        varFloat = varSize
-        varBool = varSize
-        varString = varSize
+        varInt, varFloat, varBool, varString = varSize
 
-        constInt = constSize
-        constFloat  =constSize
-        constBool = constSize
-        constString = constSize
+        constInt, constFloat, constBool, constString = constSize
 
-        self.table = { 'variables' : {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
-                        'constants' : {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
+        self.table = {
+            'vars': {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
+            'constants': {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
         }
+
 
         self.TT = Translator()
 
@@ -68,19 +64,13 @@ class GlobalMemory:
         return (dataType, dir)
     
 class LocalMemory:
-    def __init__(self, varSize, constSize):
-        varInt = varSize
-        varFloat = varSize
-        varBool = varSize
-        varString = varSize
+    def __init__(self, varSize, tempSize):
+        varInt, varFloat, varBool, varString = varSize
+        tempInt, tempFloat, tempBool, tempString = tempSize
 
-        constInt = constSize
-        constFloat  =constSize
-        constBool = constSize
-        constString = constSize
-
-        self.table = { 'variables' : {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
-                        'constants' : {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
+        self.table = {
+            'vars': {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
+            'temps': {'int': [0] * tempInt, 'float': [0.0] * tempFloat, 'bool': [False] * tempBool, 'string': [''] * tempString}
         }
 
     def scopeKey(self, dir):

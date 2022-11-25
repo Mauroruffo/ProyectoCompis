@@ -3,12 +3,12 @@ import os
 import codecs
 import re
 from AnalizadorLex import tokens
-from AnalizadorSemantico import *
 from estructuras.VarsFuncs import *
 from estructuras.Stack import *
 from estructuras.Cuadruplos import *
 from estructuras.CuboSemantico import *
 from estructuras.Memoria import *
+import json
 from sys import stdin
 
 varTable = []
@@ -43,7 +43,10 @@ precedence = (
 def p_program(p):
     ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
     funcTable.append(Function1(p[2], "program"))
-
+    
+    obj = {"function_directory": func_dir.table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table}
+    with open('obj.json', "w") as output_file:
+        json.dump(obj, output_file, indent = 2)
 
 def p_main(p):
     ''' main : MAIN pn_internal_scope LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_start_func bloque_rec RIGHT_CURLYB pn_end_main'''
@@ -57,6 +60,7 @@ def p_pn_internal_scope(p):
 
 def p_pn_start_program(p):
     ''' pn_start_program : empty '''
+    cuads.gen_cuad('GoToMain', None, None, None)
 
 def p_pn_start_func(p):
     ''' pn_start_func : empty '''

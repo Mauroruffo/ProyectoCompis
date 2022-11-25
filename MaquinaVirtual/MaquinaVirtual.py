@@ -83,12 +83,16 @@ while(instructionPtr < len(cuads)):
         mainVarWorkSpace = obj.varWorkspace('#global', 'main')
         mainTempWorkspace = obj.tempWorkspace('#global', 'main')
         mainVarWorkSpaceType = (mainVarWorkSpace['int'], mainVarWorkSpace['float'], mainVarWorkSpace['bool'], mainVarWorkSpace['string'])
-        mainTempWorkspaceType = (mainTempWorkspace['int'], mainTempWorkspace['float'], mainTempWorkspace['bool'], mainTempWorkspace['string'])
+        mainTempWorkSpaceType = (mainTempWorkspace['int'], mainTempWorkspace['float'], mainTempWorkspace['bool'], mainTempWorkspace['string'])
+        mainMem = LocalMemory(mainVarWorkSpaceType, mainTempWorkSpaceType)
+        memStack.append(mainMem)
         instructionPtr = currCuad[3]
 
     elif currCuad[0] == '=':
         assignType, assignValue = None, None
-        assignType, assignValue = valueType(globalMemory, currCuad[1][0])
+        assignType, assignValue = valueType(memStack[-1], currCuad[1])
+        assignValue = TT.cast(assignValue, assignType)
+        memStack[-1] = valorMemoria(currCuad[3], memStack[-1], assignValue)
 
     elif currCuad[0] == '+':
         opIzq, opDer = None, None
