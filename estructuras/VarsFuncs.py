@@ -1,7 +1,8 @@
 class Variable:
-    def __init__(self, varName, varType):
+    def __init__(self, varName, varType, varDir):
         self.__varName = varName
         self.__varType = varType
+        self.__varDir = varDir
         self.__varValue = None
         self.__varSize = None
 
@@ -16,21 +17,15 @@ class Variable:
 
     def size(self):
         return self.__varSize
+    
+    def varDir(self):
+        return self.__varDir
 
     def __repr__(self):
         print(self.__varName + ' ' + self.__varType + ' ' + self.__varValue + ' ' + self.__varSize)
 
 class Function:
     def __init__(self):
-
-        # tabla que contiene el directorio de funciones con la siguiente estructura
-        #       scope general       scope interno       tabla de variables
-        #       class_name	        -> #global          -> vars_table
-        # 		                    -> function_name 	-> vars_table
-        # 		                    -> constructor	    -> vars_table
-        #       '#global'	        -> #global          -> vars_table
-        # 		                    -> function_name 	-> vars_table
-        # 		                    -> main		        -> vars_table
         self.table = {}
 
     def genScope(self, name):
@@ -48,8 +43,8 @@ class Function:
         # Raise error if n is bigger than array size
         param_signature_arr = self.table[general_name][internal_name]['param_signature']
         if n >= len(param_signature_arr):
-            error_msg = "Sending too many parameters for function '" + internal_name + \
-                "' when " + str(len(param_signature_arr)) + " are expected."
+            error_msg = "Flop de cantidad de parametros '" + internal_name + \
+                "' se esperaban " + str(len(param_signature_arr))
             raise Exception(error_msg)
         else:
             return param_signature_arr[n]
@@ -97,16 +92,15 @@ class Function:
         self.table[general_name][internal_name]['start_quad'] = quad_id
 
     def addVar(self, general_name, internal_name, var_name, var_type, var_data_type, var_virtual_address):
+        print("Variable ha sido agregada")
         if var_name in self.table[general_name][internal_name]['vars_table'].keys():
             raise Exception(
                 "Variable named " + var_name + " has already been declared in the same scope.")
         else:
-            print("La variable " + var_name + " ha sido agregada")
             self.table[general_name][internal_name]['vars_table'][var_name] = {
                 'var_type': var_type,
                 'var_data_type': var_data_type,
-                'var_virtual_address': var_virtual_address,
-                'var_name': var_name
+                'var_virtual_address': var_virtual_address
             }
 
     def addParam(self, general_name, internal_name, parameter_type):
@@ -139,12 +133,9 @@ class Function:
             if var_dict['var_type'] != 'list':
                 variable_workspace[var_dict['var_data_type']] += 1
             else:
-                variable_workspace[var_dict['var_data_type']
-                                   ] += var_dict['group_size']
+                variable_workspace[var_dict['var_data_type']] += var_dict['group_size']
         self.table[general_name][internal_name]['workspace']['variables_workspace'] = variable_workspace
 
-    # funcion para calcular y guardar la m de una dimension de una variable de tipo grupo
-    # entradas: scope general, scope interno, nombre de la variable
     def gen_dimM(self, general_name, internal_name, var_name):
         size = self.table[general_name][internal_name]['vars_table'][var_name]['r']
 
@@ -156,8 +147,6 @@ class Function:
 
         self.table[general_name][internal_name]['vars_table'][var_name]['group_size'] = size
 
-    # funcion para eliminar la tabla de variables de un scope interno
-    # entradas: nombre de scope general y nombre de scope interno
     def delete_varTable(self, general_name, internal_name):
         self.table[general_name][internal_name]['vars_table'] = {}
 

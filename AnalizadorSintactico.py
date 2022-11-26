@@ -3,12 +3,12 @@ import os
 import codecs
 import re
 from AnalizadorLex import tokens
-from AnalizadorSemantico import *
 from estructuras.VarsFuncs import *
 from estructuras.Stack import *
 from estructuras.Cuadruplos import *
 from estructuras.CuboSemantico import *
 from estructuras.Memoria import *
+import json
 from sys import stdin
 
 varTable = []
@@ -42,9 +42,14 @@ precedence = (
 
 def p_program(p):
     ''' program : PROGRAM pn_start_program pn_start_func ID SEMICOLON init_dec main '''
-    p[0] = program(p[1], p[2], p[3], "program")
     funcTable.append(Function1(p[2], "program"))
 
+    constTable = memo.cont_info('constants')
+    func_dir.genVarInfo('#global', '#global')
+    
+    obj = {"function_directory": func_dir.table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table}
+    with open('obj.json', "w") as output_file:
+        json.dump(obj, output_file, indent = 2)
 
 def p_main(p):
     ''' main : MAIN pn_internal_scope LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_start_func bloque_rec RIGHT_CURLYB pn_end_main'''
@@ -58,6 +63,7 @@ def p_pn_internal_scope(p):
 
 def p_pn_start_program(p):
     ''' pn_start_program : empty '''
+    cuads.gen_cuad('GoToMain', None, None, 0)
 
 def p_pn_start_func(p):
     ''' pn_start_func : empty '''
@@ -154,7 +160,6 @@ def p_pn_access_return(p):
 def p_var_dec(p):
     ''' var_dec :  VAR tipo pn_var_type  pn_value_type ID pn_current_name SEMICOLON pn_add_variable 
                 | LIST tipo pn_var_type  pn_value_type ID pn_current_name pn_add_variable LEFT_BRACKET pn_add_dim_list cte_int pn_add_dim RIGHT_BRACKET SEMICOLON'''
-    varTable.append(Variable(p[5], p[2]))
     
 def p_pn_add_dim_list(p):
     ''' pn_add_dim_list : empty'''
@@ -178,7 +183,7 @@ def p_pn_var_type(p):
 def p_pn_value_type(p):
     ''' pn_value_type : empty '''
     global value_type
-    value_type = p[-1]
+    value_type = p[-3]
 
 def p_pn_current_name(p):
     ''' pn_current_name : empty '''
@@ -188,6 +193,7 @@ def p_pn_current_name(p):
 def p_pn_add_variable(p):
     ''' pn_add_variable : empty '''
     var_dir = memo.nueva_dir(var_type, 'globals')
+    varTable.append(Variable(p[-3], p[-6], var_dir))
     func_dir.addVar('#global', '#global', current_name, var_type, value_type, var_dir)
 
 def p_bloque(p):
@@ -207,8 +213,10 @@ def p_asignacion(p):
             variable_exists = True
             all_logical_value, all_logical_type = operandStack.pop()
             result_type = semantic_cube.type_match(x.type(), all_logical_type, '=')
+            print("Vars table incluye esto")
+            print(func_dir.table['#global']['#global']['vars_table'])
             if(result_type):
-                cuads.gen_cuad('=', all_logical_value, None, x.name() )
+                cuads.gen_cuad('=', all_logical_value, None, x.varDir() )
             else:
                 Exception("Flop de asignacion entre " + x.type() + " and " + all_logical_type + " en linea " + str(p.lineno(3) - 10))
             break
@@ -299,8 +307,9 @@ def p_varcte(p):
         for x in varTable:
             if x.name() == temp:
                 temp = ([x.name(), x.type()])
-        operandStack.append(temp)
-
+                print("La temp es:")
+                print(temp)
+                operandStack.append(temp)
 
 def p_cte_int(p):
     ''' cte_int : CONST_INT 
@@ -323,7 +332,8 @@ def p_pn_add_constant(p):
     constValue, constType = p[-1]
 
     if not const.const_exists(constType, constValue):
-        const.add_const(constType, 5000, constValue)
+        const_dir = memo.nueva_dir(constType, 'constants')
+        const.add_const(constType, const_dir, constValue)
     
     p[0] = const.const_address(constType, constValue)
 
@@ -381,16 +391,17 @@ def p_pn_condicional(p):
     else:
         Exception("Flop de condicion por expresion recibida " + tipo + " en linea " + str(p.lineno(1)))
 
-
 def p_pn_condicional_else(p):
     ''' pn_condicional_else : empty '''
-
-def p_pn_condicional_final(p):
-    ''' pn_condicional_final : empty '''
     cuads.gen_cuad('GoTo', None, None, None)
     id_cuad_falso = jumpStack.pop()
     jumpStack.append(cuads.counter - 1)
     cuads.fill_quad(id_cuad_falso, 3, cuads.counter)
+
+def p_pn_condicional_final(p):
+    ''' pn_condicional_final : empty '''
+    if_final = jumpStack.pop()
+    cuads.fill_quad(if_final, 3, cuads.counter)
 
 def p_while(p):
     ''' while : WHILE pn_while LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_while_jump while_loop'''
@@ -436,7 +447,11 @@ def p_write_rec1(p):
 
 def p_pn_write_quad(p):
     ''' pn_write_quad : empty '''
-
+    operandDir, _ = operandStack.pop()
+    for x in varTable:
+        if x.name() == operandDir:
+            cuads.gen_cuad('WRITE', None, None, x.varDir())
+    
 def p_func_call(p):
     ''' func_call : CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS '''
     func_exists = False
@@ -480,12 +495,15 @@ def p_pn_add_param_vartable(p):
 
 def p_pn_gen_vartable(p):
     ''' pn_gen_vartable : empty '''
+    # func_dir.genVarInfo('#global', '#global')
 
 def p_pn_func_quad(p):
     ''' pn_func_quad : empty '''
 
 def p_pn_end_main(p):
     ''' pn_end_main : empty'''
+    tempWorkSpace = memo.cont_info('temps')
+    func_dir.tempInfo('#global', '#global', tempWorkSpace)
 
 def p_pn_end_func(p):
     ''' pn_end_func : empty '''
@@ -520,9 +538,9 @@ def exp_cuad(op_list, line_no = 'Undefined'):
         op = operatorStack.pop()
         result_type = semantic_cube.type_match(tipo_izq, tipo_der, op)
         if result_type:
-            temp_address, temp_type = memo.nuevo_temp(result_type)
-            cuads.gen_cuad(op, valor_izq, valor_der, 5000)
-            operandStack.append((temp_address, temp_type))
+            temp_dir, temp_type = memo.nuevo_temp(result_type)
+            cuads.gen_cuad(op, valor_izq, valor_der, temp_dir)
+            operandStack.append((temp_dir, temp_type))
         else:
             Exception("Flop de operador " + op + " entre " + tipo_izq + " y " + tipo_der + " en linea " + str(line_no - 10))
  

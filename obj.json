@@ -1,0 +1,105 @@
+{
+  "function_directory": {
+    "#global": {
+      "#global": {
+        "vars_table": {},
+        "param_signature": [],
+        "workspace": {
+          "temps_workspace": {
+            "int": 2,
+            "float": 0,
+            "bool": 1,
+            "string": 0
+          },
+          "variables_workspace": {
+            "int": 0,
+            "float": 0,
+            "string": 0,
+            "bool": 0
+          }
+        },
+        "function_type": "void"
+      }
+    }
+  },
+  "quads": [
+    [
+      "GoToMain",
+      null,
+      null,
+      0
+    ],
+    [
+      "=",
+      24000,
+      null,
+      0
+    ],
+    [
+      "=",
+      24001,
+      null,
+      1
+    ],
+    [
+      ">",
+      "Y",
+      "X",
+      20000
+    ],
+    [
+      "GoToF",
+      20000,
+      null,
+      8
+    ],
+    [
+      "WRITE",
+      null,
+      null,
+      0
+    ],
+    [
+      "+",
+      24000,
+      24002,
+      16000
+    ],
+    [
+      "GoTo",
+      null,
+      null,
+      10
+    ],
+    [
+      "+",
+      24003,
+      24004,
+      16001
+    ],
+    [
+      "=",
+      16001,
+      null,
+      0
+    ]
+  ],
+  "constants_summary": {
+    "int": 5,
+    "float": 0,
+    "bool": 0,
+    "string": 0
+  },
+  "constants_table": {
+    "int": {
+      "1": 24000,
+      "2": 24001,
+      "6": 24002,
+      "4": 24003,
+      "9": 24004
+    },
+    "float": {},
+    "bool": {},
+    "string": {}
+  }
+}

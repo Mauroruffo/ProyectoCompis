@@ -11,6 +11,7 @@ class Cuadruplos:
 
     def fill_quad(self, rellena_cuad, index_cuad, valor):
         self.list[rellena_cuad][index_cuad] = valor
+        print(self.list[rellena_cuad])
 
     def operador(self):
         return self.__operador

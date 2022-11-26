@@ -2,19 +2,15 @@ from TypeTranslate import *
 
 class GlobalMemory:
     def __init__(self, varSize, constSize, constTable):
-        varInt = varSize
-        varFloat = varSize
-        varBool = varSize
-        varString = varSize
+        varInt, varFloat, varBool, varString = varSize
 
-        constInt = constSize
-        constFloat  =constSize
-        constBool = constSize
-        constString = constSize
+        constInt, constFloat, constBool, constString = constSize
 
-        self.table = { 'variables' : {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
-                        'constants' : {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
+        self.table = {
+            'vars': {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
+            'constants': {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
         }
+
 
         self.TT = Translator()
 
@@ -27,8 +23,11 @@ class GlobalMemory:
         item = self.TT.cast(item, dataType)
         self.table[tableScope][dataType][index]
 
-    def itemDir(self, dir, item):
+    def setValorDir(self, dir, item):
         tableScope, dataType, index = self.tableKeys(dir)
+        print(tableScope)
+        print(dir)
+        print(index)
         self.table[tableScope][dataType][index] = item
 
     def getItem(self, dir):
@@ -47,7 +46,7 @@ class GlobalMemory:
     
     def scopeKey(self, dir):
         if dir >= 0 and dir < 8000:
-            return 'variables'
+            return 'vars'
         else:
             return 'constants'
 
@@ -55,7 +54,7 @@ class GlobalMemory:
         dataType = 0
         if dir >= 0 and dir < 2000:
             dataType = 'int'
-            dir = dir -0
+            dir = dir - 0
         elif dir >= 2000 and dir < 4000:
             dataType = 'float'
             dir = dir - 2000
@@ -68,29 +67,22 @@ class GlobalMemory:
         return (dataType, dir)
     
 class LocalMemory:
-    def __init__(self, varSize, constSize):
-        varInt = varSize
-        varFloat = varSize
-        varBool = varSize
-        varString = varSize
+    def __init__(self, varSize, tempSize):
+        varInt, varFloat, varBool, varString = varSize
+        tempInt, tempFloat, tempBool, tempString = tempSize
 
-        constInt = constSize
-        constFloat  =constSize
-        constBool = constSize
-        constString = constSize
-
-        self.table = { 'variables' : {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
-                        'constants' : {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
+        self.table = {
+            'vars': {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
+            'temps': {'int': [0] * tempInt, 'float': [0.0] * tempFloat, 'bool': [False] * tempBool, 'string': [''] * tempString}
         }
 
     def scopeKey(self, dir):
         if dir >= 8000 and dir < 16000:
             return 'locals'
         elif dir >= 16000 and dir < 24000:
-            return 'constants'
+            return 'temps'
         
     def dataType(self, dir):
-        dataType = 0
         if dir >= 0 and dir < 2000:
             return ('int', 0)
         elif dir >= 2000 and dir < 4000:
@@ -99,7 +91,6 @@ class LocalMemory:
             return ('bool', 4000)
         elif dir >= 6000:
             return ('string', 6000)
-        return (dataType, dir)
     
     def tableKeys(self, dir):
         scopeKey = self.scopeKey(dir)
@@ -118,12 +109,6 @@ class LocalMemory:
         dataType, offSet = self.dataType(dir)
 
         return (tableScope, dataType, (dir - offSet))
-    
-    def editValorDir(self, dir, valor):
-        tableScope, dataType, index = self.tableKeys(dir)
-        if not tableScope:
-            return None
-        self.table[tableScope][dataType][index] = valor
 
     def setValorDir(self, dir, valor):
         tableScope, dataType, index = self.tableKeys(dir)

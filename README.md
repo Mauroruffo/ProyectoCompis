@@ -1,2 +1,2 @@
 # ProyectoCompis
-Proyecto de Compiladores Orientado a Objetos AD 2022
+Proyecto de Compiladores con Funcionamiento Basico "Flop++"

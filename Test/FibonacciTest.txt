@@ -1,0 +1,20 @@
+program TESTCORRECT;
+var int PREV;
+var int CURR;
+var int MAX;
+var int CONT;
+var int AUX;
+
+main(){
+   PREV = 0;
+   CURR = 1;
+   MAX = 5;
+   CONT = 0;
+   while(CONT < 5){
+   AUX = CURR;
+   CURR = PREV + CURR;
+   PREV = AUX;
+   CONT = CONT + 1
+   }
+   WRITE( CURR )
+}
