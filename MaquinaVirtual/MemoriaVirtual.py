@@ -54,7 +54,7 @@ class GlobalMemory:
         dataType = 0
         if dir >= 0 and dir < 2000:
             dataType = 'int'
-            dir = dir -0
+            dir = dir - 0
         elif dir >= 2000 and dir < 4000:
             dataType = 'float'
             dir = dir - 2000
@@ -83,7 +83,6 @@ class LocalMemory:
             return 'temps'
         
     def dataType(self, dir):
-        dataType = 0
         if dir >= 0 and dir < 2000:
             return ('int', 0)
         elif dir >= 2000 and dir < 4000:
@@ -92,7 +91,6 @@ class LocalMemory:
             return ('bool', 4000)
         elif dir >= 6000:
             return ('string', 6000)
-        return (dataType, dir)
     
     def tableKeys(self, dir):
         scopeKey = self.scopeKey(dir)

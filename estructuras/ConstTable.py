@@ -11,3 +11,8 @@ class Constants:
 
     def get_constant_address(self, type, constant):
         return self.table[type][constant]
+    
+class Variables:
+
+    def __init__(self):
+        self.table = {}

@@ -83,6 +83,8 @@ while(instructionPtr < len(cuads)):
         assignType, assignValue = None, None
         assignType, assignValue = valueType(memStack[-1], currCuad[1])
         assignValue = TT.cast(assignValue, assignType)
+        print("Valor a asignar")
+        print(assignValue)
         memStack[-1] = valorMemoria(currCuad[3], memStack[-1], assignValue)
 
     elif currCuad[0] == '+':
