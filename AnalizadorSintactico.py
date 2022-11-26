@@ -502,7 +502,6 @@ def p_pn_func_quad(p):
 
 def p_pn_end_main(p):
     ''' pn_end_main : empty'''
-    func_dir.delete_varTable('#global', '#global')
     tempWorkSpace = memo.cont_info('temps')
     func_dir.tempInfo('#global', '#global', tempWorkSpace)
 

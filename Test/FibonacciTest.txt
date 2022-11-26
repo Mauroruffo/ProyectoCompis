@@ -16,5 +16,5 @@ main(){
    PREV = AUX;
    CONT = CONT + 1
    }
-   WRITE(CURR)
+   WRITE( CURR )
 }

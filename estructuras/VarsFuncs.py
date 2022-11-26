@@ -43,8 +43,8 @@ class Function:
         # Raise error if n is bigger than array size
         param_signature_arr = self.table[general_name][internal_name]['param_signature']
         if n >= len(param_signature_arr):
-            error_msg = "Sending too many parameters for function '" + internal_name + \
-                "' when " + str(len(param_signature_arr)) + " are expected."
+            error_msg = "Flop de cantidad de parametros '" + internal_name + \
+                "' se esperaban " + str(len(param_signature_arr))
             raise Exception(error_msg)
         else:
             return param_signature_arr[n]
@@ -133,8 +133,7 @@ class Function:
             if var_dict['var_type'] != 'list':
                 variable_workspace[var_dict['var_data_type']] += 1
             else:
-                variable_workspace[var_dict['var_data_type']
-                                   ] += var_dict['group_size']
+                variable_workspace[var_dict['var_data_type']] += var_dict['group_size']
         self.table[general_name][internal_name]['workspace']['variables_workspace'] = variable_workspace
 
     def gen_dimM(self, general_name, internal_name, var_name):
