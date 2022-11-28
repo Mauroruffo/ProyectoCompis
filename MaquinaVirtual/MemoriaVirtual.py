@@ -2,8 +2,8 @@ from TypeTranslate import *
 
 class GlobalMemory:
     def __init__(self, varSize, constSize, constTable):
+        # Cantidades que existen por cada tipo de dato
         varInt, varFloat, varBool, varString = varSize
-
         constInt, constFloat, constBool, constString = constSize
 
         self.TT = Translator()
@@ -17,20 +17,24 @@ class GlobalMemory:
                 self.constDir(dir, item)
 
     def constDir(self, dir, item):
+        # FUncion para agregar una constante en una direccion virtual
         tableScope, dataType, index = self.tableKeys(dir)
         item = self.TT.cast(item, dataType)
         self.table[tableScope][dataType][index] = item
 
     def setValorDir(self, dir, item):
+        # Funcion para agregar un valor en una direccion virtual
         tableScope, dataType, index = self.tableKeys(dir)
         self.table[tableScope][dataType][index] = item
 
     def getItem(self, dir):
+        # Funcion que regresa el valor y su tipo de dato
         tableScope, dataType, index = self.tableKeys(dir)
         item  = self.table[tableScope][dataType][index]
         return (dataType, item)
 
     def tableKeys(self, dir):
+        # Funcion que regresa las llaves del diccionario para una direccion virtual
         scopeKey = self.scopeKey(dir)
         if scopeKey == 'vars':
             dir = dir - 0
@@ -40,12 +44,14 @@ class GlobalMemory:
         return (scopeKey, dataType, index)
     
     def scopeKey(self, dir):
+        # Funcion para la llave de diccionario de un tipo de dato para una direccion
         if dir >= 0 and dir < 8000:
             return 'vars'
         else:
             return 'constants'
 
     def dataType(self, dir):
+        # Funcion que regresa el tipo de dato para una direccion
         dataType = 0
         if dir >= 0 and dir < 2000:
             dataType = 'int'

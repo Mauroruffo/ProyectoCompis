@@ -6,13 +6,13 @@
         "param_signature": {},
         "workspace": {
           "temps_workspace": {
-            "int": 2,
+            "int": 1,
             "float": 0,
             "bool": 1,
             "string": 0
           },
           "variables_workspace": {
-            "int": 5,
+            "int": 2,
             "float": 0,
             "string": 0,
             "bool": 0
@@ -23,38 +23,17 @@
     }
   },
   "vars_table": {
-    "PREV": {
+    "X": {
       "var_type": "var",
       "var_data_type": "int",
       "var_virtual_address": 0,
       "general_scope": "#global",
       "internal_scope": "#global"
     },
-    "CURR": {
+    "Y": {
       "var_type": "var",
       "var_data_type": "int",
       "var_virtual_address": 1,
-      "general_scope": "#global",
-      "internal_scope": "#global"
-    },
-    "MAX": {
-      "var_type": "var",
-      "var_data_type": "int",
-      "var_virtual_address": 2,
-      "general_scope": "#global",
-      "internal_scope": "#global"
-    },
-    "CONT": {
-      "var_type": "var",
-      "var_data_type": "int",
-      "var_virtual_address": 3,
-      "general_scope": "#global",
-      "internal_scope": "#global"
-    },
-    "AUX": {
-      "var_type": "var",
-      "var_data_type": "int",
-      "var_virtual_address": 4,
       "general_scope": "#global",
       "internal_scope": "#global"
     }
@@ -79,89 +58,60 @@
       1
     ],
     [
-      "=",
-      24002,
-      null,
-      2
-    ],
-    [
-      "=",
-      24000,
-      null,
-      3
-    ],
-    [
-      "<",
-      3,
-      24002,
+      ">",
+      1,
+      0,
       20000
     ],
     [
       "GoToF",
       20000,
       null,
-      14
+      7
     ],
     [
-      "=",
-      1,
+      "WRITE",
       null,
-      4
+      null,
+      0
+    ],
+    [
+      "GoTo",
+      null,
+      null,
+      10
     ],
     [
       "+",
-      0,
-      1,
+      24002,
+      24003,
       16000
     ],
     [
       "=",
       16000,
       null,
-      1
-    ],
-    [
-      "=",
-      4,
-      null,
       0
-    ],
-    [
-      "+",
-      3,
-      24001,
-      16001
-    ],
-    [
-      "=",
-      16001,
-      null,
-      3
-    ],
-    [
-      "GoTo",
-      null,
-      null,
-      5
     ],
     [
       "WRITE",
       null,
       null,
-      1
+      0
     ]
   ],
   "constants_summary": {
-    "int": 3,
+    "int": 4,
     "float": 0,
     "bool": 0,
     "string": 0
   },
   "constants_table": {
     "int": {
-      "0": 24000,
-      "1": 24001,
-      "5": 24002
+      "1": 24000,
+      "2": 24001,
+      "4": 24002,
+      "9": 24003
     },
     "float": {},
     "bool": {},

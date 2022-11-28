@@ -30,6 +30,7 @@ def globalValueType(dir):
     return(type, value)
 
 def valueType(local_memory, dir):
+    # Obtiene el tipo de dato y valor a partir de la direccion
     type, value = local_memory.getItem(dir)
     if not type:
         return globalValueType(dir)
@@ -41,6 +42,7 @@ def memoryScope(dir):
     return 'global_memory'
 
 def biOperands(memLocal, dirOpIzq, dirOpDer):
+    # Convierte los valores recibidos por su tipo
     tipoOpIzq, valorOpIzq = valueType(memLocal, dirOpIzq)
     if not tipoOpIzq:
         raise Exception('Flop de direccionamiento de operador izquierdo')
@@ -67,8 +69,6 @@ while(instructionPtr < len(cuads)):
         raise Exception('Stack OverFlop, demasiadas llamadas creadas')
     
     if currCuad[0] == 'GoToMain':
-        # print("Ciclo")
-        # print(instructionPtr)
         mainVarWorkSpace = obj.varWorkspace('#global', '#global')
         mainTempWorkspace = obj.tempWorkspace('#global', '#global')
         mainVarWorkSpaceType = (mainVarWorkSpace['int'], mainVarWorkSpace['float'], mainVarWorkSpace['bool'], mainVarWorkSpace['string'])
