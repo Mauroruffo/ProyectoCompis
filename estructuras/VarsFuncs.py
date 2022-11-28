@@ -33,10 +33,12 @@ class Function:
 
     def intScope(self, general_name, name):
         self.table[general_name][name] = {
-            "vars_table": {},
             "param_signature": [],
             "workspace": {}
             }
+        
+    def setVarsTable(self, general_name, internal_name, varsTable):
+        self.table[general_name][internal_name][varsTable]
 
 
     def paramType(self, general_name, internal_name, n):
@@ -125,10 +127,11 @@ class Function:
     def varExists(self, general_name, internal_name, var_name):
         return (var_name in self.table[general_name][internal_name]['vars_table'].keys())
 
-    def genVarInfo(self, general_name, internal_name):
+    def genVarInfo(self, general_name, internal_name, vars_table):
         variable_workspace = {"int": 0, "float": 0, "string": 0, "bool": 0}
         # ir por todo el var table y sumar cada tipo
-        vars_table = self.table[general_name][internal_name]['vars_table']
+        print("Se estan generando estos valores")
+        print(vars_table)
         for var_name, var_dict in vars_table.items():
             if var_dict['var_type'] != 'list':
                 variable_workspace[var_dict['var_data_type']] += 1

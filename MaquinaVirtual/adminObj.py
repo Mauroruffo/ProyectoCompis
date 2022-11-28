@@ -13,6 +13,7 @@ class adminObj:
         self.cuads = self.obj['quads']
         self.const_sum = self.obj['constants_summary']
         self.constantsTable = self.obj['constants_table']
+        self.variablesTable = self.obj['vars_table']
 
     def varWorkspace(self, genScope, intScope):
         return self.func_dir[genScope][intScope]['workspace']['variables_workspace']
@@ -25,3 +26,6 @@ class adminObj:
     
     def constTable(self):
         return self.constantsTable
+    
+    def varsTable(self):
+        return self.variablesTable
