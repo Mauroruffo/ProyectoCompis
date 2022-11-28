@@ -47,15 +47,10 @@ def p_program(p):
     funcTable.append(Function1(p[2], "program"))
 
     constTable = memo.cont_info('constants')
-    # if 'vars_table' not in func_dir.table['#global']:
-    #     func_dir.table['#global']['#global'] = {}
-    # func_dir.table['#global']['#global']['vars_table'] = {}
-    # if 'workspace' not in func_dir.table['#global']:
-    #     func_dir.table['#global']['#global'] = {}
-    # func_dir.table['#global']['#global']['workspace'] = {}
     func_dir.table['#global']['#global']
     func_dir.genVarInfo('#global', '#global', vars_table)
     
+    # Generar JSON a partir de toda la informacion que se guardo (variables, direcciones, temporales...)
     obj = {"function_directory": func_dir.table, "vars_table": vars_table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table, "global_objects_constructors_start_quads": constructors}
     with open('obj.json', "w") as output_file:
         json.dump(obj, output_file, indent = 2)
@@ -180,7 +175,6 @@ def p_pn_add_dim(p):
     ''' pn_add_dim : empty'''
     size, _ = p[-1]
     size = int(size)
-    func_dir.edit_dimSize('#global', '#global', current_name, 0, size)
 
     if not const.const_exists('int', p[-1][0]):
         const_dir = memo.nueva_dir('int', 'constants')
@@ -319,8 +313,6 @@ def p_varcte(p):
         for x in varTable:
             if x.name() == temp:
                 temp = ([x.varDir(), x.type()])
-                print("La temp es:")
-                print(temp)
                 operandStack.append(temp)
 
 def p_cte_int(p):
@@ -517,7 +509,6 @@ def p_pn_end_main(p):
     tempWorkSpace = memo.cont_info('temps')
     func_dir.tempInfo('#global', '#global', tempWorkSpace)
     # func_dir.setVarsTable('#global', '#global', vars_table)
-    print(vars_table)
 
 def p_pn_end_func(p):
     ''' pn_end_func : empty '''

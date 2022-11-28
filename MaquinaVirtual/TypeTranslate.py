@@ -3,6 +3,7 @@ class Translator:
         ...
 
     def cast(self, value, type):
+        # Funcion que sirve para castear los tipos de datos
         if type == 'int':
             return int(value)
         if type == 'float':

@@ -26,6 +26,9 @@ class Variable:
 
 class Function:
     def __init__(self):
+        # Lista vacia en la que se guarda informacion en el siguiente orden
+        # ScopeExterno -> ScopeInterno -> Tabla de variables 
+        #                              ->  workspaces (cantidades por tipo de dato)
         self.table = {}
 
     def genScope(self, name):
@@ -42,7 +45,7 @@ class Function:
 
 
     def paramType(self, general_name, internal_name, n):
-        # Raise error if n is bigger than array size
+        # Regresa tipo de parametro
         param_signature_arr = self.table[general_name][internal_name]['param_signature']
         if n >= len(param_signature_arr):
             error_msg = "Flop de cantidad de parametros '" + internal_name + \
@@ -52,49 +55,42 @@ class Function:
             return param_signature_arr[n]
 
     def paramLength(self, general_name, internal_name):
+        # Regresa cantidad de parametros
         return len(self.table[general_name][internal_name]['param_signature'])
-
-    def init_funcCuad(self, general_name, internal_name):
-        return self.table[general_name][internal_name]['start_quad']
-
-    def funcType(self, general_name, internal_name):
-        return self.table[general_name][internal_name]['function_type']
-
-    def funcDir(self, general_name, internal_name, function_name):
-        return self.table[general_name][internal_name]['vars_table'][function_name]['var_virtual_address']
     
     def varDir(self, general_name, internal_name, var_name):
+        # Regresa la direccion virtual de la variable
         return self.table[general_name][internal_name]['vars_table'][var_name]['var_virtual_address']
 
     def varType(self, general_name, internal_name, var_name):
+        # Regresa el tipo de la variable 
         return self.table[general_name][internal_name]['vars_table'][var_name]['var_data_type']
 
-    def get_group_size(self, general_name, internal_name, var_name):
-        return self.table[general_name][internal_name]['vars_table'][var_name]['group_size']
-
     def dimSize(self, general_name, internal_name, var_name, dim):
+        # Regresa el valor del tamano de la dimension
         return self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim-1]['size']
 
     def get_group_dimensions(self, general_name, internal_name, var_name):
+        # Cantidad de dimensiones de una variable
         if 'dim_list' in self.table[general_name][internal_name]['vars_table'][var_name].keys():
             return len(self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'])
         else:
             return 0
 
     def dimM(self, general_name, internal_name, var_name, dim):
+        # Funcion que regresa el valor M de una dimension
         return self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim-1]['m']
         
     def tempInfo(self, general_name, internal_name, temps_workspace):
+        # Funcion para crear el workspace de temporales
         self.table[general_name][internal_name]['workspace']['temps_workspace'] = temps_workspace
 
     def tipoFunc(self, general_name, internal_name, type):
+        # Funcion para agregar el tipo de dato que regresa una funcion
         self.table[general_name][internal_name]['function_type'] = type
 
-    def initCuad(self, general_name, internal_name, quad_id):
-        self.table[general_name][internal_name]['start_quad'] = quad_id
-
     def addVar(self, general_name, internal_name, var_name, var_type, var_data_type, var_virtual_address):
-        print("Variable ha sido agregada")
+        # Funcion para agregar la informacion sobre una variable
         if var_name in self.table[general_name][internal_name]['vars_table'].keys():
             raise Exception(
                 "Variable named " + var_name + " has already been declared in the same scope.")
@@ -105,18 +101,11 @@ class Function:
                 'var_virtual_address': var_virtual_address
             }
 
-    def addParam(self, general_name, internal_name, parameter_type):
-        self.table[general_name][internal_name]['param_signature'].append(parameter_type)
-
     def add_dim1_list(self, general_name, internal_name, var_name):
+        # Funcion para establecer la primera dimension
         self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'] = [{
             'dim': 1, 'size': None}]
         self.table[general_name][internal_name]['vars_table'][var_name]['r'] = 1
-
-    def edit_dimSize(self, general_name, internal_name, var_name, index, size):
-        r = self.table[general_name][internal_name]['vars_table'][var_name]['r']
-        self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][index]['size'] = size
-        self.table[general_name][internal_name]['vars_table'][var_name]['r'] = r * size
 
     def generalScopeExists(self, name):
         return (name in self.table.keys())
@@ -128,30 +117,14 @@ class Function:
         return (var_name in self.table[general_name][internal_name]['vars_table'].keys())
 
     def genVarInfo(self, general_name, internal_name, vars_table):
+        # Funcion para agregar un workspace para variables
         variable_workspace = {"int": 0, "float": 0, "string": 0, "bool": 0}
-        # ir por todo el var table y sumar cada tipo
-        print("Se estan generando estos valores")
-        print(vars_table)
         for var_name, var_dict in vars_table.items():
             if var_dict['var_type'] != 'list':
                 variable_workspace[var_dict['var_data_type']] += 1
             else:
                 variable_workspace[var_dict['var_data_type']] += var_dict['group_size']
         self.table[general_name][internal_name]['workspace']['variables_workspace'] = variable_workspace
-
-    def gen_dimM(self, general_name, internal_name, var_name):
-        size = self.table[general_name][internal_name]['vars_table'][var_name]['r']
-
-        for dim in self.table[general_name][internal_name]['vars_table'][var_name]['dim_list']:
-            r = self.table[general_name][internal_name]['vars_table'][var_name]['r']
-            dim_size = dim['size']
-            dim['m'] = r / dim_size
-            self.table[general_name][internal_name]['vars_table'][var_name]['r'] = dim['m']
-
-        self.table[general_name][internal_name]['vars_table'][var_name]['group_size'] = size
-
-    def delete_varTable(self, general_name, internal_name):
-        self.table[general_name][internal_name]['vars_table'] = {}
 
 class Function1:
     def __init__(self, funcName, funcType):

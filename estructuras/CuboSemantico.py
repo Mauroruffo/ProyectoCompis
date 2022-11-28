@@ -5,6 +5,7 @@ S = 'string'
 
 class Cubo:
     def __init__(self):
+        # Lista con las combinaciones necesarias para devolver el tipo de dato del resultado
         self.semanticCube = {
             (I, I, '*'): I,
             (I, I, '/'): F,
