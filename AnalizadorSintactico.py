@@ -12,6 +12,7 @@ import json
 from sys import stdin
 
 varTable = []
+vars_table = {}
 constTable = []
 funcTable = []
 quadList = []
@@ -45,9 +46,16 @@ def p_program(p):
     funcTable.append(Function1(p[2], "program"))
 
     constTable = memo.cont_info('constants')
+    # if 'vars_table' not in func_dir.table['#global']:
+    #     func_dir.table['#global']['#global'] = {}
+    # func_dir.table['#global']['#global']['vars_table'] = {}
+    # if 'workspace' not in func_dir.table['#global']:
+    #     func_dir.table['#global']['#global'] = {}
+    # func_dir.table['#global']['#global']['workspace'] = {}
+    func_dir.table['#global']['#global']
     func_dir.genVarInfo('#global', '#global')
     
-    obj = {"function_directory": func_dir.table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table}
+    obj = {"function_directory": func_dir.table, "vars_table": vars_table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table}
     with open('obj.json', "w") as output_file:
         json.dump(obj, output_file, indent = 2)
 
@@ -71,7 +79,9 @@ def p_pn_start_func(p):
     general_scope = '#global'
     internal_scope = '#global'
     func_dir.genScope(general_scope)
-    func_dir.intScope(general_scope, internal_scope)
+    func_dir.table['#global'] = {}
+    func_dir.table['#global']['#global'] = {'vars_table':{}, 'param_signature':{}, 'workspace':{}}
+    # func_dir.intScope(general_scope, internal_scope)
     func_dir.tipoFunc(general_scope, internal_scope, 'void')
 
 def p_init_dec(p):
@@ -194,7 +204,10 @@ def p_pn_add_variable(p):
     ''' pn_add_variable : empty '''
     var_dir = memo.nueva_dir(var_type, 'globals')
     varTable.append(Variable(p[-3], p[-6], var_dir))
-    func_dir.addVar('#global', '#global', current_name, var_type, value_type, var_dir)
+    vars_table[p[-3]] = {'var_type': p[-7], 'var_data_type': var_type, 'var_virtual_address': var_dir, 'general_scope': '#global', 'internal_scope': '#global'}
+    func_dir.table['#global']['#global']['vars_table'] = {}
+    func_dir.table['#global']['#global']['vars_table'][p[-3]] = {'var_type': p[-7], 'var_data_type': var_type, 'var_virtual_address': var_dir, 'general_scope': '#global', 'internal_scope': '#global'}
+    # func_dir.addVar('#global', '#global', current_name, var_type, value_type, var_dir)
 
 def p_bloque(p):
     ''' bloque : asignacion 
@@ -213,8 +226,6 @@ def p_asignacion(p):
             variable_exists = True
             all_logical_value, all_logical_type = operandStack.pop()
             result_type = semantic_cube.type_match(x.type(), all_logical_type, '=')
-            print("Vars table incluye esto")
-            print(func_dir.table['#global']['#global']['vars_table'])
             if(result_type):
                 cuads.gen_cuad('=', all_logical_value, None, x.varDir() )
             else:
@@ -504,6 +515,8 @@ def p_pn_end_main(p):
     ''' pn_end_main : empty'''
     tempWorkSpace = memo.cont_info('temps')
     func_dir.tempInfo('#global', '#global', tempWorkSpace)
+    # func_dir.setVarsTable('#global', '#global', vars_table)
+    print(vars_table)
 
 def p_pn_end_func(p):
     ''' pn_end_func : empty '''

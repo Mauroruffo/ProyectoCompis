@@ -33,10 +33,12 @@ class Function:
 
     def intScope(self, general_name, name):
         self.table[general_name][name] = {
-            "vars_table": {},
             "param_signature": [],
             "workspace": {}
             }
+        
+    def setVarsTable(self, general_name, internal_name, varsTable):
+        self.table[general_name][internal_name][varsTable]
 
 
     def paramType(self, general_name, internal_name, n):
