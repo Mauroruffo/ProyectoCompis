@@ -6,9 +6,10 @@ main(){
    X = 1;
    Y = 2;
    if ( Y > X ) {
-      write( X << 1 + 6 );
+      write( X );
    }
    else {
       X = 4 + 9;
+      write( X );
    }
 }

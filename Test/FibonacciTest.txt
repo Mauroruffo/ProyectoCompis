@@ -14,7 +14,7 @@ main(){
    AUX = CURR;
    CURR = PREV + CURR;
    PREV = AUX;
-   CONT = CONT + 1
+   CONT = CONT + 1;
    }
-   WRITE( CURR )
+   write( CURR );
 }

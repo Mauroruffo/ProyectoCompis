@@ -21,6 +21,7 @@ operandStack = []
 jumpStack = []
 paramTable = []
 controlTable = []
+constructors  = []
 dim_stack = []
 semantic_cube = Cubo()
 cuads = Cuadruplos()
@@ -53,9 +54,9 @@ def p_program(p):
     #     func_dir.table['#global']['#global'] = {}
     # func_dir.table['#global']['#global']['workspace'] = {}
     func_dir.table['#global']['#global']
-    func_dir.genVarInfo('#global', '#global')
+    func_dir.genVarInfo('#global', '#global', vars_table)
     
-    obj = {"function_directory": func_dir.table, "vars_table": vars_table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table}
+    obj = {"function_directory": func_dir.table, "vars_table": vars_table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table, "global_objects_constructors_start_quads": constructors}
     with open('obj.json', "w") as output_file:
         json.dump(obj, output_file, indent = 2)
 
@@ -317,7 +318,7 @@ def p_varcte(p):
         temp = p[1]
         for x in varTable:
             if x.name() == temp:
-                temp = ([x.name(), x.type()])
+                temp = ([x.varDir(), x.type()])
                 print("La temp es:")
                 print(temp)
                 operandStack.append(temp)
@@ -460,7 +461,7 @@ def p_pn_write_quad(p):
     ''' pn_write_quad : empty '''
     operandDir, _ = operandStack.pop()
     for x in varTable:
-        if x.name() == operandDir:
+        if x.varDir() == operandDir:
             cuads.gen_cuad('WRITE', None, None, x.varDir())
     
 def p_func_call(p):

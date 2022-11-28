@@ -6,13 +6,11 @@ class GlobalMemory:
 
         constInt, constFloat, constBool, constString = constSize
 
+        self.TT = Translator()
         self.table = {
             'vars': {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
             'constants': {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
         }
-
-
-        self.TT = Translator()
 
         for type, dictValue in constTable.items():
             for item, dir in dictValue.items():
@@ -21,13 +19,10 @@ class GlobalMemory:
     def constDir(self, dir, item):
         tableScope, dataType, index = self.tableKeys(dir)
         item = self.TT.cast(item, dataType)
-        self.table[tableScope][dataType][index]
+        self.table[tableScope][dataType][index] = item
 
     def setValorDir(self, dir, item):
         tableScope, dataType, index = self.tableKeys(dir)
-        print(tableScope)
-        print(dir)
-        print(index)
         self.table[tableScope][dataType][index] = item
 
     def getItem(self, dir):
@@ -61,7 +56,7 @@ class GlobalMemory:
         elif dir >= 4000 and dir < 6000:
             dataType = 'bool'
             dir = dir - 4000
-        elif dir >= 6000:
+        else:
             dataType = 'string'
             dir = dir - 6000
         return (dataType, dir)

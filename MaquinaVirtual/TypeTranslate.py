@@ -8,6 +8,7 @@ class Translator:
         if type == 'float':
             return float(value)
         if type == 'bool':
-            return bool(value)
+            if isinstance(value, str):
+                return value == 'true'
         if type == 'string':
             return str(value)

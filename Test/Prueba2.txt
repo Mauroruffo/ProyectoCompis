@@ -5,7 +5,8 @@ var int Y;
 main(){
    X = 1;
    Y = 2;
-   while( X != Y ) {
+   while( X < Y ) {
     X = X + Y;
    }
+   write( X );
 }

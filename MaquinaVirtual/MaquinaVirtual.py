@@ -37,8 +37,8 @@ def valueType(local_memory, dir):
 
 def memoryScope(dir):
     if dir >= 8000 and dir < 24000:
-        return 'local'
-    return 'global'
+        return 'local_memory'
+    return 'global_memory'
 
 def biOperands(memLocal, dirOpIzq, dirOpDer):
     tipoOpIzq, valorOpIzq = valueType(memLocal, dirOpIzq)
@@ -82,13 +82,7 @@ while(instructionPtr < len(cuads)):
     elif currCuad[0] == '=':
         assignType, assignValue = None, None
         assignType, assignValue = valueType(memStack[-1], currCuad[1])
-        print('Valor a ASIGNAR ')
-        print(assignValue)
         assignValue = TT.cast(assignValue, assignType)
-        print("Valor a asignar")
-        print(assignValue)
-        memStack[-2] = valorMemoria(currCuad[3][0], memStack[-2], assignValue)
-        globalMemory = valorMemoria(currCuad[3][0], globalMemory, assignValue)
         memStack[-1] = valorMemoria(currCuad[3], memStack[-1], assignValue)
         
 
@@ -192,13 +186,12 @@ while(instructionPtr < len(cuads)):
 
     elif currCuad[0] == 'GoTo':
         instructionPtr = currCuad[3]
-        print(instructionPtr)
         continue
 
     elif currCuad[0] == 'GoToF':
         valorCond = None
         _, valorCond = valueType(memStack[-1], currCuad[1])
-        if valorCond == False:
+        if not valorCond:
             instructionPtr = currCuad[3]
             continue
     
@@ -211,4 +204,4 @@ while(instructionPtr < len(cuads)):
 
     instructionPtr = instructionPtr + 1
 
-print("---------------------Programa Flop++ ejecutado sin Flopear!---------------------")
+print("---------------------Programa FLOP++ ejecutado sin Flopear!---------------------")
