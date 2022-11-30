@@ -2,23 +2,47 @@
   "function_directory": {
     "#global": {
       "#global": {
-        "vars_table": {},
-        "param_signature": {},
-        "workspace": {
-          "temps_workspace": {
-            "int": 1,
-            "float": 0,
-            "bool": 1,
-            "string": 0
+        "vars_table": {
+          "X": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 0
           },
+          "Y": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 1
+          },
+          "Z": {
+            "var_type": "list",
+            "var_data_type": "int",
+            "var_virtual_address": 2,
+            "dim_list": [
+              {
+                "dim": 1,
+                "size": 5,
+                "m": 1.0
+              }
+            ],
+            "r": 1.0,
+            "group_size": 5
+          }
+        },
+        "param_signature": [],
+        "workspace": {
           "variables_workspace": {
-            "int": 2,
+            "int": 7,
             "float": 0,
             "string": 0,
             "bool": 0
+          },
+          "temps_workspace": {
+            "int": 5,
+            "float": 0,
+            "bool": 1,
+            "string": 0
           }
-        },
-        "function_type": "void"
+        }
       }
     }
   },
@@ -36,6 +60,21 @@
       "var_virtual_address": 1,
       "general_scope": "#global",
       "internal_scope": "#global"
+    },
+    "Z": {
+      "var_type": "list",
+      "var_data_type": "int",
+      "var_virtual_address": 2,
+      "group_size": 5,
+      "general_scope": "#global",
+      "internal_scope": "#global",
+      "dim_list": [
+        {
+          "dim": 1,
+          "size": null
+        }
+      ],
+      "r": 1
     }
   },
   "quads": [
@@ -47,15 +86,27 @@
     ],
     [
       "=",
-      24000,
+      24001,
       null,
       0
     ],
     [
       "=",
-      24001,
+      24002,
       null,
       1
+    ],
+    [
+      "+",
+      24001,
+      24003,
+      16000
+    ],
+    [
+      "=",
+      16000,
+      null,
+      0
     ],
     [
       ">",
@@ -67,7 +118,7 @@
       "GoToF",
       20000,
       null,
-      7
+      8
     ],
     [
       "WRITE",
@@ -76,42 +127,67 @@
       0
     ],
     [
-      "GoTo",
-      null,
-      null,
-      10
+      "VER",
+      5,
+      24004,
+      null
+    ],
+    [
+      "*",
+      24004,
+      24001,
+      16001
     ],
     [
       "+",
+      16001,
       24002,
-      24003,
-      16000
+      16002
     ],
     [
       "=",
-      16000,
+      24002,
       null,
-      0
+      2
+    ],
+    [
+      "VER",
+      5,
+      24004,
+      null
+    ],
+    [
+      "*",
+      24004,
+      24001,
+      16003
+    ],
+    [
+      "+",
+      16003,
+      24002,
+      16004
     ],
     [
       "WRITE",
       null,
       null,
-      0
+      2
     ]
   ],
   "constants_summary": {
-    "int": 4,
+    "int": 5,
     "float": 0,
     "bool": 0,
     "string": 0
   },
   "constants_table": {
     "int": {
-      "1": 24000,
-      "2": 24001,
-      "4": 24002,
-      "9": 24003
+      "5": 24000,
+      "1": 24001,
+      "2": 24002,
+      "3": 24003,
+      "0": 24004
     },
     "float": {},
     "bool": {},

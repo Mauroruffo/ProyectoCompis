@@ -11,6 +11,8 @@ class MemoriaVirtual:
 
     def nueva_dir(self, type, block):
         # Funcion para crear nueva direccion para cierto tipo de dato
+        print("Esto es block")
+        print(block)
         if self.table[block][type][0] > self.table[block][type][2]:
             raise Exception("Too many variables for type " + type)
         else:
@@ -44,3 +46,11 @@ class MemoriaVirtual:
         counter_summary = {data_type: dt_array[0] - dt_array[1]
                            for data_type, dt_array in type_counters.items()}
         return counter_summary
+
+    def getListDir(self, type, block, size):
+        if self.table[block][type][0] + size - 1 > self.table[block][type][2]:
+            raise Exception("Flop por cantidad de variables tipo " + type)
+        else:
+            current_address = self.table[block][type][0]
+            self.table[block][type][0] += size
+            return current_address

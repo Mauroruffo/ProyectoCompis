@@ -202,6 +202,13 @@ while(instructionPtr < len(cuads)):
             instructionPtr = currCuad[3]
             continue
 
+    elif currCuad[0] == 'VER':
+        dimSize = currCuad[1]
+        indexType, indexValue = None, None
+        indexType, indexValue = valueType(memStack[-1], currCuad[2])
+        if indexValue < 0 and indexValue >= dimSize:
+            raise Exception('Flop por tratar de acceder fuera de rangos!')
+
     instructionPtr = instructionPtr + 1
 
 print("---------------------Programa FLOP++ ejecutado sin Flopear!---------------------")
