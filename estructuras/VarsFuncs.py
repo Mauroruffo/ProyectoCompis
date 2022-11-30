@@ -156,6 +156,9 @@ class Function:
         self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][index]['size'] = size
         self.table[general_name][internal_name]['vars_table'][var_name]['r'] = r * size
 
+    def varExistsInScope(self, general_name, internal_name, var_name):
+        return (var_name in self.table[general_name][internal_name]['vars_table'].keys())
+
 class Function1:
     def __init__(self, funcName, funcType):
         self.__funcName = funcName

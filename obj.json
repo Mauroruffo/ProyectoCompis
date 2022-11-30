@@ -42,7 +42,13 @@
             "bool": 1,
             "string": 0
           }
-        }
+        },
+        "function_type": "void"
+      },
+      "main": {
+        "vars_table": {},
+        "param_signature": [],
+        "workspace": {}
       }
     }
   },
@@ -82,7 +88,7 @@
       "GoToMain",
       null,
       null,
-      0
+      null
     ],
     [
       "=",

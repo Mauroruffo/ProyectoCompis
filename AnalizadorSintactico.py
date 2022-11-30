@@ -56,6 +56,8 @@ def p_program(p):
 
 def p_main(p):
     ''' main : MAIN pn_internal_scope LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable bloque_rec RIGHT_CURLYB pn_end_main'''
+    global curr_intScope
+    curr_intScope = '#global'
 
 def p_vars_rec(p):
     ''' vars_rec : var_dec vars_rec
@@ -63,21 +65,27 @@ def p_vars_rec(p):
 
 def p_pn_internal_scope(p):
     ''' pn_internal_scope : empty '''
+    global curr_intScope
+    curr_intScope = 'main'
+    func_dir.intScope(curr_genScope, curr_intScope)
 
 def p_pn_start_program(p):
     ''' pn_start_program : empty '''
-    global func_dir
+    global func_dir, curr_listIntScope, curr_funcCallStack, funcParamStack
+    curr_listIntScope = None
     func_dir = Function()
-    cuads.gen_cuad('GoToMain', None, None, 0)
+    cuads.gen_cuad('GoToMain', None, None, None)
+    curr_funcCallStack = []
+    funcParamStack = []
 
 def p_pn_start_func(p):
     ''' pn_start_func : empty '''
-    global general_scope, internal_scope
-    general_scope = '#global'
-    internal_scope = '#global'
-    func_dir.genScope(general_scope)
-    func_dir.intScope(general_scope, internal_scope)
-    # func_dir.tipoFunc(general_scope, internal_scope, 'void')
+    global curr_genScope, curr_intScope
+    curr_genScope = '#global'
+    curr_intScope = '#global'
+    func_dir.genScope(curr_genScope)
+    func_dir.intScope(curr_genScope, curr_intScope)
+    func_dir.tipoFunc(curr_genScope, curr_intScope, 'void')
 
 def p_init_dec(p):
     ''' init_dec : empty 
@@ -101,7 +109,7 @@ def p_varArray(p):
 
 def p_pn_array_access1(p):
     ''' pn_array_access1 : empty '''
-    global current_name
+    global current_name, curr_intScope, curr_listIntScope
     print("Esta es la tabla")
     print(func_dir.table)
     print(vars_table)
@@ -110,24 +118,28 @@ def p_pn_array_access1(p):
     #         func_dir.table['#global']['#global']['vars_table'][varName] = {'var_type': vars_table[varName]['var_type'], 'var_data_type': vars_table[varName]['var_data_type'], 'var_virtual_address': vars_table[varName]['var_virtual_address'], 'dim_list': vars_table[varName]['dim_list'], 'r': vars_table[varName]['r']}
     #     else:
     #         func_dir.table['#global']['#global']['vars_table'][varName] = {'var_type': vars_table[varName]['var_type'], 'var_data_type': vars_table[varName]['var_data_type'], 'var_virtual_address': vars_table[varName]['var_virtual_address']}
-    for x in varTable:
-        if x.name() == p[-1]:
-            varMap = func_dir.table['#global']['#global']['vars_table'][p[-1]]
-            varDir, varType = varMap['var_virtual_address'], varMap['var_data_type']
-            current_name = p[-1]
-            operandStack.append((varDir, varType))
-            # internal_scope = '#global'
-
-    Exception("Flop de variable " + p[-1] + ", esta no fue definida!")
+    if (func_dir.varExistsInScope(curr_genScope, curr_intScope, p[-1])):
+        varMap = func_dir.table[curr_genScope][curr_intScope]['vars_table'][p[-1]]
+        varDir, varType = varMap['var_virtual_address'], varMap['var_data_type']
+        curr_listIntScope = curr_intScope
+    elif (func_dir.varExistsInScope('#global', '#global', p[-1])):
+        varMap = func_dir.table['#global']['#global']['vars_table'][p[-1]]
+        varDir, varType = varMap['var_virtual_address'], varMap['var_data_type']
+        curr_intScope = '#global'
+    else: 
+        Exception("Flop de variable " + p[-1] + ", esta no fue definida!")
+    current_name = p[-1]
+    operandStack.append((varDir, varType))
+    
 
 def p_pn_array_access2(p):
     ''' pn_array_access2 : empty '''
-    print(func_dir.table)
     listDir, _ = operandStack.pop()
     listDim = None
-    for x in varTable:
-        if x.name() == current_name:
-            listDim = func_dir.get_group_dimensions('#global', '#global', current_name)
+    if (func_dir.varExistsInScope(curr_genScope, curr_intScope, current_name)):
+        listDim = func_dir.get_group_dimensions(curr_genScope, curr_intScope, current_name)
+    elif (func_dir.varExistsInScope('#global', '#global', current_name)):
+        listDim = func_dir.get_group_dimensions('#global', '#global', current_name)
 
     if listDim > 0:
         dim = [listDir, 1, '#global', current_name]
@@ -141,11 +153,11 @@ def p_pn_array_access3(p):
     ''' pn_array_access3 : empty '''
     print("Array access 3")
     print(func_dir.table)
-    general_scope = '#global'
+    if (func_dir.varExistsInScope(curr_genScope, curr_intScope, current_name)):
+        general_scope = curr_genScope
+    else:
+        general_scope = '#global'
     dimSize = func_dir.dimSize(general_scope, dim_stack[-1][2], dim_stack[-1][3], dim_stack[-1][1])
-    print(dim_stack[-1][2])
-    print(dim_stack[-1][3])
-    print(dim_stack[-1][1])
     index = operandStack[-1][0]
 
     cuads.gen_cuad('VER', dimSize, index, None)
@@ -162,19 +174,19 @@ def p_pn_array_access3(p):
 
 def p_pn_access_return(p):
     ''' pn_access_return : empty '''
+    if (func_dir.varExistsInScope(curr_genScope, dim_stack[-1][2], dim_stack[-1][3])):
+        general_scope = curr_genScope
+    else:
+        general_scope = '#global'
     auxDir1, _ = operandStack.pop()
-    listDir = func_dir.varDir('#global', dim_stack[-1][2], dim_stack[-1][3])
-    listType = func_dir.varType('#global', dim_stack[-1][2], dim_stack[-1][3])
+    listDir = func_dir.varDir(general_scope, dim_stack[-1][2], dim_stack[-1][3])
+    listType = func_dir.varType(general_scope, dim_stack[-1][2], dim_stack[-1][3])
     newDir = None
     if not const.const_exists('int', str(listDir)):
         newDir = memo.nueva_dir('int', 'constants')
         const.add_const('int', newDir, str(listDir))
-        print("this")
     else:
-        print("that")
         newDir = const.const_address('int', str(listDir))
-    print("Esta es listDir")
-    print(listDir)
     tempDir = memo.nueva_dir('int', 'temps')
     cuads.gen_cuad('+', auxDir1, newDir, tempDir)
     pointerDir = '&' + str(tempDir)
@@ -188,15 +200,20 @@ def p_var_dec(p):
 
 def p_list1(p):
     ''' list1 : empty '''
-    func_dir.genDimMs('#global', '#global', current_name)
-    size = func_dir.groupSize('#global', '#global', current_name)
-    memo.getListDir(var_type, 'globals', size - 1)
+    func_dir.genDimMs(curr_genScope, curr_intScope, current_name)
+    if (curr_genScope == '#global'):
+        listScope = 'globals'
+    else:
+        listScope ='locals'
+
+    size = func_dir.groupSize(curr_genScope, curr_intScope, current_name)
+    memo.getListDir(var_type, listScope, size - 1)
     print("Esto es la tabla de list1")
     print(func_dir.table)
 
 def p_pn_add_dim_list(p):
     ''' pn_add_dim_list : empty'''
-    func_dir.add_dim1_list('#global', '#global', vars_table, current_name)
+    func_dir.add_dim1_list(curr_genScope, curr_intScope, vars_table, current_name)
     vars_table[current_name]['dim_list'] = [{'dim': 1, 'size': None}]
     vars_table[current_name]['r'] = 1
     
@@ -204,7 +221,7 @@ def p_pn_add_dim(p):
     ''' pn_add_dim : empty'''
     size, _ = p[-3]
     size = int(size)
-    func_dir.editSizeAndR('#global', '#global', current_name, 0, size)
+    func_dir.editSizeAndR(curr_genScope, curr_intScope, current_name, 0, size)
 
     if not const.const_exists('int', p[-3][0]):
         const_dir = memo.nueva_dir('int', 'constants')
@@ -227,11 +244,14 @@ def p_pn_current_name(p):
 
 def p_pn_add_variable(p):
     ''' pn_add_variable : empty '''
-    var_dir = memo.nueva_dir(var_type, 'globals')
+    if(curr_intScope == '#global'):
+        var_dir = memo.nueva_dir(var_type, 'globals')
+    else:
+        var_dir = memo.nueva_dir(var_type, 'locals')
     if p[-7] == 'var':
         vars_table[p[-3]] = {'var_type': p[-7], 'var_data_type': var_type, 'var_virtual_address': var_dir, 'general_scope': '#global', 'internal_scope': '#global'}
         varTable.append(Variable(current_name, var_type, var_dir ))
-        func_dir.addVar('#global', '#global', current_name, value_type, var_type, var_dir)
+        func_dir.addVar(curr_genScope, curr_intScope, current_name, value_type, var_type, var_dir)
         print(func_dir.table)
     else:
         size, _ = p[-1]
@@ -240,7 +260,7 @@ def p_pn_add_variable(p):
         print(size)
         vars_table[p[-4]] = {'var_type': value_type, 'var_data_type': var_type, 'var_virtual_address': var_dir, 'group_size': size, 'general_scope': '#global', 'internal_scope': '#global'}
         varTable.append(Variable(current_name, var_type, var_dir ))
-        func_dir.addVar('#global', '#global', current_name, value_type, var_type, var_dir)
+        func_dir.addVar(curr_genScope, curr_intScope, current_name, value_type, var_type, var_dir)
         print(func_dir.table)
 
 def p_bloque(p):
@@ -526,7 +546,7 @@ def p_pn_param_match(p):
 
 def p_func_dec(p):
     ''' func_dec : FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
-
+    
     funcTable.append(Function1(p[4], p[2]))
 
 
