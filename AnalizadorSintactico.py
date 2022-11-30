@@ -58,6 +58,7 @@ def p_main(p):
     ''' main : MAIN pn_internal_scope LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable bloque_rec RIGHT_CURLYB pn_end_main'''
     global curr_intScope
     curr_intScope = '#global'
+    cuads.fill_quad(1, 3, cuads.counter)
 
 def p_vars_rec(p):
     ''' vars_rec : var_dec vars_rec
@@ -353,8 +354,11 @@ def p_pn_termino(p):
 def p_factor(p):
     ''' factor : varcte 
                 | LEFT_PARENTHESIS pn_open_parenthesis all_logical  RIGHT_PARENTHESIS pn_close_parenthesis 
-                | func_call '''
+                | func_call empty'''
     p[0] = p[1]
+    if len(p) == 3:
+        temp = p[1]
+        operandStack.append(temp)
     
 def p_varcte(p):
     ''' varcte : cte_int pn_add_constant 
@@ -403,9 +407,11 @@ def p_pn_add_constant(p):
 
 def p_pn_open_parenthesis(p):
     ''' pn_open_parenthesis : empty ''' 
+    operatorStack.append('(')
 
 def p_pn_close_parenthesis(p):
     ''' pn_close_parenthesis : empty '''
+    operatorStack.pop()
 
 def p_tipo(p):
     ''' tipo : INT 
@@ -437,7 +443,7 @@ def p_parametro_rec(p):
 
 def p_pn_parametro_varTable(p):
     ''' pn_parametro_varTable : empty '''
-
+            
 def p_condicional(p):
     ''' condicional : IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else '''
 
@@ -517,22 +523,41 @@ def p_pn_write_quad(p):
     
 def p_func_call(p):
     ''' func_call : CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS '''
-    func_exists = False
-
-    for x in funcTable:
-        if x.name() == p[2]:
-            func_exists = True
-            break
-
-    if (func_exists == False):
-        Exception("La funcion " + p[2] + " no existe FLOP!")
+    genName = None
+    intName = None
+    funcName = None
+    genName = '#global'
+    intName = curr_funcCallStack[-1]
+    lenFirmaParam = func_dir.lenFirmaParam(genName, intName)
+    if lenFirmaParam != funcParamStack[-1]:
+        raise Exception("Flop por cantidades de parametros ingresados, se recibieron " + str(funcParamStack[-1]) + " y se esperaban " + str(lenFirmaParam))
+    else:
+        funcStartCuad = func_dir.getCuadFuncInicial(genName, intName)
+        cuads.gen_cuad('GoSub', intName, funcName, funcStartCuad)
+        funcType = func_dir.getTipoFunc(genName, intName)
+        if funcType != 'void':
+            funcDir = func_dir.funcDir('#global', '#global', curr_funcCallStack[-1])
+            nuevaDir, _ = memo.nuevo_temp(funcType)
+            p[0] = (nuevaDir, funcType)
+            cuads.gen_cuad('=', funcDir, None, nuevaDir)
+    curr_funcCallStack.pop()
+    funcParamStack.pop()
 
 
 def p_pn_verify_func(p):
     ''' pn_verify_func : empty '''
+    global currFuncCallName
+    curr_funcCallName = p[-1]
+    curr_funcCallStack.append(curr_funcCallName)
+    if not func_dir.internalScopeExists('#global', curr_funcCallStack[-1]):
+        raise Exception("Flop de llamada a la funcion " + curr_funcCallStack[-1] + " no existe!")
+    else:
+        cuads.gen_cuad('ERA', None, None, curr_funcCallStack[-1])
 
 def p_pn_param_counter(p):
     ''' pn_param_counter : empty '''
+    funcParamCount = 0
+    funcParamStack.append(funcParamCount)
 
 def p_func_call_rec(p):
     ''' func_call_rec : all_logical pn_param_match func_call_rec1 '''
@@ -543,25 +568,45 @@ def p_func_call_rec1(p):
 
 def p_pn_param_match(p):
     ''' pn_param_match : empty '''
+    global funcParamStack
+    genName = '#global'
+    intName = curr_funcCallStack[-1]
+    paramDir, paramType = operandStack.pop()
+    numTipoFirma = func_dir.numTipoFirma(genName, intName, funcParamStack[-1])
+    if numTipoFirma != paramType:
+        raise Exception("Flop por orden de tipos de parametros!")
+    else:
+        cuads.gen_cuad('PARAM', paramDir, None, funcParamStack[-1])
+        funcParamStack[-1] = funcParamStack[-1] + 1
 
 def p_func_dec(p):
-    ''' func_dec : FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
-    
+    ''' func_dec : FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
+    global curr_intScope
+    curr_intScope = '#global'
+    memo.resetLocalMem()
     funcTable.append(Function1(p[4], p[2]))
 
 
 def p_pn_add_param_vartable(p):
     ''' pn_add_param_vartable : empty '''
     parametros = p[-1]
-    
-
+    for parametro in parametros:
+        paramType, paramName = parametro
+        if (func_dir.varExistsInScope(curr_genScope, curr_intScope, paramName)):
+            raise Exception("Flop de parametro llamado " + paramName + " ya fue declarado en la linea " + str(p.lineno(1) -10))
+        else:
+            paramDir = memo.nueva_dir(paramType, 'locals')
+            func_dir.addVar(curr_genScope, curr_intScope, paramName, 'var', paramType, paramDir)
+        func_dir.agregarFirma(curr_genScope, curr_intScope, paramType)
 
 def p_pn_gen_vartable(p):
     ''' pn_gen_vartable : empty '''
-    func_dir.genVarInfo('#global', '#global', vars_table)
+    func_dir.genVarInfo(curr_genScope, curr_intScope, vars_table)
 
 def p_pn_func_quad(p):
     ''' pn_func_quad : empty '''
+    print("Si esta guardando cuad inicial")
+    func_dir.cuadInicial(curr_genScope, curr_intScope, cuads.counter)
 
 def p_pn_end_main(p):
     ''' pn_end_main : empty'''
@@ -570,16 +615,46 @@ def p_pn_end_main(p):
 
 def p_pn_end_func(p):
     ''' pn_end_func : empty '''
+    func_dir.table[curr_genScope][curr_intScope]['vars_table'] = {}
+    cuads.gen_cuad('EndFunc', None, None, None)
+    tempsInfo = memo.cont_info('temps')
+    func_dir.tempInfo(curr_genScope, curr_intScope, tempsInfo)
 
 def p_pn_add_func(p):
     ''' pn_add_func : empty '''
+    global curr_intScope
+    curr_intScope = p[-1]
+    func_dir.intScope(curr_genScope, curr_intScope)
 
 def p_pn_return_type(p):
     ''' pn_return_type : empty '''
+    funcType = p[-3]
+    func_dir.setFuncType(curr_genScope, curr_intScope, funcType)
+    if funcType != 'void':
+        nuevaDir = memo.nueva_dir(funcType, 'globals')
+        func_dir.addVar('#global', '#global', curr_intScope, 'var', funcType, nuevaDir)
+        print('Funciones')
+        print(func_dir.table)
 
 def p_func_return(p):
     ''' func_return : RETURN all_logical SEMICOLON 
                     | RETURN SEMICOLON '''
+    funcType = func_dir.table[curr_genScope][curr_intScope]['function_type']
+    if len(p) == 4:
+        returnDir, returnType = operandStack.pop()
+        if returnType != funcType:
+            raise Exception("Flop de retorno de tipo de variable, se esperaba " + funcType + " y se recibio un tipo " + returnType)
+        else:
+            globalVarFuncName = None
+            if curr_genScope == '#global':
+                globalVarFuncName = curr_intScope
+            else:
+                globalVarFuncName = curr_genScope + '#' + curr_intScope
+            funcDir = func_dir.funcDir('#global', '#global', globalVarFuncName)
+            cuads.gen_cuad('=', returnDir, None, funcDir)
+    else:
+        if funcType != 'void':
+            raise Exception("Flop de tipos de retorno, se esperaba un " + returnType)
 
 def p_bloque_rec(p):
     ''' bloque_rec : bloque bloque_rec 

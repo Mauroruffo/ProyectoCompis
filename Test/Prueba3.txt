@@ -9,5 +9,5 @@ func int PRUEBA ( int X ){
 
 main(){
     X = 1;
-    call PRUEBA ( X );
+    Y = call PRUEBA ( X );
 }

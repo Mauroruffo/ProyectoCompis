@@ -209,6 +209,40 @@ while(instructionPtr < len(cuads)):
         if indexValue < 0 and indexValue >= dimSize:
             raise Exception('Flop por tratar de acceder fuera de rangos!')
 
+    elif currCuad[0] == 'GoSub':
+        funcName = currCuad[1]
+        funcStartCuad = currCuad[3]
+        exeNewMem = futureMemory.pop()
+        memStack.append(exeNewMem[0])
+        instructionPtrStack.append(instructionPtr)
+        instructionPtr = funcStartCuad
+        continue            
+
+    elif currCuad[0] == 'ERA':
+        funcName = currCuad[3]
+        funcVarWorkspace = obj.varWorkspace('#global', funcName)
+        funcTempWorkspace = obj.tempWorkspace('#global', funcName)
+        function_variable_workspace = (
+        funcVarWorkspace['int'], funcVarWorkspace['float'], funcVarWorkspace['bool'], funcVarWorkspace['string'])
+        function_temps_workspace = (
+        funcTempWorkspace['int'], funcTempWorkspace['float'], funcTempWorkspace['bool'], funcTempWorkspace['string'])
+        function_memory = LocalMemory(
+        function_variable_workspace, function_temps_workspace)
+        futureMemory.append([function_memory, {'int': 8000, 'float': 10000, 'bool': 12000, 'string': 14000}])
+
+    elif currCuad[0] == 'PARAM':
+        param_address = currCuad[1]
+        param_index = currCuad[3]
+        param_type, param_value = None, None
+        # if it's called from method
+        if memStack:
+            param_type, param_value = valueType(memStack[-1], param_address)
+        else:
+            param_type, param_value = valueType(globalMemory, param_address)
+        new_param_address = futureMemory[-1][1][param_type]
+        futureMemory[-1][0].setValorDir(new_param_address, param_value)
+        futureMemory[-1][1][param_type] += 1
+        
     instructionPtr = instructionPtr + 1
 
 print("---------------------Programa FLOP++ ejecutado sin Flopear!---------------------")

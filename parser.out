@@ -83,7 +83,7 @@ Rule 59    termino_rec -> empty
 Rule 60    pn_termino -> empty
 Rule 61    factor -> varcte
 Rule 62    factor -> LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-Rule 63    factor -> func_call
+Rule 63    factor -> func_call empty
 Rule 64    varcte -> cte_int pn_add_constant
 Rule 65    varcte -> cte_float pn_add_constant
 Rule 66    varcte -> CONST_BOOL pn_add_constant
@@ -131,7 +131,7 @@ Rule 107   func_call_rec -> all_logical pn_param_match func_call_rec1
 Rule 108   func_call_rec1 -> COMMA all_logical pn_param_match func_call_rec
 Rule 109   func_call_rec1 -> empty
 Rule 110   pn_param_match -> empty
-Rule 111   func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+Rule 111   func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
 Rule 112   pn_add_param_vartable -> empty
 Rule 113   pn_gen_vartable -> empty
 Rule 114   pn_func_quad -> empty
@@ -219,7 +219,7 @@ condicional_else     : 87
 cte_float            : 65
 cte_int              : 22 64
 dec                  : 9
-empty                : 4 5 6 7 8 13 15 17 18 19 20 23 24 25 26 27 28 29 37 38 42 43 49 50 52 55 59 60 67 67 73 74 75 83 85 86 90 91 92 95 96 97 102 103 105 106 109 110 112 113 114 115 116 117 118 122
+empty                : 4 5 6 7 8 13 15 17 18 19 20 23 24 25 26 27 28 29 37 38 42 43 49 50 52 55 59 60 63 67 67 73 74 75 83 85 86 90 91 92 95 96 97 102 103 105 106 109 110 112 113 114 115 116 117 118 122
 exp                  : 44 45 46 47 48
 exp_rec              : 51 53 54
 factor               : 56 57 58
@@ -285,7 +285,7 @@ var                  : 36 68 98
 varArray             : 14
 var_dec              : 3 10
 varcte               : 61
-vars_rec             : 2 3
+vars_rec             : 2 3 111
 while                : 32
 while_loop           : 93
 write                : 34
@@ -370,7 +370,7 @@ state 8
     (12) dec -> . class_dec
     (21) var_dec -> . VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable
     (22) var_dec -> . LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON
-    (111) func_dec -> . FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> . FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
     (13) class_dec -> . empty
 
   ! shift/reduce conflict for VAR resolved as shift
@@ -426,7 +426,7 @@ state 11
     (12) dec -> . class_dec
     (21) var_dec -> . VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable
     (22) var_dec -> . LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON
-    (111) func_dec -> . FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> . FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
     (13) class_dec -> . empty
 
   ! shift/reduce conflict for VAR resolved as shift
@@ -510,7 +510,7 @@ state 16
 
 state 17
 
-    (111) func_dec -> FUNC . return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> FUNC . return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
     (80) return_module -> . tipo
     (81) return_module -> . VOID
     (76) tipo -> . INT
@@ -604,14 +604,10 @@ state 26
 
 state 27
 
-    (111) func_dec -> FUNC return_module . pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
-    (118) pn_return_type -> . empty
-    (123) empty -> .
+    (111) func_dec -> FUNC return_module . ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
 
-    ID              reduce using rule 123 (empty -> .)
+    ID              shift and go to state 35
 
-    pn_return_type                 shift and go to state 35
-    empty                          shift and go to state 36
 
 state 28
 
@@ -631,7 +627,7 @@ state 30
 
     (2) main -> MAIN pn_internal_scope . LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable bloque_rec RIGHT_CURLYB pn_end_main
 
-    LEFT_PARENTHESIS shift and go to state 37
+    LEFT_PARENTHESIS shift and go to state 36
 
 
 state 31
@@ -649,8 +645,8 @@ state 32
 
     ID              reduce using rule 123 (empty -> .)
 
-    pn_value_type                  shift and go to state 38
-    empty                          shift and go to state 39
+    pn_value_type                  shift and go to state 37
+    empty                          shift and go to state 38
 
 state 33
 
@@ -667,61 +663,65 @@ state 34
 
     ID              reduce using rule 123 (empty -> .)
 
-    pn_value_type                  shift and go to state 40
-    empty                          shift and go to state 39
+    pn_value_type                  shift and go to state 39
+    empty                          shift and go to state 38
 
 state 35
 
-    (111) func_dec -> FUNC return_module pn_return_type . ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> FUNC return_module ID . pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (117) pn_add_func -> . empty
+    (123) empty -> .
 
-    ID              shift and go to state 41
+    LEFT_PARENTHESIS reduce using rule 123 (empty -> .)
 
+    pn_add_func                    shift and go to state 40
+    empty                          shift and go to state 41
 
 state 36
-
-    (118) pn_return_type -> empty .
-
-    ID              reduce using rule 118 (pn_return_type -> empty .)
-
-
-state 37
 
     (2) main -> MAIN pn_internal_scope LEFT_PARENTHESIS . RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable bloque_rec RIGHT_CURLYB pn_end_main
 
     RIGHT_PARENTHESIS shift and go to state 42
 
 
-state 38
+state 37
 
     (21) var_dec -> VAR tipo pn_var_type pn_value_type . ID pn_current_name SEMICOLON pn_add_variable
 
     ID              shift and go to state 43
 
 
-state 39
+state 38
 
     (27) pn_value_type -> empty .
 
     ID              reduce using rule 27 (pn_value_type -> empty .)
 
 
-state 40
+state 39
 
     (22) var_dec -> LIST tipo pn_var_type pn_value_type . ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON
 
     ID              shift and go to state 44
 
 
-state 41
+state 40
 
-    (111) func_dec -> FUNC return_module pn_return_type ID . pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
-    (117) pn_add_func -> . empty
+    (111) func_dec -> FUNC return_module ID pn_add_func . pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (118) pn_return_type -> . empty
     (123) empty -> .
 
     LEFT_PARENTHESIS reduce using rule 123 (empty -> .)
 
-    pn_add_func                    shift and go to state 45
+    pn_return_type                 shift and go to state 45
     empty                          shift and go to state 46
+
+state 41
+
+    (117) pn_add_func -> empty .
+
+    LEFT_PARENTHESIS reduce using rule 117 (pn_add_func -> empty .)
+
 
 state 42
 
@@ -754,16 +754,16 @@ state 44
 
 state 45
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func . LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type . LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
 
     LEFT_PARENTHESIS shift and go to state 51
 
 
 state 46
 
-    (117) pn_add_func -> empty .
+    (118) pn_return_type -> empty .
 
-    LEFT_PARENTHESIS reduce using rule 117 (pn_add_func -> empty .)
+    LEFT_PARENTHESIS reduce using rule 118 (pn_return_type -> empty .)
 
 
 state 47
@@ -813,7 +813,7 @@ state 50
 
 state 51
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS . parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS . parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
     (82) parametro -> . tipo ID parametro_rec
     (83) parametro -> . empty
     (76) tipo -> . INT
@@ -867,6 +867,7 @@ state 53
     CALL            reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
     RIGHT_CURLYB    reduce using rule 123 (empty -> .)
+    RETURN          reduce using rule 123 (empty -> .)
 
     var_dec                        shift and go to state 53
     vars_rec                       shift and go to state 62
@@ -883,6 +884,7 @@ state 54
     CALL            reduce using rule 4 (vars_rec -> empty .)
     ID              reduce using rule 4 (vars_rec -> empty .)
     RIGHT_CURLYB    reduce using rule 4 (vars_rec -> empty .)
+    RETURN          reduce using rule 4 (vars_rec -> empty .)
 
 
 state 55
@@ -902,6 +904,7 @@ state 55
     CALL            reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
     RIGHT_CURLYB    reduce using rule 123 (empty -> .)
+    RETURN          reduce using rule 123 (empty -> .)
 
     pn_add_variable                shift and go to state 63
     empty                          shift and go to state 64
@@ -919,7 +922,7 @@ state 56
 
 state 57
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro . pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro . pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
     (112) pn_add_param_vartable -> . empty
     (123) empty -> .
 
@@ -1006,6 +1009,7 @@ state 62
     CALL            reduce using rule 3 (vars_rec -> var_dec vars_rec .)
     ID              reduce using rule 3 (vars_rec -> var_dec vars_rec .)
     RIGHT_CURLYB    reduce using rule 3 (vars_rec -> var_dec vars_rec .)
+    RETURN          reduce using rule 3 (vars_rec -> var_dec vars_rec .)
 
 
 state 63
@@ -1023,6 +1027,7 @@ state 63
     CALL            reduce using rule 21 (var_dec -> VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable .)
     ID              reduce using rule 21 (var_dec -> VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable .)
     RIGHT_CURLYB    reduce using rule 21 (var_dec -> VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable .)
+    RETURN          reduce using rule 21 (var_dec -> VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable .)
 
 
 state 64
@@ -1040,6 +1045,7 @@ state 64
     CALL            reduce using rule 29 (pn_add_variable -> empty .)
     ID              reduce using rule 29 (pn_add_variable -> empty .)
     RIGHT_CURLYB    reduce using rule 29 (pn_add_variable -> empty .)
+    RETURN          reduce using rule 29 (pn_add_variable -> empty .)
     RIGHT_BRACKET   reduce using rule 29 (pn_add_variable -> empty .)
 
 
@@ -1091,7 +1097,7 @@ state 67
 
 state 68
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable . RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable . RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
 
     RIGHT_PARENTHESIS shift and go to state 89
 
@@ -1376,7 +1382,7 @@ state 88
 
 state 89
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS . LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS . LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
 
     LEFT_CURLYB     shift and go to state 109
 
@@ -1466,7 +1472,7 @@ state 98
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -1532,7 +1538,7 @@ state 102
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -1664,10 +1670,15 @@ state 108
 
 state 109
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB . pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
-    (113) pn_gen_vartable -> . empty
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB . vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (3) vars_rec -> . var_dec vars_rec
+    (4) vars_rec -> . empty
+    (21) var_dec -> . VAR tipo pn_var_type pn_value_type ID pn_current_name SEMICOLON pn_add_variable
+    (22) var_dec -> . LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON
     (123) empty -> .
 
+    VAR             shift and go to state 15
+    LIST            shift and go to state 16
     IF              reduce using rule 123 (empty -> .)
     WHILE           reduce using rule 123 (empty -> .)
     READ            reduce using rule 123 (empty -> .)
@@ -1676,8 +1687,9 @@ state 109
     ID              reduce using rule 123 (empty -> .)
     RETURN          reduce using rule 123 (empty -> .)
 
-    pn_gen_vartable                shift and go to state 138
-    empty                          shift and go to state 61
+    vars_rec                       shift and go to state 138
+    var_dec                        shift and go to state 53
+    empty                          shift and go to state 54
 
 state 110
 
@@ -1709,7 +1721,7 @@ state 113
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -1913,31 +1925,33 @@ state 120
 
 state 121
 
-    (63) factor -> func_call .
+    (63) factor -> func_call . empty
+    (123) empty -> .
 
-    MULTIPLICATION  reduce using rule 63 (factor -> func_call .)
-    DIVISION        reduce using rule 63 (factor -> func_call .)
-    PLUS            reduce using rule 63 (factor -> func_call .)
-    MINUS           reduce using rule 63 (factor -> func_call .)
-    GREATER_THAN    reduce using rule 63 (factor -> func_call .)
-    LESS_THAN       reduce using rule 63 (factor -> func_call .)
-    EQUAL_COMPARE   reduce using rule 63 (factor -> func_call .)
-    NOT_EQUAL       reduce using rule 63 (factor -> func_call .)
-    AND             reduce using rule 63 (factor -> func_call .)
-    OR              reduce using rule 63 (factor -> func_call .)
-    RIGHT_PARENTHESIS reduce using rule 63 (factor -> func_call .)
-    MORE            reduce using rule 63 (factor -> func_call .)
-    SEMICOLON       reduce using rule 63 (factor -> func_call .)
-    RIGHT_BRACKET   reduce using rule 63 (factor -> func_call .)
-    COMMA           reduce using rule 63 (factor -> func_call .)
-    LEFT_PARENTHESIS reduce using rule 63 (factor -> func_call .)
-    CONST_BOOL      reduce using rule 63 (factor -> func_call .)
-    CONST_STRING    reduce using rule 63 (factor -> func_call .)
-    CALL            reduce using rule 63 (factor -> func_call .)
-    CONST_INT       reduce using rule 63 (factor -> func_call .)
-    CONST_FLOAT     reduce using rule 63 (factor -> func_call .)
-    ID              reduce using rule 63 (factor -> func_call .)
+    MULTIPLICATION  reduce using rule 123 (empty -> .)
+    DIVISION        reduce using rule 123 (empty -> .)
+    PLUS            reduce using rule 123 (empty -> .)
+    MINUS           reduce using rule 123 (empty -> .)
+    GREATER_THAN    reduce using rule 123 (empty -> .)
+    LESS_THAN       reduce using rule 123 (empty -> .)
+    EQUAL_COMPARE   reduce using rule 123 (empty -> .)
+    NOT_EQUAL       reduce using rule 123 (empty -> .)
+    AND             reduce using rule 123 (empty -> .)
+    OR              reduce using rule 123 (empty -> .)
+    RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
+    MORE            reduce using rule 123 (empty -> .)
+    SEMICOLON       reduce using rule 123 (empty -> .)
+    RIGHT_BRACKET   reduce using rule 123 (empty -> .)
+    COMMA           reduce using rule 123 (empty -> .)
+    LEFT_PARENTHESIS reduce using rule 123 (empty -> .)
+    CONST_BOOL      reduce using rule 123 (empty -> .)
+    CONST_STRING    reduce using rule 123 (empty -> .)
+    CALL            reduce using rule 123 (empty -> .)
+    CONST_INT       reduce using rule 123 (empty -> .)
+    CONST_FLOAT     reduce using rule 123 (empty -> .)
+    ID              reduce using rule 123 (empty -> .)
 
+    empty                          shift and go to state 152
 
 state 122
 
@@ -1968,8 +1982,8 @@ state 122
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_add_constant                shift and go to state 152
-    empty                          shift and go to state 153
+    pn_add_constant                shift and go to state 153
+    empty                          shift and go to state 154
 
 state 123
 
@@ -2000,8 +2014,8 @@ state 123
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_add_constant                shift and go to state 154
-    empty                          shift and go to state 153
+    pn_add_constant                shift and go to state 155
+    empty                          shift and go to state 154
 
 state 124
 
@@ -2032,8 +2046,8 @@ state 124
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_add_constant                shift and go to state 155
-    empty                          shift and go to state 153
+    pn_add_constant                shift and go to state 156
+    empty                          shift and go to state 154
 
 state 125
 
@@ -2063,7 +2077,7 @@ state 125
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    empty                          shift and go to state 156
+    empty                          shift and go to state 157
 
 state 126
 
@@ -2099,7 +2113,7 @@ state 127
     (72) cte_float -> MINUS . CONST_FLOAT
 
     CONST_INT       shift and go to state 88
-    CONST_FLOAT     shift and go to state 157
+    CONST_FLOAT     shift and go to state 158
 
 
 state 128
@@ -2139,7 +2153,7 @@ state 129
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -2161,7 +2175,7 @@ state 129
     CONST_FLOAT     shift and go to state 128
     ID              shift and go to state 86
 
-    all_logical                    shift and go to state 158
+    all_logical                    shift and go to state 159
     logical_exp                    shift and go to state 116
     exp                            shift and go to state 117
     termino                        shift and go to state 118
@@ -2176,14 +2190,14 @@ state 130
 
     (98) read -> READ LEFT_PARENTHESIS var . RIGHT_PARENTHESIS SEMICOLON
 
-    RIGHT_PARENTHESIS shift and go to state 159
+    RIGHT_PARENTHESIS shift and go to state 160
 
 
 state 131
 
     (99) write -> WRITE LEFT_PARENTHESIS write_rec . RIGHT_PARENTHESIS SEMICOLON
 
-    RIGHT_PARENTHESIS shift and go to state 160
+    RIGHT_PARENTHESIS shift and go to state 161
 
 
 state 132
@@ -2195,14 +2209,14 @@ state 132
     MORE            reduce using rule 123 (empty -> .)
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
 
-    pn_write_quad                  shift and go to state 161
-    empty                          shift and go to state 162
+    pn_write_quad                  shift and go to state 162
+    empty                          shift and go to state 163
 
 state 133
 
     (104) func_call -> CALL ID pn_verify_func . LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS
 
-    LEFT_PARENTHESIS shift and go to state 163
+    LEFT_PARENTHESIS shift and go to state 164
 
 
 state 134
@@ -2227,14 +2241,14 @@ state 135
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_array_access2               shift and go to state 164
-    empty                          shift and go to state 165
+    pn_array_access2               shift and go to state 165
+    empty                          shift and go to state 166
 
 state 136
 
     (22) var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim . RIGHT_BRACKET list1 SEMICOLON
 
-    RIGHT_BRACKET   shift and go to state 166
+    RIGHT_BRACKET   shift and go to state 167
 
 
 state 137
@@ -2246,8 +2260,8 @@ state 137
 
 state 138
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable . pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
-    (114) pn_func_quad -> . empty
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec . pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (113) pn_gen_vartable -> . empty
     (123) empty -> .
 
     IF              reduce using rule 123 (empty -> .)
@@ -2258,8 +2272,8 @@ state 138
     ID              reduce using rule 123 (empty -> .)
     RETURN          reduce using rule 123 (empty -> .)
 
-    pn_func_quad                   shift and go to state 167
-    empty                          shift and go to state 168
+    pn_gen_vartable                shift and go to state 168
+    empty                          shift and go to state 61
 
 state 139
 
@@ -2290,7 +2304,7 @@ state 141
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -2579,6 +2593,34 @@ state 151
 
 state 152
 
+    (63) factor -> func_call empty .
+
+    MULTIPLICATION  reduce using rule 63 (factor -> func_call empty .)
+    DIVISION        reduce using rule 63 (factor -> func_call empty .)
+    PLUS            reduce using rule 63 (factor -> func_call empty .)
+    MINUS           reduce using rule 63 (factor -> func_call empty .)
+    GREATER_THAN    reduce using rule 63 (factor -> func_call empty .)
+    LESS_THAN       reduce using rule 63 (factor -> func_call empty .)
+    EQUAL_COMPARE   reduce using rule 63 (factor -> func_call empty .)
+    NOT_EQUAL       reduce using rule 63 (factor -> func_call empty .)
+    AND             reduce using rule 63 (factor -> func_call empty .)
+    OR              reduce using rule 63 (factor -> func_call empty .)
+    RIGHT_PARENTHESIS reduce using rule 63 (factor -> func_call empty .)
+    MORE            reduce using rule 63 (factor -> func_call empty .)
+    SEMICOLON       reduce using rule 63 (factor -> func_call empty .)
+    RIGHT_BRACKET   reduce using rule 63 (factor -> func_call empty .)
+    COMMA           reduce using rule 63 (factor -> func_call empty .)
+    LEFT_PARENTHESIS reduce using rule 63 (factor -> func_call empty .)
+    CONST_BOOL      reduce using rule 63 (factor -> func_call empty .)
+    CONST_STRING    reduce using rule 63 (factor -> func_call empty .)
+    CALL            reduce using rule 63 (factor -> func_call empty .)
+    CONST_INT       reduce using rule 63 (factor -> func_call empty .)
+    CONST_FLOAT     reduce using rule 63 (factor -> func_call empty .)
+    ID              reduce using rule 63 (factor -> func_call empty .)
+
+
+state 153
+
     (64) varcte -> cte_int pn_add_constant .
 
     MULTIPLICATION  reduce using rule 64 (varcte -> cte_int pn_add_constant .)
@@ -2605,7 +2647,7 @@ state 152
     ID              reduce using rule 64 (varcte -> cte_int pn_add_constant .)
 
 
-state 153
+state 154
 
     (73) pn_add_constant -> empty .
 
@@ -2633,7 +2675,7 @@ state 153
     ID              reduce using rule 73 (pn_add_constant -> empty .)
 
 
-state 154
+state 155
 
     (65) varcte -> cte_float pn_add_constant .
 
@@ -2661,7 +2703,7 @@ state 154
     ID              reduce using rule 65 (varcte -> cte_float pn_add_constant .)
 
 
-state 155
+state 156
 
     (66) varcte -> CONST_BOOL pn_add_constant .
 
@@ -2689,7 +2731,7 @@ state 155
     ID              reduce using rule 66 (varcte -> CONST_BOOL pn_add_constant .)
 
 
-state 156
+state 157
 
     (67) varcte -> CONST_STRING empty . empty
     (123) empty -> .
@@ -2719,7 +2761,7 @@ state 156
 
     empty                          shift and go to state 192
 
-state 157
+state 158
 
     (72) cte_float -> MINUS CONST_FLOAT .
 
@@ -2747,28 +2789,28 @@ state 157
     ID              reduce using rule 72 (cte_float -> MINUS CONST_FLOAT .)
 
 
-state 158
+state 159
 
     (93) while -> WHILE pn_while LEFT_PARENTHESIS all_logical . RIGHT_PARENTHESIS pn_while_jump while_loop
 
     RIGHT_PARENTHESIS shift and go to state 193
 
 
-state 159
+state 160
 
     (98) read -> READ LEFT_PARENTHESIS var RIGHT_PARENTHESIS . SEMICOLON
 
     SEMICOLON       shift and go to state 194
 
 
-state 160
+state 161
 
     (99) write -> WRITE LEFT_PARENTHESIS write_rec RIGHT_PARENTHESIS . SEMICOLON
 
     SEMICOLON       shift and go to state 195
 
 
-state 161
+state 162
 
     (100) write_rec -> all_logical pn_write_quad . write_rec1
     (101) write_rec1 -> . MORE all_logical pn_write_quad write_rec1
@@ -2781,7 +2823,7 @@ state 161
     write_rec1                     shift and go to state 196
     empty                          shift and go to state 198
 
-state 162
+state 163
 
     (103) pn_write_quad -> empty .
 
@@ -2789,7 +2831,7 @@ state 162
     RIGHT_PARENTHESIS reduce using rule 103 (pn_write_quad -> empty .)
 
 
-state 163
+state 164
 
     (104) func_call -> CALL ID pn_verify_func LEFT_PARENTHESIS . pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS
     (106) pn_param_counter -> . empty
@@ -2807,7 +2849,7 @@ state 163
     pn_param_counter               shift and go to state 199
     empty                          shift and go to state 200
 
-state 164
+state 165
 
     (16) varArray -> pn_array_access1 LEFT_BRACKET pn_array_access2 . all_logical pn_array_access3 RIGHT_BRACKET pn_access_return
     (39) all_logical -> . logical_exp pn_all_logical all_logical_rec
@@ -2816,7 +2858,7 @@ state 164
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -2849,7 +2891,7 @@ state 164
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 165
+state 166
 
     (18) pn_array_access2 -> empty .
 
@@ -2863,7 +2905,7 @@ state 165
     ID              reduce using rule 18 (pn_array_access2 -> empty .)
 
 
-state 166
+state 167
 
     (22) var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET . list1 SEMICOLON
     (23) list1 -> . empty
@@ -2874,57 +2916,22 @@ state 166
     list1                          shift and go to state 202
     empty                          shift and go to state 203
 
-state 167
-
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad . bloque_rec func_return RIGHT_CURLYB pn_end_func
-    (121) bloque_rec -> . bloque bloque_rec
-    (122) bloque_rec -> . empty
-    (30) bloque -> . asignacion
-    (31) bloque -> . condicional
-    (32) bloque -> . while
-    (33) bloque -> . read
-    (34) bloque -> . write
-    (35) bloque -> . func_call SEMICOLON
-    (123) empty -> .
-    (36) asignacion -> . var pn_var_assign EQUAL_ASSIGN all_logical SEMICOLON
-    (87) condicional -> . IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else
-    (93) while -> . WHILE pn_while LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_while_jump while_loop
-    (98) read -> . READ LEFT_PARENTHESIS var RIGHT_PARENTHESIS SEMICOLON
-    (99) write -> . WRITE LEFT_PARENTHESIS write_rec RIGHT_PARENTHESIS SEMICOLON
-    (104) func_call -> . CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS
-    (14) var -> . ID varArray
-
-    RETURN          reduce using rule 123 (empty -> .)
-    IF              shift and go to state 81
-    WHILE           shift and go to state 82
-    READ            shift and go to state 83
-    WRITE           shift and go to state 84
-    CALL            shift and go to state 85
-    ID              shift and go to state 86
-
-    bloque_rec                     shift and go to state 204
-    bloque                         shift and go to state 72
-    empty                          shift and go to state 73
-    asignacion                     shift and go to state 74
-    condicional                    shift and go to state 75
-    while                          shift and go to state 76
-    read                           shift and go to state 77
-    write                          shift and go to state 78
-    func_call                      shift and go to state 79
-    var                            shift and go to state 80
-
 state 168
 
-    (114) pn_func_quad -> empty .
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable . pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (114) pn_func_quad -> . empty
+    (123) empty -> .
 
-    IF              reduce using rule 114 (pn_func_quad -> empty .)
-    WHILE           reduce using rule 114 (pn_func_quad -> empty .)
-    READ            reduce using rule 114 (pn_func_quad -> empty .)
-    WRITE           reduce using rule 114 (pn_func_quad -> empty .)
-    CALL            reduce using rule 114 (pn_func_quad -> empty .)
-    ID              reduce using rule 114 (pn_func_quad -> empty .)
-    RETURN          reduce using rule 114 (pn_func_quad -> empty .)
+    IF              reduce using rule 123 (empty -> .)
+    WHILE           reduce using rule 123 (empty -> .)
+    READ            reduce using rule 123 (empty -> .)
+    WRITE           reduce using rule 123 (empty -> .)
+    CALL            reduce using rule 123 (empty -> .)
+    ID              reduce using rule 123 (empty -> .)
+    RETURN          reduce using rule 123 (empty -> .)
 
+    pn_func_quad                   shift and go to state 204
+    empty                          shift and go to state 205
 
 state 169
 
@@ -2951,14 +2958,14 @@ state 171
 
     (62) factor -> LEFT_PARENTHESIS pn_open_parenthesis all_logical . RIGHT_PARENTHESIS pn_close_parenthesis
 
-    RIGHT_PARENTHESIS shift and go to state 205
+    RIGHT_PARENTHESIS shift and go to state 206
 
 
 state 172
 
     (87) condicional -> IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional . LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else
 
-    LEFT_CURLYB     shift and go to state 206
+    LEFT_CURLYB     shift and go to state 207
 
 
 state 173
@@ -3002,8 +3009,8 @@ state 175
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 207
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 208
+    empty                          shift and go to state 209
 
 state 176
 
@@ -3020,8 +3027,8 @@ state 176
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 209
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 210
+    empty                          shift and go to state 209
 
 state 177
 
@@ -3078,8 +3085,8 @@ state 179
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 210
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 211
+    empty                          shift and go to state 209
 
 state 180
 
@@ -3096,8 +3103,8 @@ state 180
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 211
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 212
+    empty                          shift and go to state 209
 
 state 181
 
@@ -3114,8 +3121,8 @@ state 181
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 212
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 213
+    empty                          shift and go to state 209
 
 state 182
 
@@ -3132,8 +3139,8 @@ state 182
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 213
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 214
+    empty                          shift and go to state 209
 
 state 183
 
@@ -3196,8 +3203,8 @@ state 185
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 214
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 215
+    empty                          shift and go to state 209
 
 state 186
 
@@ -3214,8 +3221,8 @@ state 186
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 215
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 216
+    empty                          shift and go to state 209
 
 state 187
 
@@ -3283,8 +3290,8 @@ state 189
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 216
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 217
+    empty                          shift and go to state 209
 
 state 190
 
@@ -3301,8 +3308,8 @@ state 190
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_operator                    shift and go to state 217
-    empty                          shift and go to state 208
+    pn_operator                    shift and go to state 218
+    empty                          shift and go to state 209
 
 state 191
 
@@ -3366,8 +3373,8 @@ state 193
 
     LEFT_CURLYB     reduce using rule 123 (empty -> .)
 
-    pn_while_jump                  shift and go to state 218
-    empty                          shift and go to state 219
+    pn_while_jump                  shift and go to state 219
+    empty                          shift and go to state 220
 
 state 194
 
@@ -3413,7 +3420,7 @@ state 197
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3435,7 +3442,7 @@ state 197
     CONST_FLOAT     shift and go to state 128
     ID              shift and go to state 86
 
-    all_logical                    shift and go to state 220
+    all_logical                    shift and go to state 221
     logical_exp                    shift and go to state 116
     exp                            shift and go to state 117
     termino                        shift and go to state 118
@@ -3468,7 +3475,7 @@ state 199
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_open_parenthesis            shift and go to state 221
+    pn_open_parenthesis            shift and go to state 222
     empty                          shift and go to state 142
 
 state 200
@@ -3493,14 +3500,14 @@ state 201
 
     RIGHT_BRACKET   reduce using rule 123 (empty -> .)
 
-    pn_array_access3               shift and go to state 222
-    empty                          shift and go to state 223
+    pn_array_access3               shift and go to state 223
+    empty                          shift and go to state 224
 
 state 202
 
     (22) var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 . SEMICOLON
 
-    SEMICOLON       shift and go to state 224
+    SEMICOLON       shift and go to state 225
 
 
 state 203
@@ -3512,15 +3519,57 @@ state 203
 
 state 204
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec . func_return RIGHT_CURLYB pn_end_func
-    (119) func_return -> . RETURN all_logical SEMICOLON
-    (120) func_return -> . RETURN SEMICOLON
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad . bloque_rec func_return RIGHT_CURLYB pn_end_func
+    (121) bloque_rec -> . bloque bloque_rec
+    (122) bloque_rec -> . empty
+    (30) bloque -> . asignacion
+    (31) bloque -> . condicional
+    (32) bloque -> . while
+    (33) bloque -> . read
+    (34) bloque -> . write
+    (35) bloque -> . func_call SEMICOLON
+    (123) empty -> .
+    (36) asignacion -> . var pn_var_assign EQUAL_ASSIGN all_logical SEMICOLON
+    (87) condicional -> . IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else
+    (93) while -> . WHILE pn_while LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_while_jump while_loop
+    (98) read -> . READ LEFT_PARENTHESIS var RIGHT_PARENTHESIS SEMICOLON
+    (99) write -> . WRITE LEFT_PARENTHESIS write_rec RIGHT_PARENTHESIS SEMICOLON
+    (104) func_call -> . CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS
+    (14) var -> . ID varArray
 
-    RETURN          shift and go to state 226
+    RETURN          reduce using rule 123 (empty -> .)
+    IF              shift and go to state 81
+    WHILE           shift and go to state 82
+    READ            shift and go to state 83
+    WRITE           shift and go to state 84
+    CALL            shift and go to state 85
+    ID              shift and go to state 86
 
-    func_return                    shift and go to state 225
+    bloque_rec                     shift and go to state 226
+    bloque                         shift and go to state 72
+    empty                          shift and go to state 73
+    asignacion                     shift and go to state 74
+    condicional                    shift and go to state 75
+    while                          shift and go to state 76
+    read                           shift and go to state 77
+    write                          shift and go to state 78
+    func_call                      shift and go to state 79
+    var                            shift and go to state 80
 
 state 205
+
+    (114) pn_func_quad -> empty .
+
+    IF              reduce using rule 114 (pn_func_quad -> empty .)
+    WHILE           reduce using rule 114 (pn_func_quad -> empty .)
+    READ            reduce using rule 114 (pn_func_quad -> empty .)
+    WRITE           reduce using rule 114 (pn_func_quad -> empty .)
+    CALL            reduce using rule 114 (pn_func_quad -> empty .)
+    ID              reduce using rule 114 (pn_func_quad -> empty .)
+    RETURN          reduce using rule 114 (pn_func_quad -> empty .)
+
+
+state 206
 
     (62) factor -> LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS . pn_close_parenthesis
     (75) pn_close_parenthesis -> . empty
@@ -3552,7 +3601,7 @@ state 205
     pn_close_parenthesis           shift and go to state 227
     empty                          shift and go to state 228
 
-state 206
+state 207
 
     (87) condicional -> IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB . bloque_rec RIGHT_CURLYB condicional_else
     (121) bloque_rec -> . bloque bloque_rec
@@ -3591,7 +3640,7 @@ state 206
     func_call                      shift and go to state 79
     var                            shift and go to state 80
 
-state 207
+state 208
 
     (40) all_logical_rec -> AND pn_operator . logical_exp pn_all_logical all_logical_rec
     (44) logical_exp -> . exp pn_logical_exp logical_exp_rec
@@ -3599,7 +3648,7 @@ state 207
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3631,7 +3680,7 @@ state 207
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 208
+state 209
 
     (38) pn_operator -> empty .
 
@@ -3645,7 +3694,7 @@ state 208
     ID              reduce using rule 38 (pn_operator -> empty .)
 
 
-state 209
+state 210
 
     (41) all_logical_rec -> OR pn_operator . logical_exp pn_all_logical all_logical_rec
     (44) logical_exp -> . exp pn_logical_exp logical_exp_rec
@@ -3653,7 +3702,7 @@ state 209
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3685,14 +3734,14 @@ state 209
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 210
+state 211
 
     (45) logical_exp_rec -> GREATER_THAN pn_operator . exp pn_logical_exp logical_exp_rec
     (51) exp -> . termino pn_exp exp_rec
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3723,14 +3772,14 @@ state 210
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 211
+state 212
 
     (46) logical_exp_rec -> LESS_THAN pn_operator . exp pn_logical_exp logical_exp_rec
     (51) exp -> . termino pn_exp exp_rec
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3761,14 +3810,14 @@ state 211
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 212
+state 213
 
     (47) logical_exp_rec -> EQUAL_COMPARE pn_operator . exp pn_logical_exp logical_exp_rec
     (51) exp -> . termino pn_exp exp_rec
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3799,14 +3848,14 @@ state 212
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 213
+state 214
 
     (48) logical_exp_rec -> NOT_EQUAL pn_operator . exp pn_logical_exp logical_exp_rec
     (51) exp -> . termino pn_exp exp_rec
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3837,13 +3886,13 @@ state 213
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 214
+state 215
 
     (53) exp_rec -> PLUS pn_operator . termino pn_exp exp_rec
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3873,13 +3922,13 @@ state 214
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 215
+state 216
 
     (54) exp_rec -> MINUS pn_operator . termino pn_exp exp_rec
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3909,12 +3958,12 @@ state 215
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 216
+state 217
 
     (57) termino_rec -> MULTIPLICATION pn_operator . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3943,12 +3992,12 @@ state 216
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 217
+state 218
 
     (58) termino_rec -> DIVISION pn_operator . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -3977,7 +4026,7 @@ state 217
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 218
+state 219
 
     (93) while -> WHILE pn_while LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_while_jump . while_loop
     (94) while_loop -> . LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_while_jump1
@@ -3986,14 +4035,14 @@ state 218
 
     while_loop                     shift and go to state 240
 
-state 219
+state 220
 
     (96) pn_while_jump -> empty .
 
     LEFT_CURLYB     reduce using rule 96 (pn_while_jump -> empty .)
 
 
-state 220
+state 221
 
     (101) write_rec1 -> MORE all_logical . pn_write_quad write_rec1
     (103) pn_write_quad -> . empty
@@ -4003,9 +4052,9 @@ state 220
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
 
     pn_write_quad                  shift and go to state 242
-    empty                          shift and go to state 162
+    empty                          shift and go to state 163
 
-state 221
+state 222
 
     (104) func_call -> CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis . func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS
     (107) func_call_rec -> . all_logical pn_param_match func_call_rec1
@@ -4015,7 +4064,7 @@ state 221
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -4049,21 +4098,21 @@ state 221
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 222
+state 223
 
     (16) varArray -> pn_array_access1 LEFT_BRACKET pn_array_access2 all_logical pn_array_access3 . RIGHT_BRACKET pn_access_return
 
     RIGHT_BRACKET   shift and go to state 245
 
 
-state 223
+state 224
 
     (19) pn_array_access3 -> empty .
 
     RIGHT_BRACKET   reduce using rule 19 (pn_array_access3 -> empty .)
 
 
-state 224
+state 225
 
     (22) var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON .
 
@@ -4078,58 +4127,18 @@ state 224
     CALL            reduce using rule 22 (var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON .)
     ID              reduce using rule 22 (var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON .)
     RIGHT_CURLYB    reduce using rule 22 (var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON .)
-
-
-state 225
-
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return . RIGHT_CURLYB pn_end_func
-
-    RIGHT_CURLYB    shift and go to state 246
+    RETURN          reduce using rule 22 (var_dec -> LIST tipo pn_var_type pn_value_type ID pn_current_name LEFT_BRACKET cte_int pn_add_variable pn_add_dim_list pn_add_dim RIGHT_BRACKET list1 SEMICOLON .)
 
 
 state 226
 
-    (119) func_return -> RETURN . all_logical SEMICOLON
-    (120) func_return -> RETURN . SEMICOLON
-    (39) all_logical -> . logical_exp pn_all_logical all_logical_rec
-    (44) logical_exp -> . exp pn_logical_exp logical_exp_rec
-    (51) exp -> . termino pn_exp exp_rec
-    (56) termino -> . factor pn_termino termino_rec
-    (61) factor -> . varcte
-    (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
-    (64) varcte -> . cte_int pn_add_constant
-    (65) varcte -> . cte_float pn_add_constant
-    (66) varcte -> . CONST_BOOL pn_add_constant
-    (67) varcte -> . CONST_STRING empty empty
-    (68) varcte -> . var
-    (104) func_call -> . CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS
-    (69) cte_int -> . CONST_INT
-    (70) cte_int -> . MINUS CONST_INT
-    (71) cte_float -> . CONST_FLOAT
-    (72) cte_float -> . MINUS CONST_FLOAT
-    (14) var -> . ID varArray
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec . func_return RIGHT_CURLYB pn_end_func
+    (119) func_return -> . RETURN all_logical SEMICOLON
+    (120) func_return -> . RETURN SEMICOLON
 
-    SEMICOLON       shift and go to state 248
-    LEFT_PARENTHESIS shift and go to state 114
-    CONST_BOOL      shift and go to state 124
-    CONST_STRING    shift and go to state 125
-    CALL            shift and go to state 85
-    CONST_INT       shift and go to state 66
-    MINUS           shift and go to state 127
-    CONST_FLOAT     shift and go to state 128
-    ID              shift and go to state 86
+    RETURN          shift and go to state 247
 
-    all_logical                    shift and go to state 247
-    logical_exp                    shift and go to state 116
-    exp                            shift and go to state 117
-    termino                        shift and go to state 118
-    factor                         shift and go to state 119
-    varcte                         shift and go to state 120
-    func_call                      shift and go to state 121
-    cte_int                        shift and go to state 122
-    cte_float                      shift and go to state 123
-    var                            shift and go to state 126
+    func_return                    shift and go to state 246
 
 state 227
 
@@ -4191,7 +4200,7 @@ state 229
 
     (87) condicional -> IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec . RIGHT_CURLYB condicional_else
 
-    RIGHT_CURLYB    shift and go to state 249
+    RIGHT_CURLYB    shift and go to state 248
 
 
 state 230
@@ -4216,7 +4225,7 @@ state 230
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_all_logical                 shift and go to state 250
+    pn_all_logical                 shift and go to state 249
     empty                          shift and go to state 145
 
 state 231
@@ -4241,7 +4250,7 @@ state 231
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_all_logical                 shift and go to state 251
+    pn_all_logical                 shift and go to state 250
     empty                          shift and go to state 145
 
 state 232
@@ -4270,7 +4279,7 @@ state 232
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_logical_exp                 shift and go to state 252
+    pn_logical_exp                 shift and go to state 251
     empty                          shift and go to state 147
 
 state 233
@@ -4299,7 +4308,7 @@ state 233
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_logical_exp                 shift and go to state 253
+    pn_logical_exp                 shift and go to state 252
     empty                          shift and go to state 147
 
 state 234
@@ -4328,7 +4337,7 @@ state 234
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_logical_exp                 shift and go to state 254
+    pn_logical_exp                 shift and go to state 253
     empty                          shift and go to state 147
 
 state 235
@@ -4357,7 +4366,7 @@ state 235
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_logical_exp                 shift and go to state 255
+    pn_logical_exp                 shift and go to state 254
     empty                          shift and go to state 147
 
 state 236
@@ -4387,7 +4396,7 @@ state 236
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_exp                         shift and go to state 256
+    pn_exp                         shift and go to state 255
     empty                          shift and go to state 149
 
 state 237
@@ -4417,7 +4426,7 @@ state 237
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_exp                         shift and go to state 257
+    pn_exp                         shift and go to state 256
     empty                          shift and go to state 149
 
 state 238
@@ -4449,7 +4458,7 @@ state 238
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_termino                     shift and go to state 258
+    pn_termino                     shift and go to state 257
     empty                          shift and go to state 151
 
 state 239
@@ -4481,7 +4490,7 @@ state 239
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_termino                     shift and go to state 259
+    pn_termino                     shift and go to state 258
     empty                          shift and go to state 151
 
 state 240
@@ -4526,7 +4535,7 @@ state 241
     CALL            shift and go to state 85
     ID              shift and go to state 86
 
-    bloque_rec                     shift and go to state 260
+    bloque_rec                     shift and go to state 259
     bloque                         shift and go to state 72
     empty                          shift and go to state 73
     asignacion                     shift and go to state 74
@@ -4547,7 +4556,7 @@ state 242
     MORE            shift and go to state 197
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
 
-    write_rec1                     shift and go to state 261
+    write_rec1                     shift and go to state 260
     empty                          shift and go to state 198
 
 state 243
@@ -4558,7 +4567,7 @@ state 243
 
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
 
-    pn_close_parenthesis           shift and go to state 262
+    pn_close_parenthesis           shift and go to state 261
     empty                          shift and go to state 228
 
 state 244
@@ -4570,8 +4579,8 @@ state 244
     COMMA           reduce using rule 123 (empty -> .)
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
 
-    pn_param_match                 shift and go to state 263
-    empty                          shift and go to state 264
+    pn_param_match                 shift and go to state 262
+    empty                          shift and go to state 263
 
 state 245
 
@@ -4603,38 +4612,61 @@ state 245
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_access_return               shift and go to state 265
-    empty                          shift and go to state 266
+    pn_access_return               shift and go to state 264
+    empty                          shift and go to state 265
 
 state 246
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB . pn_end_func
-    (116) pn_end_func -> . empty
-    (123) empty -> .
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return . RIGHT_CURLYB pn_end_func
 
-    VAR             reduce using rule 123 (empty -> .)
-    LIST            reduce using rule 123 (empty -> .)
-    FUNC            reduce using rule 123 (empty -> .)
-    MAIN            reduce using rule 123 (empty -> .)
+    RIGHT_CURLYB    shift and go to state 266
 
-    pn_end_func                    shift and go to state 267
-    empty                          shift and go to state 268
 
 state 247
 
-    (119) func_return -> RETURN all_logical . SEMICOLON
+    (119) func_return -> RETURN . all_logical SEMICOLON
+    (120) func_return -> RETURN . SEMICOLON
+    (39) all_logical -> . logical_exp pn_all_logical all_logical_rec
+    (44) logical_exp -> . exp pn_logical_exp logical_exp_rec
+    (51) exp -> . termino pn_exp exp_rec
+    (56) termino -> . factor pn_termino termino_rec
+    (61) factor -> . varcte
+    (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
+    (63) factor -> . func_call empty
+    (64) varcte -> . cte_int pn_add_constant
+    (65) varcte -> . cte_float pn_add_constant
+    (66) varcte -> . CONST_BOOL pn_add_constant
+    (67) varcte -> . CONST_STRING empty empty
+    (68) varcte -> . var
+    (104) func_call -> . CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS
+    (69) cte_int -> . CONST_INT
+    (70) cte_int -> . MINUS CONST_INT
+    (71) cte_float -> . CONST_FLOAT
+    (72) cte_float -> . MINUS CONST_FLOAT
+    (14) var -> . ID varArray
 
-    SEMICOLON       shift and go to state 269
+    SEMICOLON       shift and go to state 268
+    LEFT_PARENTHESIS shift and go to state 114
+    CONST_BOOL      shift and go to state 124
+    CONST_STRING    shift and go to state 125
+    CALL            shift and go to state 85
+    CONST_INT       shift and go to state 66
+    MINUS           shift and go to state 127
+    CONST_FLOAT     shift and go to state 128
+    ID              shift and go to state 86
 
+    all_logical                    shift and go to state 267
+    logical_exp                    shift and go to state 116
+    exp                            shift and go to state 117
+    termino                        shift and go to state 118
+    factor                         shift and go to state 119
+    varcte                         shift and go to state 120
+    func_call                      shift and go to state 121
+    cte_int                        shift and go to state 122
+    cte_float                      shift and go to state 123
+    var                            shift and go to state 126
 
 state 248
-
-    (120) func_return -> RETURN SEMICOLON .
-
-    RIGHT_CURLYB    reduce using rule 120 (func_return -> RETURN SEMICOLON .)
-
-
-state 249
 
     (87) condicional -> IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB . condicional_else
     (88) condicional_else -> . ELSE pn_condicional_else LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_condicional_final
@@ -4642,7 +4674,7 @@ state 249
     (92) pn_condicional_final -> . empty
     (123) empty -> .
 
-    ELSE            shift and go to state 271
+    ELSE            shift and go to state 270
     IF              reduce using rule 123 (empty -> .)
     WHILE           reduce using rule 123 (empty -> .)
     READ            reduce using rule 123 (empty -> .)
@@ -4652,13 +4684,40 @@ state 249
     RIGHT_CURLYB    reduce using rule 123 (empty -> .)
     RETURN          reduce using rule 123 (empty -> .)
 
-    condicional_else               shift and go to state 270
-    pn_condicional_final           shift and go to state 272
-    empty                          shift and go to state 273
+    condicional_else               shift and go to state 269
+    pn_condicional_final           shift and go to state 271
+    empty                          shift and go to state 272
+
+state 249
+
+    (40) all_logical_rec -> AND pn_operator logical_exp pn_all_logical . all_logical_rec
+    (40) all_logical_rec -> . AND pn_operator logical_exp pn_all_logical all_logical_rec
+    (41) all_logical_rec -> . OR pn_operator logical_exp pn_all_logical all_logical_rec
+    (42) all_logical_rec -> . empty
+    (123) empty -> .
+
+    AND             shift and go to state 175
+    OR              shift and go to state 176
+    RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
+    MORE            reduce using rule 123 (empty -> .)
+    SEMICOLON       reduce using rule 123 (empty -> .)
+    RIGHT_BRACKET   reduce using rule 123 (empty -> .)
+    COMMA           reduce using rule 123 (empty -> .)
+    LEFT_PARENTHESIS reduce using rule 123 (empty -> .)
+    CONST_BOOL      reduce using rule 123 (empty -> .)
+    CONST_STRING    reduce using rule 123 (empty -> .)
+    CALL            reduce using rule 123 (empty -> .)
+    CONST_INT       reduce using rule 123 (empty -> .)
+    MINUS           reduce using rule 123 (empty -> .)
+    CONST_FLOAT     reduce using rule 123 (empty -> .)
+    ID              reduce using rule 123 (empty -> .)
+
+    all_logical_rec                shift and go to state 273
+    empty                          shift and go to state 177
 
 state 250
 
-    (40) all_logical_rec -> AND pn_operator logical_exp pn_all_logical . all_logical_rec
+    (41) all_logical_rec -> OR pn_operator logical_exp pn_all_logical . all_logical_rec
     (40) all_logical_rec -> . AND pn_operator logical_exp pn_all_logical all_logical_rec
     (41) all_logical_rec -> . OR pn_operator logical_exp pn_all_logical all_logical_rec
     (42) all_logical_rec -> . empty
@@ -4685,14 +4744,20 @@ state 250
 
 state 251
 
-    (41) all_logical_rec -> OR pn_operator logical_exp pn_all_logical . all_logical_rec
-    (40) all_logical_rec -> . AND pn_operator logical_exp pn_all_logical all_logical_rec
-    (41) all_logical_rec -> . OR pn_operator logical_exp pn_all_logical all_logical_rec
-    (42) all_logical_rec -> . empty
+    (45) logical_exp_rec -> GREATER_THAN pn_operator exp pn_logical_exp . logical_exp_rec
+    (45) logical_exp_rec -> . GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec
+    (46) logical_exp_rec -> . LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec
+    (47) logical_exp_rec -> . EQUAL_COMPARE pn_operator exp pn_logical_exp logical_exp_rec
+    (48) logical_exp_rec -> . NOT_EQUAL pn_operator exp pn_logical_exp logical_exp_rec
+    (49) logical_exp_rec -> . empty
     (123) empty -> .
 
-    AND             shift and go to state 175
-    OR              shift and go to state 176
+    GREATER_THAN    shift and go to state 179
+    LESS_THAN       shift and go to state 180
+    EQUAL_COMPARE   shift and go to state 181
+    NOT_EQUAL       shift and go to state 182
+    AND             reduce using rule 123 (empty -> .)
+    OR              reduce using rule 123 (empty -> .)
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
     MORE            reduce using rule 123 (empty -> .)
     SEMICOLON       reduce using rule 123 (empty -> .)
@@ -4707,12 +4772,12 @@ state 251
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    all_logical_rec                shift and go to state 275
-    empty                          shift and go to state 177
+    logical_exp_rec                shift and go to state 275
+    empty                          shift and go to state 183
 
 state 252
 
-    (45) logical_exp_rec -> GREATER_THAN pn_operator exp pn_logical_exp . logical_exp_rec
+    (46) logical_exp_rec -> LESS_THAN pn_operator exp pn_logical_exp . logical_exp_rec
     (45) logical_exp_rec -> . GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec
     (46) logical_exp_rec -> . LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec
     (47) logical_exp_rec -> . EQUAL_COMPARE pn_operator exp pn_logical_exp logical_exp_rec
@@ -4745,7 +4810,7 @@ state 252
 
 state 253
 
-    (46) logical_exp_rec -> LESS_THAN pn_operator exp pn_logical_exp . logical_exp_rec
+    (47) logical_exp_rec -> EQUAL_COMPARE pn_operator exp pn_logical_exp . logical_exp_rec
     (45) logical_exp_rec -> . GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec
     (46) logical_exp_rec -> . LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec
     (47) logical_exp_rec -> . EQUAL_COMPARE pn_operator exp pn_logical_exp logical_exp_rec
@@ -4778,7 +4843,7 @@ state 253
 
 state 254
 
-    (47) logical_exp_rec -> EQUAL_COMPARE pn_operator exp pn_logical_exp . logical_exp_rec
+    (48) logical_exp_rec -> NOT_EQUAL pn_operator exp pn_logical_exp . logical_exp_rec
     (45) logical_exp_rec -> . GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec
     (46) logical_exp_rec -> . LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec
     (47) logical_exp_rec -> . EQUAL_COMPARE pn_operator exp pn_logical_exp logical_exp_rec
@@ -4811,18 +4876,19 @@ state 254
 
 state 255
 
-    (48) logical_exp_rec -> NOT_EQUAL pn_operator exp pn_logical_exp . logical_exp_rec
-    (45) logical_exp_rec -> . GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec
-    (46) logical_exp_rec -> . LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec
-    (47) logical_exp_rec -> . EQUAL_COMPARE pn_operator exp pn_logical_exp logical_exp_rec
-    (48) logical_exp_rec -> . NOT_EQUAL pn_operator exp pn_logical_exp logical_exp_rec
-    (49) logical_exp_rec -> . empty
+    (53) exp_rec -> PLUS pn_operator termino pn_exp . exp_rec
+    (53) exp_rec -> . PLUS pn_operator termino pn_exp exp_rec
+    (54) exp_rec -> . MINUS pn_operator termino pn_exp exp_rec
+    (55) exp_rec -> . empty
     (123) empty -> .
 
-    GREATER_THAN    shift and go to state 179
-    LESS_THAN       shift and go to state 180
-    EQUAL_COMPARE   shift and go to state 181
-    NOT_EQUAL       shift and go to state 182
+  ! shift/reduce conflict for MINUS resolved as shift
+    PLUS            shift and go to state 185
+    MINUS           shift and go to state 186
+    GREATER_THAN    reduce using rule 123 (empty -> .)
+    LESS_THAN       reduce using rule 123 (empty -> .)
+    EQUAL_COMPARE   reduce using rule 123 (empty -> .)
+    NOT_EQUAL       reduce using rule 123 (empty -> .)
     AND             reduce using rule 123 (empty -> .)
     OR              reduce using rule 123 (empty -> .)
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
@@ -4835,16 +4901,17 @@ state 255
     CONST_STRING    reduce using rule 123 (empty -> .)
     CALL            reduce using rule 123 (empty -> .)
     CONST_INT       reduce using rule 123 (empty -> .)
-    MINUS           reduce using rule 123 (empty -> .)
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    logical_exp_rec                shift and go to state 279
-    empty                          shift and go to state 183
+  ! MINUS           [ reduce using rule 123 (empty -> .) ]
+
+    exp_rec                        shift and go to state 279
+    empty                          shift and go to state 187
 
 state 256
 
-    (53) exp_rec -> PLUS pn_operator termino pn_exp . exp_rec
+    (54) exp_rec -> MINUS pn_operator termino pn_exp . exp_rec
     (53) exp_rec -> . PLUS pn_operator termino pn_exp exp_rec
     (54) exp_rec -> . MINUS pn_operator termino pn_exp exp_rec
     (55) exp_rec -> . empty
@@ -4879,15 +4946,16 @@ state 256
 
 state 257
 
-    (54) exp_rec -> MINUS pn_operator termino pn_exp . exp_rec
-    (53) exp_rec -> . PLUS pn_operator termino pn_exp exp_rec
-    (54) exp_rec -> . MINUS pn_operator termino pn_exp exp_rec
-    (55) exp_rec -> . empty
+    (57) termino_rec -> MULTIPLICATION pn_operator factor pn_termino . termino_rec
+    (57) termino_rec -> . MULTIPLICATION pn_operator factor pn_termino termino_rec
+    (58) termino_rec -> . DIVISION pn_operator factor pn_termino termino_rec
+    (59) termino_rec -> . empty
     (123) empty -> .
 
-  ! shift/reduce conflict for MINUS resolved as shift
-    PLUS            shift and go to state 185
-    MINUS           shift and go to state 186
+    MULTIPLICATION  shift and go to state 189
+    DIVISION        shift and go to state 190
+    PLUS            reduce using rule 123 (empty -> .)
+    MINUS           reduce using rule 123 (empty -> .)
     GREATER_THAN    reduce using rule 123 (empty -> .)
     LESS_THAN       reduce using rule 123 (empty -> .)
     EQUAL_COMPARE   reduce using rule 123 (empty -> .)
@@ -4907,14 +4975,12 @@ state 257
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-  ! MINUS           [ reduce using rule 123 (empty -> .) ]
-
-    exp_rec                        shift and go to state 281
-    empty                          shift and go to state 187
+    termino_rec                    shift and go to state 281
+    empty                          shift and go to state 191
 
 state 258
 
-    (57) termino_rec -> MULTIPLICATION pn_operator factor pn_termino . termino_rec
+    (58) termino_rec -> DIVISION pn_operator factor pn_termino . termino_rec
     (57) termino_rec -> . MULTIPLICATION pn_operator factor pn_termino termino_rec
     (58) termino_rec -> . DIVISION pn_operator factor pn_termino termino_rec
     (59) termino_rec -> . empty
@@ -4948,73 +5014,39 @@ state 258
 
 state 259
 
-    (58) termino_rec -> DIVISION pn_operator factor pn_termino . termino_rec
-    (57) termino_rec -> . MULTIPLICATION pn_operator factor pn_termino termino_rec
-    (58) termino_rec -> . DIVISION pn_operator factor pn_termino termino_rec
-    (59) termino_rec -> . empty
-    (123) empty -> .
-
-    MULTIPLICATION  shift and go to state 189
-    DIVISION        shift and go to state 190
-    PLUS            reduce using rule 123 (empty -> .)
-    MINUS           reduce using rule 123 (empty -> .)
-    GREATER_THAN    reduce using rule 123 (empty -> .)
-    LESS_THAN       reduce using rule 123 (empty -> .)
-    EQUAL_COMPARE   reduce using rule 123 (empty -> .)
-    NOT_EQUAL       reduce using rule 123 (empty -> .)
-    AND             reduce using rule 123 (empty -> .)
-    OR              reduce using rule 123 (empty -> .)
-    RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
-    MORE            reduce using rule 123 (empty -> .)
-    SEMICOLON       reduce using rule 123 (empty -> .)
-    RIGHT_BRACKET   reduce using rule 123 (empty -> .)
-    COMMA           reduce using rule 123 (empty -> .)
-    LEFT_PARENTHESIS reduce using rule 123 (empty -> .)
-    CONST_BOOL      reduce using rule 123 (empty -> .)
-    CONST_STRING    reduce using rule 123 (empty -> .)
-    CALL            reduce using rule 123 (empty -> .)
-    CONST_INT       reduce using rule 123 (empty -> .)
-    CONST_FLOAT     reduce using rule 123 (empty -> .)
-    ID              reduce using rule 123 (empty -> .)
-
-    termino_rec                    shift and go to state 283
-    empty                          shift and go to state 191
-
-state 260
-
     (94) while_loop -> LEFT_CURLYB bloque_rec . RIGHT_CURLYB pn_while_jump1
 
-    RIGHT_CURLYB    shift and go to state 284
+    RIGHT_CURLYB    shift and go to state 283
 
 
-state 261
+state 260
 
     (101) write_rec1 -> MORE all_logical pn_write_quad write_rec1 .
 
     RIGHT_PARENTHESIS reduce using rule 101 (write_rec1 -> MORE all_logical pn_write_quad write_rec1 .)
 
 
-state 262
+state 261
 
     (104) func_call -> CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis . RIGHT_PARENTHESIS
 
-    RIGHT_PARENTHESIS shift and go to state 285
+    RIGHT_PARENTHESIS shift and go to state 284
 
 
-state 263
+state 262
 
     (107) func_call_rec -> all_logical pn_param_match . func_call_rec1
     (108) func_call_rec1 -> . COMMA all_logical pn_param_match func_call_rec
     (109) func_call_rec1 -> . empty
     (123) empty -> .
 
-    COMMA           shift and go to state 287
+    COMMA           shift and go to state 286
     RIGHT_PARENTHESIS reduce using rule 123 (empty -> .)
 
-    func_call_rec1                 shift and go to state 286
-    empty                          shift and go to state 288
+    func_call_rec1                 shift and go to state 285
+    empty                          shift and go to state 287
 
-state 264
+state 263
 
     (110) pn_param_match -> empty .
 
@@ -5030,7 +5062,7 @@ state 264
     ID              reduce using rule 110 (pn_param_match -> empty .)
 
 
-state 265
+state 264
 
     (16) varArray -> pn_array_access1 LEFT_BRACKET pn_array_access2 all_logical pn_array_access3 RIGHT_BRACKET pn_access_return .
 
@@ -5059,7 +5091,7 @@ state 265
     ID              reduce using rule 16 (varArray -> pn_array_access1 LEFT_BRACKET pn_array_access2 all_logical pn_array_access3 RIGHT_BRACKET pn_access_return .)
 
 
-state 266
+state 265
 
     (20) pn_access_return -> empty .
 
@@ -5088,34 +5120,35 @@ state 266
     ID              reduce using rule 20 (pn_access_return -> empty .)
 
 
+state 266
+
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB . pn_end_func
+    (116) pn_end_func -> . empty
+    (123) empty -> .
+
+    VAR             reduce using rule 123 (empty -> .)
+    LIST            reduce using rule 123 (empty -> .)
+    FUNC            reduce using rule 123 (empty -> .)
+    MAIN            reduce using rule 123 (empty -> .)
+
+    pn_end_func                    shift and go to state 288
+    empty                          shift and go to state 289
+
 state 267
 
-    (111) func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .
+    (119) func_return -> RETURN all_logical . SEMICOLON
 
-    VAR             reduce using rule 111 (func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
-    LIST            reduce using rule 111 (func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
-    FUNC            reduce using rule 111 (func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
-    MAIN            reduce using rule 111 (func_dec -> FUNC return_module pn_return_type ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
+    SEMICOLON       shift and go to state 290
 
 
 state 268
 
-    (116) pn_end_func -> empty .
+    (120) func_return -> RETURN SEMICOLON .
 
-    VAR             reduce using rule 116 (pn_end_func -> empty .)
-    LIST            reduce using rule 116 (pn_end_func -> empty .)
-    FUNC            reduce using rule 116 (pn_end_func -> empty .)
-    MAIN            reduce using rule 116 (pn_end_func -> empty .)
+    RIGHT_CURLYB    reduce using rule 120 (func_return -> RETURN SEMICOLON .)
 
 
 state 269
-
-    (119) func_return -> RETURN all_logical SEMICOLON .
-
-    RIGHT_CURLYB    reduce using rule 119 (func_return -> RETURN all_logical SEMICOLON .)
-
-
-state 270
 
     (87) condicional -> IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else .
 
@@ -5129,7 +5162,7 @@ state 270
     RETURN          reduce using rule 87 (condicional -> IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else .)
 
 
-state 271
+state 270
 
     (88) condicional_else -> ELSE . pn_condicional_else LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_condicional_final
     (91) pn_condicional_else -> . empty
@@ -5137,10 +5170,10 @@ state 271
 
     LEFT_CURLYB     reduce using rule 123 (empty -> .)
 
-    pn_condicional_else            shift and go to state 289
-    empty                          shift and go to state 290
+    pn_condicional_else            shift and go to state 291
+    empty                          shift and go to state 292
 
-state 272
+state 271
 
     (89) condicional_else -> pn_condicional_final .
 
@@ -5154,7 +5187,7 @@ state 272
     RETURN          reduce using rule 89 (condicional_else -> pn_condicional_final .)
 
 
-state 273
+state 272
 
     (92) pn_condicional_final -> empty .
 
@@ -5168,7 +5201,7 @@ state 273
     RETURN          reduce using rule 92 (pn_condicional_final -> empty .)
 
 
-state 274
+state 273
 
     (40) all_logical_rec -> AND pn_operator logical_exp pn_all_logical all_logical_rec .
 
@@ -5187,7 +5220,7 @@ state 274
     ID              reduce using rule 40 (all_logical_rec -> AND pn_operator logical_exp pn_all_logical all_logical_rec .)
 
 
-state 275
+state 274
 
     (41) all_logical_rec -> OR pn_operator logical_exp pn_all_logical all_logical_rec .
 
@@ -5206,7 +5239,7 @@ state 275
     ID              reduce using rule 41 (all_logical_rec -> OR pn_operator logical_exp pn_all_logical all_logical_rec .)
 
 
-state 276
+state 275
 
     (45) logical_exp_rec -> GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec .
 
@@ -5227,7 +5260,7 @@ state 276
     ID              reduce using rule 45 (logical_exp_rec -> GREATER_THAN pn_operator exp pn_logical_exp logical_exp_rec .)
 
 
-state 277
+state 276
 
     (46) logical_exp_rec -> LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec .
 
@@ -5248,7 +5281,7 @@ state 277
     ID              reduce using rule 46 (logical_exp_rec -> LESS_THAN pn_operator exp pn_logical_exp logical_exp_rec .)
 
 
-state 278
+state 277
 
     (47) logical_exp_rec -> EQUAL_COMPARE pn_operator exp pn_logical_exp logical_exp_rec .
 
@@ -5269,7 +5302,7 @@ state 278
     ID              reduce using rule 47 (logical_exp_rec -> EQUAL_COMPARE pn_operator exp pn_logical_exp logical_exp_rec .)
 
 
-state 279
+state 278
 
     (48) logical_exp_rec -> NOT_EQUAL pn_operator exp pn_logical_exp logical_exp_rec .
 
@@ -5290,7 +5323,7 @@ state 279
     ID              reduce using rule 48 (logical_exp_rec -> NOT_EQUAL pn_operator exp pn_logical_exp logical_exp_rec .)
 
 
-state 280
+state 279
 
     (53) exp_rec -> PLUS pn_operator termino pn_exp exp_rec .
 
@@ -5315,7 +5348,7 @@ state 280
     ID              reduce using rule 53 (exp_rec -> PLUS pn_operator termino pn_exp exp_rec .)
 
 
-state 281
+state 280
 
     (54) exp_rec -> MINUS pn_operator termino pn_exp exp_rec .
 
@@ -5340,7 +5373,7 @@ state 281
     ID              reduce using rule 54 (exp_rec -> MINUS pn_operator termino pn_exp exp_rec .)
 
 
-state 282
+state 281
 
     (57) termino_rec -> MULTIPLICATION pn_operator factor pn_termino termino_rec .
 
@@ -5366,7 +5399,7 @@ state 282
     ID              reduce using rule 57 (termino_rec -> MULTIPLICATION pn_operator factor pn_termino termino_rec .)
 
 
-state 283
+state 282
 
     (58) termino_rec -> DIVISION pn_operator factor pn_termino termino_rec .
 
@@ -5392,7 +5425,7 @@ state 283
     ID              reduce using rule 58 (termino_rec -> DIVISION pn_operator factor pn_termino termino_rec .)
 
 
-state 284
+state 283
 
     (94) while_loop -> LEFT_CURLYB bloque_rec RIGHT_CURLYB . pn_while_jump1
     (97) pn_while_jump1 -> . empty
@@ -5407,10 +5440,10 @@ state 284
     RIGHT_CURLYB    reduce using rule 123 (empty -> .)
     RETURN          reduce using rule 123 (empty -> .)
 
-    pn_while_jump1                 shift and go to state 291
-    empty                          shift and go to state 292
+    pn_while_jump1                 shift and go to state 293
+    empty                          shift and go to state 294
 
-state 285
+state 284
 
     (104) func_call -> CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS .
 
@@ -5438,14 +5471,14 @@ state 285
     ID              reduce using rule 104 (func_call -> CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS .)
 
 
-state 286
+state 285
 
     (107) func_call_rec -> all_logical pn_param_match func_call_rec1 .
 
     RIGHT_PARENTHESIS reduce using rule 107 (func_call_rec -> all_logical pn_param_match func_call_rec1 .)
 
 
-state 287
+state 286
 
     (108) func_call_rec1 -> COMMA . all_logical pn_param_match func_call_rec
     (39) all_logical -> . logical_exp pn_all_logical all_logical_rec
@@ -5454,7 +5487,7 @@ state 287
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -5476,7 +5509,7 @@ state 287
     CONST_FLOAT     shift and go to state 128
     ID              shift and go to state 86
 
-    all_logical                    shift and go to state 293
+    all_logical                    shift and go to state 295
     logical_exp                    shift and go to state 116
     exp                            shift and go to state 117
     termino                        shift and go to state 118
@@ -5487,28 +5520,55 @@ state 287
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 288
+state 287
 
     (109) func_call_rec1 -> empty .
 
     RIGHT_PARENTHESIS reduce using rule 109 (func_call_rec1 -> empty .)
 
 
+state 288
+
+    (111) func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .
+
+    VAR             reduce using rule 111 (func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
+    LIST            reduce using rule 111 (func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
+    FUNC            reduce using rule 111 (func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
+    MAIN            reduce using rule 111 (func_dec -> FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func .)
+
+
 state 289
 
-    (88) condicional_else -> ELSE pn_condicional_else . LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_condicional_final
+    (116) pn_end_func -> empty .
 
-    LEFT_CURLYB     shift and go to state 294
+    VAR             reduce using rule 116 (pn_end_func -> empty .)
+    LIST            reduce using rule 116 (pn_end_func -> empty .)
+    FUNC            reduce using rule 116 (pn_end_func -> empty .)
+    MAIN            reduce using rule 116 (pn_end_func -> empty .)
 
 
 state 290
+
+    (119) func_return -> RETURN all_logical SEMICOLON .
+
+    RIGHT_CURLYB    reduce using rule 119 (func_return -> RETURN all_logical SEMICOLON .)
+
+
+state 291
+
+    (88) condicional_else -> ELSE pn_condicional_else . LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_condicional_final
+
+    LEFT_CURLYB     shift and go to state 296
+
+
+state 292
 
     (91) pn_condicional_else -> empty .
 
     LEFT_CURLYB     reduce using rule 91 (pn_condicional_else -> empty .)
 
 
-state 291
+state 293
 
     (94) while_loop -> LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_while_jump1 .
 
@@ -5522,7 +5582,7 @@ state 291
     RETURN          reduce using rule 94 (while_loop -> LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_while_jump1 .)
 
 
-state 292
+state 294
 
     (97) pn_while_jump1 -> empty .
 
@@ -5536,7 +5596,7 @@ state 292
     RETURN          reduce using rule 97 (pn_while_jump1 -> empty .)
 
 
-state 293
+state 295
 
     (108) func_call_rec1 -> COMMA all_logical . pn_param_match func_call_rec
     (110) pn_param_match -> . empty
@@ -5551,10 +5611,10 @@ state 293
     CONST_FLOAT     reduce using rule 123 (empty -> .)
     ID              reduce using rule 123 (empty -> .)
 
-    pn_param_match                 shift and go to state 295
-    empty                          shift and go to state 264
+    pn_param_match                 shift and go to state 297
+    empty                          shift and go to state 263
 
-state 294
+state 296
 
     (88) condicional_else -> ELSE pn_condicional_else LEFT_CURLYB . bloque_rec RIGHT_CURLYB pn_condicional_final
     (121) bloque_rec -> . bloque bloque_rec
@@ -5582,7 +5642,7 @@ state 294
     CALL            shift and go to state 85
     ID              shift and go to state 86
 
-    bloque_rec                     shift and go to state 296
+    bloque_rec                     shift and go to state 298
     bloque                         shift and go to state 72
     empty                          shift and go to state 73
     asignacion                     shift and go to state 74
@@ -5593,7 +5653,7 @@ state 294
     func_call                      shift and go to state 79
     var                            shift and go to state 80
 
-state 295
+state 297
 
     (108) func_call_rec1 -> COMMA all_logical pn_param_match . func_call_rec
     (107) func_call_rec -> . all_logical pn_param_match func_call_rec1
@@ -5603,7 +5663,7 @@ state 295
     (56) termino -> . factor pn_termino termino_rec
     (61) factor -> . varcte
     (62) factor -> . LEFT_PARENTHESIS pn_open_parenthesis all_logical RIGHT_PARENTHESIS pn_close_parenthesis
-    (63) factor -> . func_call
+    (63) factor -> . func_call empty
     (64) varcte -> . cte_int pn_add_constant
     (65) varcte -> . cte_float pn_add_constant
     (66) varcte -> . CONST_BOOL pn_add_constant
@@ -5626,7 +5686,7 @@ state 295
     ID              shift and go to state 86
 
     all_logical                    shift and go to state 244
-    func_call_rec                  shift and go to state 297
+    func_call_rec                  shift and go to state 299
     logical_exp                    shift and go to state 116
     exp                            shift and go to state 117
     termino                        shift and go to state 118
@@ -5637,21 +5697,21 @@ state 295
     cte_float                      shift and go to state 123
     var                            shift and go to state 126
 
-state 296
+state 298
 
     (88) condicional_else -> ELSE pn_condicional_else LEFT_CURLYB bloque_rec . RIGHT_CURLYB pn_condicional_final
 
-    RIGHT_CURLYB    shift and go to state 298
+    RIGHT_CURLYB    shift and go to state 300
 
 
-state 297
+state 299
 
     (108) func_call_rec1 -> COMMA all_logical pn_param_match func_call_rec .
 
     RIGHT_PARENTHESIS reduce using rule 108 (func_call_rec1 -> COMMA all_logical pn_param_match func_call_rec .)
 
 
-state 298
+state 300
 
     (88) condicional_else -> ELSE pn_condicional_else LEFT_CURLYB bloque_rec RIGHT_CURLYB . pn_condicional_final
     (92) pn_condicional_final -> . empty
@@ -5666,10 +5726,10 @@ state 298
     RIGHT_CURLYB    reduce using rule 123 (empty -> .)
     RETURN          reduce using rule 123 (empty -> .)
 
-    pn_condicional_final           shift and go to state 299
-    empty                          shift and go to state 273
+    pn_condicional_final           shift and go to state 301
+    empty                          shift and go to state 272
 
-state 299
+state 301
 
     (88) condicional_else -> ELSE pn_condicional_else LEFT_CURLYB bloque_rec RIGHT_CURLYB pn_condicional_final .
 
@@ -5692,7 +5752,7 @@ WARNING: shift/reduce conflict for VAR in state 11 resolved as shift
 WARNING: shift/reduce conflict for LIST in state 11 resolved as shift
 WARNING: shift/reduce conflict for FUNC in state 11 resolved as shift
 WARNING: shift/reduce conflict for MINUS in state 148 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 255 resolved as shift
 WARNING: shift/reduce conflict for MINUS in state 256 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 257 resolved as shift
 WARNING: reduce/reduce conflict in state 10 resolved using rule (init_dec -> empty)
 WARNING: rejected rule (class_dec -> empty) in state 10

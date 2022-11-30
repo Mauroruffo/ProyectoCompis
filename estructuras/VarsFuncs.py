@@ -158,6 +158,40 @@ class Function:
 
     def varExistsInScope(self, general_name, internal_name, var_name):
         return (var_name in self.table[general_name][internal_name]['vars_table'].keys())
+    
+    def agregarFirma(self, general_name, internal_name, parameter_type):
+        # Funcion que te permite modificar los parametros de la funcion
+        self.table[general_name][internal_name]['param_signature'].append(parameter_type)
+        
+    def cuadInicial(self, general_name, internal_name, quad_id):
+        # Funcion que sirve para determinar el indice del cuadruplo
+        self.table[general_name][internal_name]['start_quad'] = quad_id
+
+    def funcDir(self, general_name, internal_name, function_name):
+        return self.table[general_name][internal_name]['vars_table'][function_name]['var_virtual_address']
+
+    def setFuncType(self, general_name, internal_name, type):
+        self.table[general_name][internal_name]['function_type'] = type
+
+    def lenFirmaParam(self, general_name, internal_name):
+        return len(self.table[general_name][internal_name]['param_signature'])
+    
+    def getCuadFuncInicial(self, general_name, internal_name):
+        # Funcion para obtener el indice del primer cuadruplo
+        return self.table[general_name][internal_name]['start_quad']
+
+    def getTipoFunc(self, general_name, internal_name):
+        return self.table[general_name][internal_name]['function_type']
+
+    def numTipoFirma(self, general_name, internal_name, n):
+        # Raise error if n is bigger than array size
+        param_signature_arr = self.table[general_name][internal_name]['param_signature']
+        if n >= len(param_signature_arr):
+            error_msg = "Sending too many parameters for function '" + internal_name + \
+                "' when " + str(len(param_signature_arr)) + " are expected."
+            raise Exception(error_msg)
+        else:
+            return param_signature_arr[n]
 
 class Function1:
     def __init__(self, funcName, funcType):
