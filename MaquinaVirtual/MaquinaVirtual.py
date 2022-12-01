@@ -67,28 +67,35 @@ while(instructionPtr < len(cuads)):
     currCuad = cuads[instructionPtr].copy()
     if len(memStack) > 100000:
         raise Exception('Stack OverFlop, demasiadas llamadas creadas')
-    
+
     if currCuad[0] == 'GoToMain':
-        mainVarWorkSpace = obj.varWorkspace('#global', '#global')
-        mainTempWorkspace = obj.tempWorkspace('#global', '#global')
+        # Obtenemos los workspaces del JSON (canitdades de cada tipo de dato)
+        mainVarWorkSpace = obj.varWorkspace('#global', 'main')
+        mainTempWorkspace = obj.tempWorkspace('#global', 'main')
+        # Creamos un workspace para cada tipo de dato
         mainVarWorkSpaceType = (mainVarWorkSpace['int'], mainVarWorkSpace['float'], mainVarWorkSpace['bool'], mainVarWorkSpace['string'])
         mainTempWorkSpaceType = (mainTempWorkspace['int'], mainTempWorkspace['float'], mainTempWorkspace['bool'], mainTempWorkspace['string'])
+        # Creamos un objeto con las cantidades de variables y temporales
         mainMem = LocalMemory(mainVarWorkSpaceType, mainTempWorkSpaceType)
         memStack.append(mainMem)
         instructionPtr = currCuad[3]
-        instructionPtr = instructionPtr + 1
         continue
 
     elif currCuad[0] == '=':
         assignType, assignValue = None, None
+        # Obtenemos el valor a asignar y su tipo
         assignType, assignValue = valueType(memStack[-1], currCuad[1])
+        # Convertimos el valor de string a su tipo de dato
         assignValue = TT.cast(assignValue, assignType)
+        # Actualizamos el objeto con el valor ubicado en la direccion
         memStack[-1] = valorMemoria(currCuad[3], memStack[-1], assignValue)
         
 
     elif currCuad[0] == '+':
         opIzq, opDer = None, None
+        # Convierte los valores recibidos por su tipo
         opIzq, opDer = biOperands(memStack[-1], currCuad[1], currCuad[2])
+        # Realizamos la operacion
         sum = opIzq + opDer
         memStack[-1] = valorMemoria(currCuad[3], memStack[-1], sum)
 
@@ -155,15 +162,19 @@ while(instructionPtr < len(cuads)):
     elif currCuad[0] == 'WRITE':
         write_type, write_value = None, None
         write_type, write_value = valueType(memStack[-1], currCuad[3])
+        # Imprimimos el valor
         print(write_value)
 
     elif currCuad[0] == 'READ':
         readType, readValue = None, None
         readType, readValue = valueType(memStack[-1], currCuad[3])
+        # Recibimos como entrada el valor a asignar
         readValue = input()
+        # Verificamos que tipo de dato es
         if readType == 'int':
             try:
                 readValue = int(readValue)
+                # Guardamos el valor en la memoria
                 valorMemoria(currCuad[3], memStack[-1], readValue)
             except Exception:
                 raise Exception("Flop de tipos, se esperaba " + readType)
@@ -194,13 +205,6 @@ while(instructionPtr < len(cuads)):
         if not valorCond:
             instructionPtr = currCuad[3]
             continue
-    
-    elif currCuad[0] == 'GoToV':
-        valorCond = None
-        _, valorCond = valueType(memStack[-1], currCuad[1])
-        if valorCond == True:
-            instructionPtr = currCuad[3]
-            continue
 
     elif currCuad[0] == 'VER':
         dimSize = currCuad[1]
@@ -222,26 +226,23 @@ while(instructionPtr < len(cuads)):
         funcName = currCuad[3]
         funcVarWorkspace = obj.varWorkspace('#global', funcName)
         funcTempWorkspace = obj.tempWorkspace('#global', funcName)
-        function_variable_workspace = (
-        funcVarWorkspace['int'], funcVarWorkspace['float'], funcVarWorkspace['bool'], funcVarWorkspace['string'])
-        function_temps_workspace = (
-        funcTempWorkspace['int'], funcTempWorkspace['float'], funcTempWorkspace['bool'], funcTempWorkspace['string'])
-        function_memory = LocalMemory(
-        function_variable_workspace, function_temps_workspace)
+        function_variable_workspace = (funcVarWorkspace['int'], funcVarWorkspace['float'], funcVarWorkspace['bool'], funcVarWorkspace['string'])
+        function_temps_workspace = (funcTempWorkspace['int'], funcTempWorkspace['float'], funcTempWorkspace['bool'], funcTempWorkspace['string'])
+        function_memory = LocalMemory(function_variable_workspace, function_temps_workspace)
         futureMemory.append([function_memory, {'int': 8000, 'float': 10000, 'bool': 12000, 'string': 14000}])
 
     elif currCuad[0] == 'PARAM':
         param_address = currCuad[1]
         param_index = currCuad[3]
         param_type, param_value = None, None
-        # if it's called from method
-        if memStack:
-            param_type, param_value = valueType(memStack[-1], param_address)
-        else:
-            param_type, param_value = valueType(globalMemory, param_address)
+        param_type, param_value = valueType(memStack[-1], param_address)
         new_param_address = futureMemory[-1][1][param_type]
         futureMemory[-1][0].setValorDir(new_param_address, param_value)
         futureMemory[-1][1][param_type] += 1
+
+    elif currCuad[0] == 'EndFunc':
+        memStack.pop()
+        instructionPtr = instructionPtrStack.pop()
         
     instructionPtr = instructionPtr + 1
 

@@ -1,13 +1,18 @@
 program TESTCORRECT;
-var int X;
+var int A;
+var int B;
+var int C;
 var int Y;
 
-func int PRUEBA ( int X ){
-    Y = 8;
-    return X;
+func int PRUEBA ( int C, int B ){
+
+    return C;
 }
 
 main(){
-    X = 1;
-    Y = call PRUEBA ( X );
+    A = 5;
+    B = 5;
+    C = 7;
+    Y = call PRUEBA ( C , B );
+    write( Y );
 }

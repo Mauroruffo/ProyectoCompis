@@ -12,8 +12,6 @@ class MemoriaVirtual:
 
     def nueva_dir(self, type, block):
         # Funcion para crear nueva direccion para cierto tipo de dato
-        print("Esto es block")
-        print(block)
         if self.table[block][type][0] > self.table[block][type][2]:
             raise Exception("Too many variables for type " + type)
         else:

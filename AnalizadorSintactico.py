@@ -25,8 +25,6 @@ constructors  = []
 dim_stack = []
 semantic_cube = Cubo()
 cuads = Cuadruplos()
-const = Constant()
-memo = MemoriaVirtual()
 func_dir = None
 
 
@@ -50,7 +48,7 @@ def p_program(p):
     func_dir.genVarInfo('#global', '#global', vars_table)
     
     # Generar JSON a partir de toda la informacion que se guardo (variables, direcciones, temporales...)
-    obj = {"function_directory": func_dir.table, "vars_table": vars_table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table, "global_objects_constructors_start_quads": constructors}
+    obj = {"function_directory": func_dir.table, "quads": cuads.list, "constants_summary": constTable, "constants_table": const.table, "global_objects_constructors_start_quads": constructors}
     with open('obj.json', "w") as output_file:
         json.dump(obj, output_file, indent = 2)
 
@@ -58,7 +56,7 @@ def p_main(p):
     ''' main : MAIN pn_internal_scope LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable bloque_rec RIGHT_CURLYB pn_end_main'''
     global curr_intScope
     curr_intScope = '#global'
-    cuads.fill_quad(1, 3, cuads.counter)
+    memo.resetLocalMem()
 
 def p_vars_rec(p):
     ''' vars_rec : var_dec vars_rec
@@ -69,12 +67,16 @@ def p_pn_internal_scope(p):
     global curr_intScope
     curr_intScope = 'main'
     func_dir.intScope(curr_genScope, curr_intScope)
+    cuads.fill_quad(0, 3, cuads.counter)
 
 def p_pn_start_program(p):
     ''' pn_start_program : empty '''
     global func_dir, curr_listIntScope, curr_funcCallStack, funcParamStack
+    global memo, const
     curr_listIntScope = None
+    memo = MemoriaVirtual()
     func_dir = Function()
+    const = Constant()
     cuads.gen_cuad('GoToMain', None, None, None)
     curr_funcCallStack = []
     funcParamStack = []
@@ -110,10 +112,7 @@ def p_varArray(p):
 
 def p_pn_array_access1(p):
     ''' pn_array_access1 : empty '''
-    global current_name, curr_intScope, curr_listIntScope
-    print("Esta es la tabla")
-    print(func_dir.table)
-    print(vars_table)
+    global current_name, curr_listIntScope
     # for varName in vars_table.keys():
     #     if 'group_size' in vars_table[varName]:
     #         func_dir.table['#global']['#global']['vars_table'][varName] = {'var_type': vars_table[varName]['var_type'], 'var_data_type': vars_table[varName]['var_data_type'], 'var_virtual_address': vars_table[varName]['var_virtual_address'], 'dim_list': vars_table[varName]['dim_list'], 'r': vars_table[varName]['r']}
@@ -126,7 +125,7 @@ def p_pn_array_access1(p):
     elif (func_dir.varExistsInScope('#global', '#global', p[-1])):
         varMap = func_dir.table['#global']['#global']['vars_table'][p[-1]]
         varDir, varType = varMap['var_virtual_address'], varMap['var_data_type']
-        curr_intScope = '#global'
+        curr_listIntScope = '#global'
     else: 
         Exception("Flop de variable " + p[-1] + ", esta no fue definida!")
     current_name = p[-1]
@@ -143,7 +142,7 @@ def p_pn_array_access2(p):
         listDim = func_dir.get_group_dimensions('#global', '#global', current_name)
 
     if listDim > 0:
-        dim = [listDir, 1, '#global', current_name]
+        dim = [listDir, 1, curr_listIntScope, current_name]
         dim_stack.append(dim)
         operatorStack.append('[')
     else: 
@@ -152,8 +151,6 @@ def p_pn_array_access2(p):
 
 def p_pn_array_access3(p):
     ''' pn_array_access3 : empty '''
-    print("Array access 3")
-    print(func_dir.table)
     if (func_dir.varExistsInScope(curr_genScope, curr_intScope, current_name)):
         general_scope = curr_genScope
     else:
@@ -209,8 +206,6 @@ def p_list1(p):
 
     size = func_dir.groupSize(curr_genScope, curr_intScope, current_name)
     memo.getListDir(var_type, listScope, size - 1)
-    print("Esto es la tabla de list1")
-    print(func_dir.table)
 
 def p_pn_add_dim_list(p):
     ''' pn_add_dim_list : empty'''
@@ -253,16 +248,12 @@ def p_pn_add_variable(p):
         vars_table[p[-3]] = {'var_type': p[-7], 'var_data_type': var_type, 'var_virtual_address': var_dir, 'general_scope': '#global', 'internal_scope': '#global'}
         varTable.append(Variable(current_name, var_type, var_dir ))
         func_dir.addVar(curr_genScope, curr_intScope, current_name, value_type, var_type, var_dir)
-        print(func_dir.table)
     else:
         size, _ = p[-1]
         size = int(size)
-        print("This is size")
-        print(size)
         vars_table[p[-4]] = {'var_type': value_type, 'var_data_type': var_type, 'var_virtual_address': var_dir, 'group_size': size, 'general_scope': '#global', 'internal_scope': '#global'}
         varTable.append(Variable(current_name, var_type, var_dir ))
         func_dir.addVar(curr_genScope, curr_intScope, current_name, value_type, var_type, var_dir)
-        print(func_dir.table)
 
 def p_bloque(p):
     ''' bloque : asignacion 
@@ -397,7 +388,7 @@ def p_cte_float(p):
 def p_pn_add_constant(p):
     ''' pn_add_constant : empty '''   
     constValue, constType = p[-1]
-
+    # Agrega la direccion de constante constante junto a su tipo
     if not const.const_exists(constType, constValue):
         const_dir = memo.nueva_dir(constType, 'constants')
         const.add_const(constType, const_dir, constValue)
@@ -440,9 +431,6 @@ def p_parametro_rec(p):
         p[0] = [(p[2], p[3])] + p[4]
     else:
         p[0] = []
-
-def p_pn_parametro_varTable(p):
-    ''' pn_parametro_varTable : empty '''
             
 def p_condicional(p):
     ''' condicional : IF LEFT_PARENTHESIS all_logical RIGHT_PARENTHESIS pn_condicional LEFT_CURLYB bloque_rec RIGHT_CURLYB condicional_else '''
@@ -484,6 +472,7 @@ def p_pn_while(p):
 
 def p_pn_while_jump(p):
     ''' pn_while_jump : empty '''
+
     direccion, tipo = operandStack.pop()
     if tipo == 'bool':
         cuads.gen_cuad('GoToF', direccion, None, None)
@@ -493,9 +482,11 @@ def p_pn_while_jump(p):
 
 def p_pn_while_jump1(p):
     ''' pn_while_jump1 : empty '''
+    # Obtiene la direccion de la pila de saltos
     gotof_id = jumpStack.pop()
     cuad_return = jumpStack.pop()
     cuads.gen_cuad('GoTo', None, None, cuad_return)
+    # Modifica el cuadruplo que fue generado sin un destion
     cuads.fill_quad(gotof_id, 3, cuads.counter)
 
 def p_read(p):
@@ -516,6 +507,7 @@ def p_write_rec1(p):
 
 def p_pn_write_quad(p):
     ''' pn_write_quad : empty '''
+    # Obtenemos la direccion de la variable para pode desplegar
     operandDir, _ = operandStack.pop()
     for x in varTable:
         if x.varDir() == operandDir:
@@ -525,7 +517,7 @@ def p_func_call(p):
     ''' func_call : CALL ID pn_verify_func LEFT_PARENTHESIS pn_param_counter pn_open_parenthesis func_call_rec pn_close_parenthesis RIGHT_PARENTHESIS '''
     genName = None
     intName = None
-    funcName = None
+
     genName = '#global'
     intName = curr_funcCallStack[-1]
     lenFirmaParam = func_dir.lenFirmaParam(genName, intName)
@@ -533,7 +525,7 @@ def p_func_call(p):
         raise Exception("Flop por cantidades de parametros ingresados, se recibieron " + str(funcParamStack[-1]) + " y se esperaban " + str(lenFirmaParam))
     else:
         funcStartCuad = func_dir.getCuadFuncInicial(genName, intName)
-        cuads.gen_cuad('GoSub', intName, funcName, funcStartCuad)
+        cuads.gen_cuad('GoSub', intName, None, funcStartCuad)
         funcType = func_dir.getTipoFunc(genName, intName)
         if funcType != 'void':
             funcDir = func_dir.funcDir('#global', '#global', curr_funcCallStack[-1])
@@ -547,6 +539,7 @@ def p_func_call(p):
 def p_pn_verify_func(p):
     ''' pn_verify_func : empty '''
     global currFuncCallName
+    # Verificamos que la funcion exista
     curr_funcCallName = p[-1]
     curr_funcCallStack.append(curr_funcCallName)
     if not func_dir.internalScopeExists('#global', curr_funcCallStack[-1]):
@@ -569,23 +562,27 @@ def p_func_call_rec1(p):
 def p_pn_param_match(p):
     ''' pn_param_match : empty '''
     global funcParamStack
+    genName = None
+    intName = None
+
     genName = '#global'
     intName = curr_funcCallStack[-1]
+
     paramDir, paramType = operandStack.pop()
     numTipoFirma = func_dir.numTipoFirma(genName, intName, funcParamStack[-1])
     if numTipoFirma != paramType:
         raise Exception("Flop por orden de tipos de parametros!")
     else:
         cuads.gen_cuad('PARAM', paramDir, None, funcParamStack[-1])
-        funcParamStack[-1] = funcParamStack[-1] + 1
+        # Agregar al contador de parametros
+        funcParamStack[-1] += 1
 
 def p_func_dec(p):
-    ''' func_dec : FUNC return_module ID pn_add_func pn_return_type LEFT_PARENTHESIS parametro pn_add_param_vartable RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
+    ''' func_dec : FUNC return_module ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable pn_return_type RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''
     global curr_intScope
     curr_intScope = '#global'
     memo.resetLocalMem()
     funcTable.append(Function1(p[4], p[2]))
-
 
 def p_pn_add_param_vartable(p):
     ''' pn_add_param_vartable : empty '''
@@ -597,7 +594,7 @@ def p_pn_add_param_vartable(p):
         else:
             paramDir = memo.nueva_dir(paramType, 'locals')
             func_dir.addVar(curr_genScope, curr_intScope, paramName, 'var', paramType, paramDir)
-        func_dir.agregarFirma(curr_genScope, curr_intScope, paramType)
+            func_dir.agregarFirma(curr_genScope, curr_intScope, paramType)
 
 def p_pn_gen_vartable(p):
     ''' pn_gen_vartable : empty '''
@@ -605,17 +602,16 @@ def p_pn_gen_vartable(p):
 
 def p_pn_func_quad(p):
     ''' pn_func_quad : empty '''
-    print("Si esta guardando cuad inicial")
     func_dir.cuadInicial(curr_genScope, curr_intScope, cuads.counter)
 
 def p_pn_end_main(p):
     ''' pn_end_main : empty'''
     tempWorkSpace = memo.cont_info('temps')
-    func_dir.tempInfo('#global', '#global', tempWorkSpace)
+    func_dir.tempInfo(curr_genScope, curr_intScope, tempWorkSpace)
 
 def p_pn_end_func(p):
     ''' pn_end_func : empty '''
-    func_dir.table[curr_genScope][curr_intScope]['vars_table'] = {}
+    # func_dir.table[curr_genScope][curr_intScope]['vars_table'] = {}
     cuads.gen_cuad('EndFunc', None, None, None)
     tempsInfo = memo.cont_info('temps')
     func_dir.tempInfo(curr_genScope, curr_intScope, tempsInfo)
@@ -628,13 +624,11 @@ def p_pn_add_func(p):
 
 def p_pn_return_type(p):
     ''' pn_return_type : empty '''
-    funcType = p[-3]
+    funcType = p[-6]
     func_dir.setFuncType(curr_genScope, curr_intScope, funcType)
     if funcType != 'void':
         nuevaDir = memo.nueva_dir(funcType, 'globals')
         func_dir.addVar('#global', '#global', curr_intScope, 'var', funcType, nuevaDir)
-        print('Funciones')
-        print(func_dir.table)
 
 def p_func_return(p):
     ''' func_return : RETURN all_logical SEMICOLON 
@@ -671,10 +665,14 @@ def p_error(p):
 
 def exp_cuad(op_list, line_no = 'Undefined'):
     if operatorStack and operatorStack[-1] in op_list:
+        # Obtiene los valores y tipos de dato para los operandos izquierda y derecha
         valor_der, tipo_der = operandStack.pop()
         valor_izq, tipo_izq = operandStack.pop()
+        # Obtiene el operador del stacke
         op = operatorStack.pop()
+        # Verifica el operador y los operandos son compatibles
         result_type = semantic_cube.type_match(tipo_izq, tipo_der, op)
+        # Si es compatible guardamos la direccion de la temporal 
         if result_type:
             temp_dir, temp_type = memo.nuevo_temp(result_type)
             cuads.gen_cuad(op, valor_izq, valor_der, temp_dir)

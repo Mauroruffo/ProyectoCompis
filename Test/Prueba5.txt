@@ -10,6 +10,6 @@ main(){
    if ( Y > X ) {
       write( X );
    }
-   Z[0] = 2;
-   write( Z[0] );
+   Z[X] = Y;
+   write( Z[X] );
 }

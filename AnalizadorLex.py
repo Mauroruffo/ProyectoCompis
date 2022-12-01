@@ -127,7 +127,7 @@ def t_CONST_INT(t):
     return t
 
 def t_error(t):
-    print("Caracter Ilegal! '%s'" % t.value[0] )
+    #print("Caracter Ilegal! '%s'" % t.value[0] )
     t.lexer.skip(1)
 
 def buscarFicheros(directorio):

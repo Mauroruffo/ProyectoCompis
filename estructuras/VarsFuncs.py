@@ -44,16 +44,6 @@ class Function:
     def setVarsTable(self, general_name, internal_name, varsTable):
         self.table[general_name][internal_name][varsTable]
 
-    def paramType(self, general_name, internal_name, n):
-        # Regresa tipo de parametro
-        param_signature_arr = self.table[general_name][internal_name]['param_signature']
-        if n >= len(param_signature_arr):
-            error_msg = "Flop de cantidad de parametros '" + internal_name + \
-                "' se esperaban " + str(len(param_signature_arr))
-            raise Exception(error_msg)
-        else:
-            return param_signature_arr[n]
-
     def paramLength(self, general_name, internal_name):
         # Regresa cantidad de parametros
         return len(self.table[general_name][internal_name]['param_signature'])
@@ -100,8 +90,6 @@ class Function:
         # if 'm' not in self.table[general_name][internal_name]['vars_table'][var_name]['dim_list']:
         #     self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'] = {}
         #     self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim - 1]['m']
-        print("Esto contiene la lista")
-        print(self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim-1])
         return self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim-1]['m']
         
     def tempInfo(self, general_name, internal_name, temps_workspace):
@@ -116,7 +104,7 @@ class Function:
         # Funcion para agregar la informacion sobre una variable
         if var_name in self.table[general_name][internal_name]['vars_table'].keys():
             raise Exception(
-                "Variable named " + var_name + " has already been declared in the same scope.")
+                "Flop por creacion de la variable " + var_name + ", esta ya fue declarada!")
         else:
             self.table[general_name][internal_name]['vars_table'][var_name] = {
                 'var_type': var_type,
@@ -135,9 +123,6 @@ class Function:
 
     def internalScopeExists(self, general_name, internal_name):
         return (internal_name in self.table[general_name].keys())
-
-    def varExists(self, general_name, internal_name, var_name):
-        return (var_name in self.table[general_name][internal_name]['vars_table'].keys())
 
     def genVarInfo(self, general_name, internal_name, vars_table):
         # Funcion para agregar un workspace para variables
@@ -184,12 +169,10 @@ class Function:
         return self.table[general_name][internal_name]['function_type']
 
     def numTipoFirma(self, general_name, internal_name, n):
-        # Raise error if n is bigger than array size
+        # Verifica que la n no sea mas grande la cantidad de parametros esperados
         param_signature_arr = self.table[general_name][internal_name]['param_signature']
         if n >= len(param_signature_arr):
-            error_msg = "Sending too many parameters for function '" + internal_name + \
-                "' when " + str(len(param_signature_arr)) + " are expected."
-            raise Exception(error_msg)
+            raise Exception("Flop por cantidad de parametros en'" + internal_name + "' se esperaban " + str(len(param_signature_arr)))
         else:
             return param_signature_arr[n]
 

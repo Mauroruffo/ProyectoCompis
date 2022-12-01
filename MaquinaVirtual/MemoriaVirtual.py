@@ -8,8 +8,8 @@ class GlobalMemory:
 
         self.TT = Translator()
         self.table = {
-            'vars': {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
-            'constants': {'int': [0] * constInt, 'float': [0.0] * constFloat, 'bool': [False] * constBool, 'string': [''] * constString}
+            'vars': {'int': [0] * (varInt + 1), 'float': [0.0] * (varFloat + 1), 'bool': [False] * (varBool + 1), 'string': [''] * (varString + 1)},
+            'constants': {'int': [0] * (constInt + 1), 'float': [0.0] * (constFloat + 1), 'bool': [False] * (constBool + 1) , 'string': [''] * (constString + 1)}
         }
 
         for type, dictValue in constTable.items():
