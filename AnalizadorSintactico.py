@@ -491,10 +491,25 @@ def p_pn_while_jump1(p):
     cuads.fill_quad(gotof_id, 3, cuads.counter)
 
 def p_read(p):
-    ''' read : READ LEFT_PARENTHESIS var RIGHT_PARENTHESIS SEMICOLON '''
+    ''' read : READ LEFT_PARENTHESIS var_readRec RIGHT_PARENTHESIS SEMICOLON '''
     for var in p[3]:
+        for x in varTable:
+            if x.name() == var:
+                var = x.varDir()
         dir_var = var
         cuads.gen_cuad('READ', None, None, dir_var)
+
+def p_var_readRec(p):
+    ''' var_readRec : var var_readRec1 '''
+    p[0] = [p[1]] + p[2]
+
+def p_var_readRec1(p):
+    ''' var_readRec1 : COMMA var var_readRec1 
+                    |   empty '''
+    if len(p) == 4:
+        p[0] = [p[2]] + p[3]
+    else:
+        p[0] = []
 
 def p_write(p):
     ''' write : WRITE LEFT_PARENTHESIS write_rec RIGHT_PARENTHESIS SEMICOLON '''
@@ -612,7 +627,7 @@ def p_pn_end_main(p):
 
 def p_pn_end_func(p):
     ''' pn_end_func : empty '''
-    # func_dir.table[curr_genScope][curr_intScope]['vars_table'] = {}
+    func_dir.table[curr_genScope][curr_intScope]['vars_table'] = {}
     cuads.gen_cuad('EndFunc', None, None, None)
     tempsInfo = memo.cont_info('temps')
     func_dir.tempInfo(curr_genScope, curr_intScope, tempsInfo)
