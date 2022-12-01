@@ -71,15 +71,16 @@ def p_pn_internal_scope(p):
 
 def p_pn_start_program(p):
     ''' pn_start_program : empty '''
-    global func_dir, curr_listIntScope, curr_funcCallStack, funcParamStack
-    global memo, const
+    global func_dir, curr_listIntScope, curr_funcCallStack, funcParamCountStack
+    global memo, const, funcParamCount
+    funcParamCount = None
     curr_listIntScope = None
     memo = MemoriaVirtual()
     func_dir = Function()
     const = Constant()
     cuads.gen_cuad('GoToMain', None, None, None)
     curr_funcCallStack = []
-    funcParamStack = []
+    funcParamCountStack = []
 
 def p_pn_start_func(p):
     ''' pn_start_func : empty '''
@@ -521,8 +522,8 @@ def p_func_call(p):
     genName = '#global'
     intName = curr_funcCallStack[-1]
     lenFirmaParam = func_dir.lenFirmaParam(genName, intName)
-    if lenFirmaParam != funcParamStack[-1]:
-        raise Exception("Flop por cantidades de parametros ingresados, se recibieron " + str(funcParamStack[-1]) + " y se esperaban " + str(lenFirmaParam))
+    if lenFirmaParam != funcParamCountStack[-1]:
+        raise Exception("Flop por cantidades de parametros ingresados, se recibieron " + str(funcParamCountStack[-1]) + " y se esperaban " + str(lenFirmaParam))
     else:
         funcStartCuad = func_dir.getCuadFuncInicial(genName, intName)
         cuads.gen_cuad('GoSub', intName, None, funcStartCuad)
@@ -533,7 +534,7 @@ def p_func_call(p):
             p[0] = (nuevaDir, funcType)
             cuads.gen_cuad('=', funcDir, None, nuevaDir)
     curr_funcCallStack.pop()
-    funcParamStack.pop()
+    funcParamCountStack.pop()
 
 
 def p_pn_verify_func(p):
@@ -550,18 +551,18 @@ def p_pn_verify_func(p):
 def p_pn_param_counter(p):
     ''' pn_param_counter : empty '''
     funcParamCount = 0
-    funcParamStack.append(funcParamCount)
+    funcParamCountStack.append(funcParamCount)
 
 def p_func_call_rec(p):
     ''' func_call_rec : all_logical pn_param_match func_call_rec1 '''
 
 def p_func_call_rec1(p):
-    ''' func_call_rec1 : COMMA all_logical pn_param_match func_call_rec
+    ''' func_call_rec1 : COMMA all_logical pn_param_match func_call_rec1
                         | empty '''
 
 def p_pn_param_match(p):
     ''' pn_param_match : empty '''
-    global funcParamStack
+    global funcParamCountStack
     genName = None
     intName = None
 
@@ -569,13 +570,13 @@ def p_pn_param_match(p):
     intName = curr_funcCallStack[-1]
 
     paramDir, paramType = operandStack.pop()
-    numTipoFirma = func_dir.numTipoFirma(genName, intName, funcParamStack[-1])
+    numTipoFirma = func_dir.numTipoFirma(genName, intName, funcParamCountStack[-1])
     if numTipoFirma != paramType:
         raise Exception("Flop por orden de tipos de parametros!")
     else:
-        cuads.gen_cuad('PARAM', paramDir, None, funcParamStack[-1])
+        cuads.gen_cuad('PARAM', paramDir, None, funcParamCountStack[-1])
         # Agregar al contador de parametros
-        funcParamStack[-1] += 1
+        funcParamCountStack[-1] += 1
 
 def p_func_dec(p):
     ''' func_dec : FUNC return_module ID pn_add_func LEFT_PARENTHESIS parametro pn_add_param_vartable pn_return_type RIGHT_PARENTHESIS LEFT_CURLYB vars_rec pn_gen_vartable pn_func_quad bloque_rec func_return RIGHT_CURLYB pn_end_func '''

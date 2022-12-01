@@ -42,13 +42,25 @@
       },
       "PRUEBA": {
         "vars_table": {
-          "C": {
+          "A": {
             "var_type": "var",
             "var_data_type": "int",
             "var_virtual_address": 8000
+          },
+          "C": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8001
+          },
+          "B": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8002
           }
         },
         "param_signature": [
+          "int",
+          "int",
           "int"
         ],
         "workspace": {
@@ -59,7 +71,7 @@
             "bool": 0
           },
           "temps_workspace": {
-            "int": 0,
+            "int": 3,
             "float": 0,
             "bool": 0,
             "string": 0
@@ -93,7 +105,37 @@
       "GoToMain",
       null,
       null,
-      3
+      8
+    ],
+    [
+      "*",
+      0,
+      0,
+      16000
+    ],
+    [
+      "=",
+      16000,
+      null,
+      2
+    ],
+    [
+      "*",
+      1,
+      1,
+      16001
+    ],
+    [
+      "+",
+      2,
+      16001,
+      16002
+    ],
+    [
+      "=",
+      16002,
+      null,
+      2
     ],
     [
       "=",
@@ -133,9 +175,21 @@
     ],
     [
       "PARAM",
-      2,
+      0,
       null,
       0
+    ],
+    [
+      "PARAM",
+      2,
+      null,
+      1
+    ],
+    [
+      "PARAM",
+      1,
+      null,
+      2
     ],
     [
       "GoSub",
