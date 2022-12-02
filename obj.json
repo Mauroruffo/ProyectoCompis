@@ -3,21 +3,16 @@
     "#global": {
       "#global": {
         "vars_table": {
-          "X": {
+          "PRUEBA": {
             "var_type": "var",
             "var_data_type": "int",
             "var_virtual_address": 0
-          },
-          "Y": {
-            "var_type": "var",
-            "var_data_type": "int",
-            "var_virtual_address": 1
           }
         },
         "param_signature": [],
         "workspace": {
           "variables_workspace": {
-            "int": 2,
+            "int": 3,
             "float": 0,
             "string": 0,
             "bool": 0
@@ -25,18 +20,74 @@
         },
         "function_type": "void"
       },
-      "main": {
-        "vars_table": {},
-        "param_signature": [],
+      "PRUEBA": {
+        "vars_table": {
+          "X": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8000
+          },
+          "Y": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8001
+          },
+          "Z": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8002
+          }
+        },
+        "param_signature": [
+          "int",
+          "int",
+          "int"
+        ],
         "workspace": {
           "variables_workspace": {
-            "int": 2,
+            "int": 0,
             "float": 0,
             "string": 0,
             "bool": 0
           },
           "temps_workspace": {
-            "int": 0,
+            "int": 1,
+            "float": 0,
+            "bool": 0,
+            "string": 0
+          }
+        },
+        "function_type": "int",
+        "start_quad": 1
+      },
+      "main": {
+        "vars_table": {
+          "A": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8000
+          },
+          "B": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8001
+          },
+          "C": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 8002
+          }
+        },
+        "param_signature": [],
+        "workspace": {
+          "variables_workspace": {
+            "int": 3,
+            "float": 0,
+            "string": 0,
+            "bool": 0
+          },
+          "temps_workspace": {
+            "int": 1,
             "float": 0,
             "bool": 0,
             "string": 0
@@ -50,29 +101,110 @@
       "GoToMain",
       null,
       null,
+      5
+    ],
+    [
+      "+",
+      8001,
+      8002,
+      16000
+    ],
+    [
+      "=",
+      16000,
+      null,
+      8000
+    ],
+    [
+      "=",
+      8000,
+      null,
+      0
+    ],
+    [
+      "EndFunc",
+      null,
+      null,
+      null
+    ],
+    [
+      "=",
+      24000,
+      null,
+      8000
+    ],
+    [
+      "=",
+      24000,
+      null,
+      8001
+    ],
+    [
+      "=",
+      24001,
+      null,
+      8002
+    ],
+    [
+      "ERA",
+      null,
+      null,
+      "PRUEBA"
+    ],
+    [
+      "PARAM",
+      8000,
+      null,
+      0
+    ],
+    [
+      "PARAM",
+      8001,
+      null,
       1
     ],
     [
-      "READ",
+      "PARAM",
+      8002,
       null,
+      2
+    ],
+    [
+      "GoSub",
+      "PRUEBA",
       null,
-      0
+      1
+    ],
+    [
+      "=",
+      0,
+      null,
+      16000
+    ],
+    [
+      "=",
+      16000,
+      null,
+      8000
     ],
     [
       "WRITE",
       null,
       null,
-      0
+      8000
     ]
   ],
   "constants_summary": {
-    "int": 0,
+    "int": 2,
     "float": 0,
     "bool": 0,
     "string": 0
   },
   "constants_table": {
-    "int": {},
+    "int": {
+      "5": 24000,
+      "7": 24001
+    },
     "float": {},
     "bool": {},
     "string": {}

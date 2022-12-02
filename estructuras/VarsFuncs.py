@@ -34,97 +34,95 @@ class Function:
     def genScope(self, name):
         self.table[name] = {}
 
-    def intScope(self, general_name, name):
-        self.table[general_name][name] = {
+    def intScope(self, genScope, name):
+        self.table[genScope][name] = {
             "vars_table" : {},
             "param_signature": [],
             "workspace": {}
             }
         
-    def setVarsTable(self, general_name, internal_name, varsTable):
-        self.table[general_name][internal_name][varsTable]
+    def setVarsTable(self, genScope, intScope, varsTable):
+        self.table[genScope][intScope][varsTable]
 
-    def paramLength(self, general_name, internal_name):
+    def paramLength(self, genScope, intScope):
         # Regresa cantidad de parametros
-        return len(self.table[general_name][internal_name]['param_signature'])
+        return len(self.table[genScope][intScope]['param_signature'])
     
-    def varDir(self, general_name, internal_name, var_name):
+    def varDir(self, genScope, intScope, var_name):
         # Regresa la direccion virtual de la variable
-        return self.table[general_name][internal_name]['vars_table'][var_name]['var_virtual_address']
+        return self.table[genScope][intScope]['vars_table'][var_name]['var_virtual_address']
 
-    def varType(self, general_name, internal_name, var_name):
+    def varType(self, genScope, intScope, var_name):
         # Regresa el tipo de la variable 
-        return self.table[general_name][internal_name]['vars_table'][var_name]['var_data_type']
+        return self.table[genScope][intScope]['vars_table'][var_name]['var_data_type']
 
-    def dimSize(self, general_name, internal_name, var_name, dim):
+    def dimSize(self, genScope, intScope, var_name, dim):
         # Regresa el valor del tamano de la dimension
-        return self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim-1]['size']
+        return self.table[genScope][intScope]['vars_table'][var_name]['dim_list'][dim-1]['size']
 
-    def groupSize(self, general_name, internal_name, var_name):
+    def groupSize(self, genScope, intScope, var_name):
         # Regresa el valor del conjunto de la dimension (ya sea una o dos dimensiones)
-        return self.table[general_name][internal_name]['vars_table'][var_name]['group_size']
+        return self.table[genScope][intScope]['vars_table'][var_name]['group_size']
 
-    def get_group_dimensions(self, general_name, internal_name, var_name):
+    def get_group_dimensions(self, genScope, intScope, var_name):
         # Cantidad de dimensiones de una variable
-        if 'dim_list' in self.table[general_name][internal_name]['vars_table'][var_name].keys():
-            return len(self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'])
+        if 'dim_list' in self.table[genScope][intScope]['vars_table'][var_name].keys():
+            return len(self.table[genScope][intScope]['vars_table'][var_name]['dim_list'])
         else:
             return 0
 
-    def genDimMs(self, general_name, internal_name, var_name):
+    def genDimMs(self, genScope, intScope, var_name):
 
-        size = self.table[general_name][internal_name]['vars_table'][var_name]['r']
+        size = self.table[genScope][intScope]['vars_table'][var_name]['r']
 
-        for dim in self.table[general_name][internal_name]['vars_table'][var_name]['dim_list']:
-            r = self.table[general_name][internal_name]['vars_table'][var_name]['r']
-            print("Esto es el dimSize")
+        for dim in self.table[genScope][intScope]['vars_table'][var_name]['dim_list']:
+            r = self.table[genScope][intScope]['vars_table'][var_name]['r']
             dim_size = dim['size']
-            print(dim_size)
             dim['m'] = r / dim_size
-            self.table[general_name][internal_name]['vars_table'][var_name]['r'] = dim['m']
+            self.table[genScope][intScope]['vars_table'][var_name]['r'] = dim['m']
 
-        self.table[general_name][internal_name]['vars_table'][var_name]['group_size'] = size
+        self.table[genScope][intScope]['vars_table'][var_name]['group_size'] = size
 
-    def dimM(self, general_name, internal_name, var_name, dim):
+    def dimM(self, genScope, intScope, var_name, dim):
         # Funcion que regresa el valor M de una dimension
-        # if 'm' not in self.table[general_name][internal_name]['vars_table'][var_name]['dim_list']:
-        #     self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'] = {}
-        #     self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim - 1]['m']
-        return self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][dim-1]['m']
+        # if 'm' not in self.table[genScope][intScope]['vars_table'][var_name]['dim_list']:
+        #     self.table[genScope][intScope]['vars_table'][var_name]['dim_list'] = {}
+        #     self.table[genScope][intScope]['vars_table'][var_name]['dim_list'][dim - 1]['m']
+        return self.table[genScope][intScope]['vars_table'][var_name]['dim_list'][dim-1]['m']
         
-    def tempInfo(self, general_name, internal_name, temps_workspace):
+    def tempInfo(self, genScope, intScope, temps_workspace):
         # Funcion para crear el workspace de temporales
-        self.table[general_name][internal_name]['workspace']['temps_workspace'] = temps_workspace
+        self.table[genScope][intScope]['workspace']['temps_workspace'] = temps_workspace
 
-    def tipoFunc(self, general_name, internal_name, type):
+    def tipoFunc(self, genScope, intScope, type):
         # Funcion para agregar el tipo de dato que regresa una funcion
-        self.table[general_name][internal_name]['function_type'] = type
+        self.table[genScope][intScope]['function_type'] = type
 
-    def addVar(self, general_name, internal_name, var_name, var_type, var_data_type, var_virtual_address):
+    def addVar(self, genScope, intScope, var_name, var_type, var_data_type, var_virtual_address):
         # Funcion para agregar la informacion sobre una variable
-        if var_name in self.table[general_name][internal_name]['vars_table'].keys():
+        if var_name in self.table[genScope][intScope]['vars_table'].keys():
             raise Exception(
                 "Flop por creacion de la variable " + var_name + ", esta ya fue declarada!")
         else:
-            self.table[general_name][internal_name]['vars_table'][var_name] = {
+            self.table[genScope][intScope]['vars_table'][var_name] = {
                 'var_type': var_type,
                 'var_data_type': var_data_type,
                 'var_virtual_address': var_virtual_address
             }
 
-    def add_dim1_list(self, general_name, internal_name, vars_table, var_name):
+    def add_dim1_list(self, genScope, intScope, vars_table, var_name):
         # Funcion para establecer la primera dimension
-        self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'] = [{'dim': 1, 'size': None}]
-        self.table[general_name][internal_name]['vars_table'][var_name]['r'] = 1
+        self.table[genScope][intScope]['vars_table'][var_name]['dim_list'] = [{'dim': 1, 'size': None}]
+        self.table[genScope][intScope]['vars_table'][var_name]['r'] = 1
         vars
 
     def generalScopeExists(self, name):
         return (name in self.table.keys())
 
-    def internalScopeExists(self, general_name, internal_name):
-        return (internal_name in self.table[general_name].keys())
+    def internalScopeExists(self, genScope, intScope):
+        return (intScope in self.table[genScope].keys())
 
-    def genVarInfo(self, general_name, internal_name, vars_table):
+    def genVarInfo(self, genScope, intScope, vars_table):
         # Funcion para agregar un workspace para variables
         variable_workspace = {"int": 0, "float": 0, "string": 0, "bool": 0}
         for var_name, var_dict in vars_table.items():
@@ -134,45 +132,46 @@ class Function:
                 print("Group size")
                 print(var_dict['group_size'])
                 variable_workspace[var_dict['var_data_type']] += var_dict['group_size']
-        self.table[general_name][internal_name]['workspace']['variables_workspace'] = variable_workspace
+        self.table[genScope][intScope]['workspace']['variables_workspace'] = variable_workspace
     
-    def editSizeAndR(self, general_name, internal_name, var_name, index, size):
-        r = self.table[general_name][internal_name]['vars_table'][var_name]['r']
-        self.table[general_name][internal_name]['vars_table'][var_name]['dim_list'][index]['size'] = size
-        self.table[general_name][internal_name]['vars_table'][var_name]['r'] = r * size
+    def editSizeAndR(self, genScope, intScope, var_name, index, size):
+        r = self.table[genScope][intScope]['vars_table'][var_name]['r']
+        self.table[genScope][intScope]['vars_table'][var_name]['dim_list'][index]['size'] = size
+        self.table[genScope][intScope]['vars_table'][var_name]['r'] = r * size
 
-    def varExistsInScope(self, general_name, internal_name, var_name):
-        return (var_name in self.table[general_name][internal_name]['vars_table'].keys())
+    def varExistsInScope(self, genScope, intScope, var_name):
+        return (var_name in self.table[genScope][intScope]['vars_table'].keys())
     
-    def agregarFirma(self, general_name, internal_name, parameter_type):
+    def agregarFirma(self, genScope, intScope, parameter_type):
         # Funcion que te permite modificar los parametros de la funcion
-        self.table[general_name][internal_name]['param_signature'].append(parameter_type)
+        self.table[genScope][intScope]['param_signature'].append(parameter_type)
         
-    def cuadInicial(self, general_name, internal_name, quad_id):
+    def cuadInicial(self, genScope, intScope, quad_id):
         # Funcion que sirve para determinar el indice del cuadruplo
-        self.table[general_name][internal_name]['start_quad'] = quad_id
+        self.table[genScope][intScope]['start_quad'] = quad_id
 
-    def funcDir(self, general_name, internal_name, function_name):
-        return self.table[general_name][internal_name]['vars_table'][function_name]['var_virtual_address']
+    def funcDir(self, genScope, intScope, function_name):
+        return self.table[genScope][intScope]['vars_table'][function_name]['var_virtual_address']
 
-    def setFuncType(self, general_name, internal_name, type):
-        self.table[general_name][internal_name]['function_type'] = type
+    def setFuncType(self, genScope, intScope, type):
+        self.table[genScope][intScope]['function_type'] = type
 
-    def lenFirmaParam(self, general_name, internal_name):
-        return len(self.table[general_name][internal_name]['param_signature'])
+    def lenFirmaParam(self, genScope, intScope):
+        # Funcion para regresar la firma de los parametros
+        return len(self.table[genScope][intScope]['param_signature'])
     
-    def getCuadFuncInicial(self, general_name, internal_name):
+    def getCuadFuncInicial(self, genScope, intScope):
         # Funcion para obtener el indice del primer cuadruplo
-        return self.table[general_name][internal_name]['start_quad']
+        return self.table[genScope][intScope]['start_quad']
 
-    def getTipoFunc(self, general_name, internal_name):
-        return self.table[general_name][internal_name]['function_type']
+    def getTipoFunc(self, genScope, intScope):
+        return self.table[genScope][intScope]['function_type']
 
-    def numTipoFirma(self, general_name, internal_name, n):
+    def numTipoFirma(self, genScope, intScope, n):
         # Verifica que la n no sea mas grande la cantidad de parametros esperados
-        param_signature_arr = self.table[general_name][internal_name]['param_signature']
+        param_signature_arr = self.table[genScope][intScope]['param_signature']
         if n >= len(param_signature_arr):
-            raise Exception("Flop por cantidad de parametros en'" + internal_name + "' se esperaban " + str(len(param_signature_arr)))
+            raise Exception("Flop por cantidad de parametros en'" + intScope + "' se esperaban " + str(len(param_signature_arr)))
         else:
             return param_signature_arr[n]
 

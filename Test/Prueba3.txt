@@ -1,19 +1,17 @@
 program TESTCORRECT;
-var int A;
-var int B;
-var int C;
-var int Y;
 
-func int PRUEBA ( int A, int C, int B ){
-    C = A * A;
-    C = C + B * B;
-    return C;
+func int PRUEBA ( int X, int Y, int Z ){
+    X = Y + Z;
+    return X;
 }
 
 main(){
+    var int A;
+    var int B;
+    var int C;
     A = 5;
     B = 5;
     C = 7;
-    Y = call PRUEBA ( A,  C , B );
-    write( Y );
+    A = call PRUEBA ( A, B, C );
+    write( A );
 }

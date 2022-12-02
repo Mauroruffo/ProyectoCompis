@@ -6,7 +6,7 @@ func int PRUEBA ( int N ){
     if ( N < 1 || N = 1) {
         return N;
     }
-    return PRUEBA ( N - 1 ) + PRUEBA ( N - 2 );
+    return call PRUEBA ( N - 1 ) + call PRUEBA ( N - 2 );
 }
 
 main(){

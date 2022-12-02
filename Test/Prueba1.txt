@@ -3,6 +3,7 @@ var int X;
 var int Y;
 
 main(){
+   var int Z;
    X = 1;
    Y = 2;
    if ( Y > X ) {

@@ -216,6 +216,7 @@ while(instructionPtr < len(cuads)):
     elif currCuad[0] == 'GoSub':
         funcName = currCuad[1]
         funcStartCuad = currCuad[3]
+        # 
         exeNewMem = futureMemory.pop()
         memStack.append(exeNewMem[0])
         instructionPtrStack.append(instructionPtr)

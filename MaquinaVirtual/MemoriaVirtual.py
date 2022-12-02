@@ -25,6 +25,8 @@ class GlobalMemory:
     def setValorDir(self, dir, item):
         # Funcion para agregar un valor en una direccion virtual
         tableScope, dataType, index = self.tableKeys(dir)
+        while(len(self.table[tableScope][dataType]) < index + 1):
+            self.table[tableScope][dataType].append(0)
         self.table[tableScope][dataType][index] = item
 
     def getItem(self, dir):
@@ -73,8 +75,8 @@ class LocalMemory:
         tempInt, tempFloat, tempBool, tempString = tempSize
 
         self.table = {
-            'vars': {'int': [0] * varInt, 'float': [0.0] * varFloat, 'bool': [False] * varBool, 'string': [''] * varString},
-            'temps': {'int': [0] * tempInt, 'float': [0.0] * tempFloat, 'bool': [False] * tempBool, 'string': [''] * tempString}
+            'vars': {'int': [0] * (varInt + 1), 'float': [0.0] * (varFloat + 1), 'bool': [False] * (varBool + 1), 'string': [''] * (varString + 1)},
+            'temps': {'int': [0] * (tempInt + 1), 'float': [0.0] * (tempFloat + 1), 'bool': [False] * (tempBool + 1), 'string': [''] * (tempString + 1)}
         }
 
     def scopeKey(self, dir):
@@ -115,6 +117,8 @@ class LocalMemory:
         tableScope, dataType, index = self.tableKeys(dir)
         if not tableScope:
             return None
+        while(len(self.table[tableScope][dataType]) < index + 1):
+            self.table[tableScope][dataType].append(0)
         self.table[tableScope][dataType][index] = valor
 
     def getItem(self, dir):
