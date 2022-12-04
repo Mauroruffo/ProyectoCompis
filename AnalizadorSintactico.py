@@ -643,8 +643,6 @@ def p_func_dec(p):
 def p_pn_add_param_vartable(p):
     ''' pn_add_param_vartable : empty '''
     parametros = p[-1]
-    print("Parametros")
-    print(parametros)
     # Agregamos los parametros a la tabla de variables para su propia tabla de variables
     for parametro in parametros:
         paramType, paramName = parametro

@@ -3,16 +3,35 @@
     "#global": {
       "#global": {
         "vars_table": {
-          "PRUEBA": {
+          "X": {
             "var_type": "var",
             "var_data_type": "int",
             "var_virtual_address": 0
+          },
+          "Y": {
+            "var_type": "var",
+            "var_data_type": "int",
+            "var_virtual_address": 1
+          },
+          "Z": {
+            "var_type": "list",
+            "var_data_type": "int",
+            "var_virtual_address": 2,
+            "dim_list": [
+              {
+                "dim": 1,
+                "size": 5,
+                "m": 1.0
+              }
+            ],
+            "r": 1.0,
+            "group_size": 5
           }
         },
         "param_signature": [],
         "workspace": {
           "variables_workspace": {
-            "int": 3,
+            "int": 7,
             "float": 0,
             "string": 0,
             "bool": 0
@@ -20,76 +39,20 @@
         },
         "function_type": "void"
       },
-      "PRUEBA": {
-        "vars_table": {
-          "X": {
-            "var_type": "var",
-            "var_data_type": "int",
-            "var_virtual_address": 8000
-          },
-          "Y": {
-            "var_type": "var",
-            "var_data_type": "int",
-            "var_virtual_address": 8001
-          },
-          "Z": {
-            "var_type": "var",
-            "var_data_type": "int",
-            "var_virtual_address": 8002
-          }
-        },
-        "param_signature": [
-          "int",
-          "int",
-          "int"
-        ],
-        "workspace": {
-          "variables_workspace": {
-            "int": 0,
-            "float": 0,
-            "string": 0,
-            "bool": 0
-          },
-          "temps_workspace": {
-            "int": 1,
-            "float": 0,
-            "bool": 0,
-            "string": 0
-          }
-        },
-        "function_type": "int",
-        "start_quad": 1
-      },
       "main": {
-        "vars_table": {
-          "A": {
-            "var_type": "var",
-            "var_data_type": "int",
-            "var_virtual_address": 8000
-          },
-          "B": {
-            "var_type": "var",
-            "var_data_type": "int",
-            "var_virtual_address": 8001
-          },
-          "C": {
-            "var_type": "var",
-            "var_data_type": "int",
-            "var_virtual_address": 8002
-          }
-        },
+        "vars_table": {},
         "param_signature": [],
         "workspace": {
           "variables_workspace": {
-            "int": 3,
+            "int": 7,
             "float": 0,
             "string": 0,
             "bool": 0
           },
           "temps_workspace": {
-            "int": 1,
+            "int": 5,
             "float": 0,
-            "bool": 0,
+            "bool": 1,
             "string": 0
           }
         }
@@ -101,101 +64,101 @@
       "GoToMain",
       null,
       null,
-      5
-    ],
-    [
-      "+",
-      8001,
-      8002,
-      16000
-    ],
-    [
-      "=",
-      16000,
-      null,
-      8000
-    ],
-    [
-      "=",
-      8000,
-      null,
-      0
-    ],
-    [
-      "EndFunc",
-      null,
-      null,
-      null
-    ],
-    [
-      "=",
-      24000,
-      null,
-      8000
-    ],
-    [
-      "=",
-      24000,
-      null,
-      8001
+      1
     ],
     [
       "=",
       24001,
       null,
-      8002
-    ],
-    [
-      "ERA",
-      null,
-      null,
-      "PRUEBA"
-    ],
-    [
-      "PARAM",
-      8000,
-      null,
       0
     ],
     [
-      "PARAM",
-      8001,
-      null,
-      1
-    ],
-    [
-      "PARAM",
-      8002,
-      null,
-      2
-    ],
-    [
-      "GoSub",
-      "PRUEBA",
-      null,
-      1
-    ],
-    [
       "=",
-      0,
+      24002,
       null,
+      1
+    ],
+    [
+      "+",
+      24001,
+      24003,
       16000
     ],
     [
       "=",
       16000,
       null,
-      8000
+      0
+    ],
+    [
+      ">",
+      1,
+      0,
+      20000
+    ],
+    [
+      "GoToF",
+      20000,
+      null,
+      8
     ],
     [
       "WRITE",
       null,
       null,
-      8000
+      0
+    ],
+    [
+      "VER",
+      5,
+      0,
+      null
+    ],
+    [
+      "*",
+      0,
+      24001,
+      16001
+    ],
+    [
+      "+",
+      16001,
+      24002,
+      16002
+    ],
+    [
+      "=",
+      1,
+      null,
+      "&16002"
+    ],
+    [
+      "VER",
+      5,
+      0,
+      null
+    ],
+    [
+      "*",
+      0,
+      24001,
+      16003
+    ],
+    [
+      "+",
+      16003,
+      24002,
+      16004
+    ],
+    [
+      "WRITE",
+      null,
+      null,
+      "&16004"
     ]
   ],
   "constants_summary": {
-    "int": 2,
+    "int": 4,
     "float": 0,
     "bool": 0,
     "string": 0
@@ -203,7 +166,9 @@
   "constants_table": {
     "int": {
       "5": 24000,
-      "7": 24001
+      "1": 24001,
+      "2": 24002,
+      "3": 24003
     },
     "float": {},
     "bool": {},

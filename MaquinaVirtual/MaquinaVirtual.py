@@ -61,6 +61,18 @@ def valorMemoria(dir, mem_local, valor):
         globalMemory.setValorDir(dir, valor)
     return mem_local
 
+def obtainPointerAddress(currCuad, memory):
+    for x, cuadElement in enumerate(currCuad):
+        if cuadElement is not None and str(cuadElement)[0] == '&':
+            # Para no confundir con el operador AND (&&)
+            if len(str(cuadElement)) > 1 and str(cuadElement)[1] == '&':
+                continue
+            cuadElement = cuadElement[1:]
+            cuadElement = int(cuadElement)
+            _, new_address = valueType(memory, cuadElement)
+            currCuad[x] = new_address
+    return currCuad
+
 print("---------------------FLOP++---------------------")
 
 while(instructionPtr < len(cuads)):
@@ -68,6 +80,9 @@ while(instructionPtr < len(cuads)):
     if len(memStack) > 100000:
         raise Exception('Stack OverFlop, demasiadas llamadas creadas')
 
+    if memStack:
+        currCuad = obtainPointerAddress( currCuad , memStack[-1])
+    
     if currCuad[0] == 'GoToMain':
         # Obtenemos los workspaces del JSON (canitdades de cada tipo de dato)
         mainVarWorkSpace = obj.varWorkspace('#global', 'main')

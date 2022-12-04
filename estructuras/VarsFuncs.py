@@ -129,8 +129,6 @@ class Function:
             if var_dict['var_type'] != 'list':
                 variable_workspace[var_dict['var_data_type']] += 1
             else:
-                print("Group size")
-                print(var_dict['group_size'])
                 variable_workspace[var_dict['var_data_type']] += var_dict['group_size']
         self.table[genScope][intScope]['workspace']['variables_workspace'] = variable_workspace
     
